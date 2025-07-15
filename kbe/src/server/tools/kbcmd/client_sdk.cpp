@@ -5,6 +5,7 @@
 #include "client_sdk_unity.h"	
 #include "client_sdk_ue4.h"
 #include "client_sdk_ue5.h"
+#include "client_sdk_typescript.h"
 #include "client_sdk_plugin.h"
 #include "entitydef/entitydef.h"
 #include "entitydef/scriptdef_module.h"
@@ -66,6 +67,10 @@ ClientSDK* ClientSDK::createClientSDK(const std::string& type)
 	else if (lowerType == "plugin")
 	{
 		return new ClientSDKPlugin();
+	}
+	else if (lowerType == "typescript")
+	{
+		return new ClientSDKTypeScript();
 	}
 
 	return NULL;
@@ -217,8 +222,8 @@ bool ClientSDK::create(const std::string& path)
 	if (!writeEntityDefsModule())
 		return false;
 
-	if (!writeCustomDataTypes())
-		return false;
+	/*if (!writeCustomDataTypes())
+		return false;*/
 	
 	const EntityDef::SCRIPT_MODULES& scriptModules = EntityDef::getScriptModules();
 	EntityDef::SCRIPT_MODULES::const_iterator moduleIter = scriptModules.begin();
@@ -1381,6 +1386,26 @@ bool ClientSDK::writeTypes()
 
 	if (!writeTypesEnd())
 		return false; 
+
+
+	if (!writeCustomDataTypesBegin())
+		return false;
+
+	const DataTypes::UID_DATATYPE_MAP& customDataTypes = DataTypes::uid_dataTypes();
+	DataTypes::UID_DATATYPE_MAP::const_iterator customDtiter = customDataTypes.begin();
+	for (; customDtiter != customDataTypes.end(); ++customDtiter)
+	{
+		const DataType* customDataTypes = customDtiter->second;
+
+		if (customDataTypes->aliasName()[0] == '_')
+			continue;
+
+		if (!writeCustomDataType(customDataTypes))
+			return false;
+	}
+	if (!writeCustomDataTypesEnd())
+		return false;
+	
 
 	return saveFile();
 }
