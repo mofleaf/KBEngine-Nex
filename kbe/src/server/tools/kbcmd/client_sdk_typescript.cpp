@@ -1999,7 +1999,7 @@ bool ClientSDKTypeScript::writeCustomDataType(const DataType* pDataType)
 		}
 
 		std::string readName;
-		sourcefileBody_ += fmt::format("\n\nexport class DATATYPE_{} extends DataTypes.DATATYPE_BASE{{ //1111\n", className);
+		sourcefileBody_ += fmt::format("\n\nexport class DATATYPE_{} extends DataTypes.DATATYPE_BASE{{\n", className);
 
 		bool isFixedType = strcmp(pFixedArrayType->getDataType()->getName(), "FIXED_DICT") == 0 ||
 		strcmp(pFixedArrayType->getDataType()->getName(), "ARRAY") == 0;
@@ -2011,7 +2011,7 @@ bool ClientSDKTypeScript::writeCustomDataType(const DataType* pDataType)
 			sourcefileBody_ += fmt::format("\tprivate  itemType:DATATYPE_{} = new DATATYPE_{}();\n\n",
 			pFixedArrayType->getDataType()->aliasName(), pFixedArrayType->getDataType()->aliasName());
 
-			sourcefileBody_ += fmt::format("\tpublic  createFromStreamEx(stream:MemoryStream):{}{{ // 22222\n", typeName);
+			sourcefileBody_ += fmt::format("\tpublic  createFromStreamEx(stream:MemoryStream):{}{{\n", typeName);
 			sourcefileBody_ += fmt::format("\t\tlet size = stream.ReadUint32();\n");
 			sourcefileBody_ += fmt::format("\t\tlet datas = new {}();\n\n", typeName);
 			sourcefileBody_ += fmt::format("\t\twhile(size > 0)\n");
@@ -2058,7 +2058,7 @@ bool ClientSDKTypeScript::writeCustomDataType(const DataType* pDataType)
 		}
 		else if (strcmp(pFixedArrayType->getDataType()->getName(), "ARRAY") == 0)
 		{
-			readName = fmt::format("itemType.createFromStreamEx(stream){{ // 33333", readName);
+			readName = fmt::format("itemType.createFromStreamEx(stream){{", readName);
 
 			sourcefileBody_ += fmt::format("\tprivate DATATYPE_{} itemType = new DATATYPE_{}();\n\n",
 				className + "_ChildArray", className + "_ChildArray");
@@ -2083,7 +2083,7 @@ bool ClientSDKTypeScript::writeCustomDataType(const DataType* pDataType)
 			readName[0] = std::toupper(readName[0]);
 			readName = fmt::format("stream.Read{}()", readName);
 
-			sourcefileBody_ += fmt::format("\tpublic createFromStreamEx(stream:MemoryStream): {}{{ // 44444\n", typeName);
+			sourcefileBody_ += fmt::format("\tpublic createFromStreamEx(stream:MemoryStream): {}{{\n", typeName);
 			sourcefileBody_ += fmt::format("\t\tlet size = stream.ReadUint32();\n");
 			sourcefileBody_ += fmt::format("\t\tlet datas = new {}();\n\n",  typeName);
 			sourcefileBody_ += fmt::format("\t\twhile(size > 0)\n");
