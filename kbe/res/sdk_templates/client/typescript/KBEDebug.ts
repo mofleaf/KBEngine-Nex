@@ -1,65 +1,61 @@
+export default class KBEDebug {
+    private static _ccLog: ((...args: any[]) => void) | null = null;
+    private static _ccWarn: ((...args: any[]) => void) | null = null;
+    private static _ccError: ((...args: any[]) => void) | null = null;
+    private static _ccDebug: ((...args: any[]) => void) | null = null;
 
-export default class KBEDebug
-{
-    static KBE_CC_PLATFORM =  "undefined";  // 特别针对cc平台
-
-    static DEBUG_MSG(msg: string, ...optionalParams: any[]): void
-    {
-        optionalParams.unshift(msg);
-        console.debug.apply(this, optionalParams);
-    }
-
-    static INFO_MSG(msg: string, ...optionalParams: any[]): void
-    {
-        optionalParams.unshift(msg);
-        if (this.KBE_CC_PLATFORM) 
-        {
-            // cc.log.apply(this, optionalParams);
-            console.info.apply(this, optionalParams);
-        }
-        else 
-        {
-            console.info.apply(this, optionalParams);
-        }
-    }
-
-    static WARNING_MSG(msg: string, ...optionalParams: any[]): void
-    {
-        optionalParams.unshift(msg);
-        if (this.KBE_CC_PLATFORM) 
-        {
-            // cc.warn.apply(this, optionalParams);
-            console.warn.apply(this, optionalParams);
-        }
-        else 
-        {
-            console.warn.apply(this, optionalParams);
+    // 自动检测是否是 Cocos 环境
+    private static detectCC() {
+        if (this._ccLog !== null) return; // 已初始化
+        try {
+            const globalAny = globalThis as any;
+            if (typeof globalAny.cc !== 'undefined') {
+                const cc = globalAny.cc;
+                this._ccLog = cc.log || console.log;
+                this._ccWarn = cc.warn || console.warn;
+                this._ccError = cc.error || console.error;
+                this._ccDebug = cc.log || console.debug;
+            } else {
+                this._ccLog = console.log;
+                this._ccWarn = console.warn;
+                this._ccError = console.error;
+                this._ccDebug = console.debug;
+            }
+        } catch (e) {
+            this._ccLog = console.log;
+            this._ccWarn = console.warn;
+            this._ccError = console.error;
+            this._ccDebug = console.debug;
         }
     }
 
-    static ERROR_MSG(msg: string, ...optionalParams: any[]): void
-    {
+    static DEBUG_MSG(msg: string, ...optionalParams: any[]): void {
+        this.detectCC();
         optionalParams.unshift(msg);
-        if (this.KBE_CC_PLATFORM) 
-        {
-            // cc.error.apply(this, optionalParams);
-            console.error.apply(this, optionalParams);
-        }
-        else 
-        {
-            console.error.apply(this, optionalParams);
-        }
+        this._ccDebug!.apply(null, optionalParams);
     }
 
-    static ASSERT(condition?: boolean, message?: string, ...data: any[]): void
-    {
-        // 使用抛出异常的方式来实现类似断言功能
-        if(!condition)
-        {
-            throw(new Error(message));
-        }
+    static INFO_MSG(msg: string, ...optionalParams: any[]): void {
+        this.detectCC();
+        optionalParams.unshift(msg);
+        this._ccLog!.apply(null, optionalParams);
+    }
 
-        // note：微信小游戏平台不支持，手册中提到的CC_WECHATGAME未定义，无法区分是否微信小游戏平台，
-        // console.assert(condition, message, ...data);
+    static WARNING_MSG(msg: string, ...optionalParams: any[]): void {
+        this.detectCC();
+        optionalParams.unshift(msg);
+        this._ccWarn!.apply(null, optionalParams);
+    }
+
+    static ERROR_MSG(msg: string, ...optionalParams: any[]): void {
+        this.detectCC();
+        optionalParams.unshift(msg);
+        this._ccError!.apply(null, optionalParams);
+    }
+
+    static ASSERT(condition?: boolean, message?: string, ...data: any[]): void {
+        if (!condition) {
+            throw new Error(message || "Assertion failed");
+        }
     }
 }
