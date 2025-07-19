@@ -641,9 +641,24 @@ export class KBEngineApp {
             bundle.WriteFloat(player.position.x);
             bundle.WriteFloat(player.position.y);
             bundle.WriteFloat(player.position.z);
-            bundle.WriteFloat(player.direction.x);
-            bundle.WriteFloat(player.direction.y);
-            bundle.WriteFloat(player.direction.z);
+
+            let x = player.direction.x / 360 * (2 * Math.PI);
+            let y = player.direction.y / 360 * (2 * Math.PI);
+            let z = player.direction.z / 360 * (2 * Math.PI);
+
+            if( x - Math.PI > 0.0){
+                x = x - Math.PI * 2;
+            }
+            if( y - Math.PI > 0.0){
+                y = y - Math.PI * 2;
+            }
+            if( z - Math.PI > 0.0){
+                z = z - Math.PI * 2;
+            }
+
+            bundle.WriteFloat(x);
+            bundle.WriteFloat(y);
+            bundle.WriteFloat(z);
 
             let isOnGound = player.isOnGround ? 1 : 0;
             bundle.WriteUint8(isOnGound);
@@ -669,9 +684,24 @@ export class KBEngineApp {
                 bundle.WriteFloat(position.y);
                 bundle.WriteFloat(position.z);
 
-                bundle.WriteFloat(direction.x);
-                bundle.WriteFloat(direction.y);
-                bundle.WriteFloat(direction.z);
+
+                let x = entity.direction.x / 360 * (2 * Math.PI);
+                let y = entity.direction.y / 360 * (2 * Math.PI);
+                let z = entity.direction.z / 360 * (2 * Math.PI);
+    
+                if( x - Math.PI > 0.0){
+                    x = x - Math.PI * 2;
+                }
+                if( y - Math.PI > 0.0){
+                    y = y - Math.PI * 2;
+                }
+                if( z - Math.PI > 0.0){
+                    z = z - Math.PI * 2;
+                }
+                
+                bundle.WriteFloat(x);
+                bundle.WriteFloat(y);
+                bundle.WriteFloat(z);
 
                 let isOnGound = player.isOnGround ? 1 : 0;
                 bundle.WriteUint8(isOnGound);
@@ -1256,6 +1286,8 @@ export class KBEngineApp {
             return;
         }
 
+        let oldDirection = new Vector3(entity.direction.x, entity.direction.y, entity.direction.z);
+
         // 小于0不设置
         if (isOnGround >= 0) {
             entity.isOnGround = (isOnGround > 0);
@@ -1265,22 +1297,23 @@ export class KBEngineApp {
 
         if (roll != KBE_FLT_MAX) {
             changeDirection = true;
-            entity.direction.x = isOptimized? Int8ToAngle(roll, false)  : roll;
+            entity.direction.x = (isOptimized? Int8ToAngle(roll, false)  : roll) * 360 / (2 * Math.PI);
         }
 
         if (pitch != KBE_FLT_MAX) {
             changeDirection = true;
-            entity.direction.y = isOptimized? Int8ToAngle(pitch, false)  : pitch;
+            entity.direction.y = (isOptimized? Int8ToAngle(pitch, false)  : pitch) * 360 / (2 * Math.PI);
         }
 
         if (yaw != KBE_FLT_MAX) {
             changeDirection = true;
-            entity.direction.z = isOptimized? Int8ToAngle(yaw, false)  : yaw;
+            entity.direction.z = (isOptimized? Int8ToAngle(yaw, false)  : yaw) * 360 / (2 * Math.PI);
         }
 
         let done = false;
         if (changeDirection == true) {
-            KBEEvent.Fire("set_direction", entity);
+            entity.onDirectionChanged(oldDirection);
+            // KBEEvent.Fire("set_direction", entity);
             done = true;
         }
 
@@ -1293,10 +1326,12 @@ export class KBEngineApp {
         if (z == KBE_FLT_MAX) z = isOptimized ? 0.0 : entity.position.z;
 
         if (positionChanged) {
+            let oldPos = new Vector3(entity.position.x, entity.position.y, entity.position.z);
             let pos = isOptimized ? new Vector3(x + this.entityServerPos.x, y + this.entityServerPos.y, z + this.entityServerPos.z) : new Vector3(x, y, z);
             entity.position = pos;
             done = true;
-            KBEEvent.Fire("updatePosition", entity);
+            entity.onPositionChanged(oldPos);
+            // KBEEvent.Fire("updatePosition", entity);
         }
 
         if (done)
@@ -1311,10 +1346,12 @@ export class KBEngineApp {
         let entity = this.Player();
         if (entity != null && entity.isControlled)
         {
+            let oldDirection = new Vector3(entity.direction.x, entity.direction.y, entity.direction.z);
             entity.direction.x = roll;
             entity.direction.y = pitch;
             entity.direction.z = yaw;
-            KBEEvent.Fire("set_direction", entity);
+            // KBEEvent.Fire("set_direction", entity);
+            entity.onDirectionChanged(oldDirection);
             entity.OnUpdateVolatileData();
         }
     }
@@ -1360,14 +1397,23 @@ export class KBEngineApp {
         entity.position.x = stream.ReadFloat();
         entity.position.y = stream.ReadFloat();
         entity.position.z = stream.ReadFloat();
-        entity.direction.x = stream.ReadFloat();
-        entity.direction.y = stream.ReadFloat();
-        entity.direction.z = stream.ReadFloat();
+
+        let yaw = stream.ReadFloat() * 360 / (Math.PI * 2);
+        let pitch = stream.ReadFloat() * 360 / (Math.PI * 2);
+        let roll = stream.ReadFloat() * 360 / (Math.PI * 2);
+        // entity.direction.x = stream.ReadFloat();
+        // entity.direction.y = stream.ReadFloat();
+        // entity.direction.z = stream.ReadFloat();
+
+        entity.direction.x = roll;
+        entity.direction.y = pitch;
+        entity.direction.z = yaw;
 
         // 记录玩家最后一次上报位置时自身当前的位置
         entity.entityLastLocalPos.x = entity.position.x;
         entity.entityLastLocalPos.y = entity.position.y;
         entity.entityLastLocalPos.z = entity.position.z;
+        
         entity.entityLastLocalDir.x = entity.direction.x;
         entity.entityLastLocalDir.y = entity.direction.y;
         entity.entityLastLocalDir.z = entity.direction.z;
@@ -3125,6 +3171,9 @@ export class Entity
     onDirectionChanged(oldVal: Vector3){
         if(this.inWorld){
             // this.direction.x
+            // this.direction.x = this.direction.x *360 / (2 * Math.PI);
+            // this.direction.y = this.direction.y *360 / (2 * Math.PI);
+            // this.direction.z = this.direction.z *360 / (2 * Math.PI);
             KBEEvent.Fire("set_direction", this);
         }else{
             this.direction = oldVal;
