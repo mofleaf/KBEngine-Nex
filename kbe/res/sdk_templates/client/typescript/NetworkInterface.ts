@@ -43,7 +43,7 @@ export default class NetworkInterface
     {
         try
         {
-            KBEDebug.INFO_MSG("NetworkInterface::Close on good:" + this.IsGood)
+            KBEDebug.DEBUG_MSG("NetworkInterface::Close on good:" + this.IsGood)
             if(this.socket != undefined)
             {
                 this.socket.close();

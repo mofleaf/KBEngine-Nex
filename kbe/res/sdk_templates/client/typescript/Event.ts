@@ -64,7 +64,7 @@ export default class KBEEvent
         let eventList: Array<EventInfo> = this._events[eventName];
         if(eventList === undefined)
         {
-            // KBEDebug.INFO_MSG("Event::Fire:cant find event by name(%s).", eventName);
+            // KBEDebug.DEBUG_MSG("Event::Fire:cant find event by name(%s).", eventName);
             return;
         }
 

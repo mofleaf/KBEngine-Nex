@@ -8,15 +8,19 @@ import KBEEvent from "./Event";
 import * as ExportEntity from "./ExportEntity";
 import { Vector2, Vector3, Vector4, Int8ToAngle,AngleToInt8 } from "./KBEMath";
 
-import { ServerErrorDescrs } from "./ServerErrorDescrs";
+import { ServerErr, ServerErrorDescrs } from "./ServerErrorDescrs";
 import Messages,{ Message } from "./Messages";
 import EntityDef from "./EntityDef";
 
 //#region KBEngine app
 export class KBEngineArgs {
     address: string = "127.0.0.1";
-    port: number = 20013;
-    updateTick: number = 100;
+    port: number = @{KBE_LOGIN_PORT};
+    // 心跳频率 （tick数）
+    updateTick: number = @{KBE_SERVER_EXTERNAL_TIMEOUT}; // 100
+    // 自动同步玩家信息到服务端，信息包括位置与方向，毫秒
+    // 非高实时类游戏不需要开放这个选项
+    syncPlayerMS: number = 1000 / @{KBE_UPDATEHZ};
     clientType: number = 5;
     isOnInitCallPropertysSetMethods: boolean = true;
     useWss = false;
@@ -35,6 +39,7 @@ const KBE_FLT_MAX: number = 3.402823466e+38;
 export class KBEngineApp {
     private args: KBEngineArgs;
     private idInterval: number;
+    private updatePlayerToServerInterval: number;
 
     private userName: string = "test";
     private password: string = "123456";
@@ -70,10 +75,10 @@ export class KBEngineApp {
 
     private serverVersion = "";
     private serverScriptVersion = "";
-    private serverProtocolMD5 = "";
-    private serverEntityDefMD5 = "";
-    private clientVersion = "2.5.10";
-    private clientScriptVersion = "0.1.0";
+    private serverProtocolMD5 = "@{KBE_SERVER_PROTO_MD5}";
+    private serverEntityDefMD5 = "@{KBE_SERVER_ENTITYDEF_MD5}";
+    private clientVersion = "@{KBE_VERSION}";
+    private clientScriptVersion = "@{KBE_SCRIPT_VERSION}";
 
     private lastTickTime: number = 0;
     private lastTickCBTime: number = 0;
@@ -165,6 +170,7 @@ export class KBEngineApp {
         this.lastTickTime = now;
         this.lastTickCBTime = now;
         this.idInterval = setInterval(this.Update.bind(this), this.args.updateTick);
+        this.updatePlayerToServerInterval = setInterval(this.UpdatePlayer.bind(this), this.args.syncPlayerMS);
     }
 
     InstallEvents(): void {
@@ -238,11 +244,19 @@ export class KBEngineApp {
     /**
      * 通过错误id得到错误描述
      */
-    private ServerErr(id: number)
+    public ServerErr(id: number):string
     {
-        // todo 这里要改，从生成的文件里获取
         let err = this.serverErrors.serverErr(id);
         return err?.name + "[" + err?.descr + "]";
+    }
+
+    /**
+     * 通过错误id得到错误描述
+     */
+    public ServerErrItem(id: number) : ServerErr
+    {
+        let err = this.serverErrors.serverErr(id);
+        return err;
     }
 
     /**
@@ -298,10 +312,6 @@ export class KBEngineApp {
         // 版本信息
         this.serverVersion = "";
         this.serverScriptVersion = "";
-        this.serverProtocolMD5 = "";
-        this.serverEntityDefMD5 = "";
-        this.clientVersion = "2.2.9";
-        this.clientScriptVersion = "0.1.0";
 
         // player的相关信息
         this.entity_uuid = undefined;
@@ -349,7 +359,7 @@ export class KBEngineApp {
     private Login_loginapp(noconnect: boolean): void {
         if (noconnect) {
             let addr: string = this.GetLoginappAddr();
-            KBEDebug.INFO_MSG("KBEngineApp::Login_loginapp: start connect to " + addr + "!");
+            KBEDebug.DEBUG_MSG("KBEngineApp::Login_loginapp: start connect to " + addr + "!");
 
             this.networkInterface.ConnectTo(addr, (event: Event) => this.OnOpenLoginapp_login(event as MessageEvent));
         }
@@ -413,7 +423,7 @@ export class KBEngineApp {
     Resetpassword_loginapp(noconnect: boolean) {
         if (noconnect) {
             let addr = this.GetLoginappAddr();
-            KBEDebug.INFO_MSG("KBEngineApp::Resetpassword_loginapp: start connect to %s!", addr);
+            KBEDebug.DEBUG_MSG("KBEngineApp::Resetpassword_loginapp: start connect to %s!", addr);
             this.networkInterface.ConnectTo(addr, (event: Event) => this.OnOpenLoginapp_resetpassword(event as MessageEvent));
         }
         else {
@@ -425,7 +435,7 @@ export class KBEngineApp {
     }
 
     private OnOpenLoginapp_resetpassword(event: MessageEvent) {
-        KBEDebug.INFO_MSG("KBEngineApp::onOpenLoginapp_resetpassword: successfully!");
+        KBEDebug.DEBUG_MSG("KBEngineApp::onOpenLoginapp_resetpassword: successfully!");
         this.currserver = "loginapp";
         this.currstate = "resetpassword";
 
@@ -444,7 +454,7 @@ export class KBEngineApp {
 
     OnOpenLoginapp_createAccount(event: MessageEvent) {
         KBEEvent.Fire("onConnectionState", true);
-        KBEDebug.INFO_MSG("KBEngineApp::OnOpenLoginapp_createAccount: successfully!");
+        KBEDebug.DEBUG_MSG("KBEngineApp::OnOpenLoginapp_createAccount: successfully!");
         this.currserver = "loginapp";
         this.currstate = "createAccount";
 
@@ -454,7 +464,7 @@ export class KBEngineApp {
     CreateAccount_loginapp(noconnect: boolean) {
         if (noconnect) {
             let addr = this.GetLoginappAddr();
-            KBEDebug.INFO_MSG("KBEngineApp::CreateAccount_loginapp: start connect to %s!", addr);
+            KBEDebug.DEBUG_MSG("KBEngineApp::CreateAccount_loginapp: start connect to %s!", addr);
             this.networkInterface.ConnectTo(addr, (event: Event) => this.OnOpenLoginapp_createAccount(event as MessageEvent));
         }
         else {
@@ -478,12 +488,12 @@ export class KBEngineApp {
         this.networkInterface.Close();
         KBEEvent.Fire("onReloginBaseapp");
         let addr = this.GetBaseappAddr();
-        KBEDebug.INFO_MSG("KBEngineApp::reloginBaseapp: start connect to %s!", addr);
+        KBEDebug.DEBUG_MSG("KBEngineApp::reloginBaseapp: start connect to %s!", addr);
         this.networkInterface.ConnectTo(addr, (event: Event) => this.OnReOpenBaseapp(event as MessageEvent));
     }
 
     OnReOpenBaseapp(event: MessageEvent) {
-        KBEDebug.INFO_MSG("KBEngineApp::onReOpenBaseapp: successfully!");
+        KBEDebug.DEBUG_MSG("KBEngineApp::onReOpenBaseapp: successfully!");
         this.currserver = "baseapp";
 
         let bundle = new Bundle();
@@ -533,7 +543,7 @@ export class KBEngineApp {
      *  与服务端握手，与任何一个进程连接之后应该第一时间进行握手
      */
     private Hello() {
-        KBEDebug.INFO_MSG("KBEngine::Hello.........current server:%s.", this.currserver);
+        KBEDebug.DEBUG_MSG("KBEngine::Hello.........current server:%s.", this.currserver);
         let bundle: Bundle = new Bundle();
         if (this.currserver === "loginapp") {
             bundle.NewMessage(Messages.messages["Loginapp_hello"]);
@@ -553,14 +563,14 @@ export class KBEngineApp {
      * @param stream 
      */
     Client_onHelloCB(stream: MemoryStream) {
-        KBEDebug.INFO_MSG("KBEngine::Client_onHelloCB.........stream length:%d.", stream.Length());
+        KBEDebug.DEBUG_MSG("KBEngine::Client_onHelloCB.........stream length:%d.", stream.Length());
         this.serverVersion = stream.ReadString();
         this.serverScriptVersion = stream.ReadString();
         this.serverProtocolMD5 = stream.ReadString();
         this.serverEntityDefMD5 = stream.ReadString();
         let ctype = stream.ReadInt32();
 
-        KBEDebug.INFO_MSG("KBEngineApp::Client_onHelloCB: verInfo(" + this.serverVersion + "), scriptVerInfo(" +
+        KBEDebug.DEBUG_MSG("KBEngineApp::Client_onHelloCB: verInfo(" + this.serverVersion + "), scriptVerInfo(" +
             this.serverScriptVersion + "), serverProtocolMD5(" + this.serverProtocolMD5 + "), serverEntityDefMD5(" +
             this.serverEntityDefMD5 + "), ctype(" + ctype + ")!");
 
@@ -608,6 +618,9 @@ export class KBEngineApp {
     }
 
 
+    private UpdatePlayer(){
+        KBEngineApp.app!.UpdatePlayerToServer();
+    }
 
     private UpdatePlayerToServer() {
         let player = this.Player();
@@ -684,7 +697,7 @@ export class KBEngineApp {
         this.baseappUDPPort = stream.ReadUint16();
         this.serverdatas = stream.ReadBlob();
 
-        KBEDebug.INFO_MSG("KBEngineApp::Client_onLoginSuccessfully: accountName(" + accountName + "), addr(" +
+        KBEDebug.DEBUG_MSG("KBEngineApp::Client_onLoginSuccessfully: accountName(" + accountName + "), addr(" +
             this.baseappAddress + ":" + this.baseappPort + "), datas(" + this.serverdatas.length + ")!");
 
         this.networkInterface.Close();
@@ -694,7 +707,7 @@ export class KBEngineApp {
     private Login_baseapp(noconnect: boolean) {
         if (noconnect) {
             let addr: string = this.GetBaseappAddr();
-            KBEDebug.INFO_MSG("KBEngineApp::Login_baseapp: start connect to " + addr + "!");
+            KBEDebug.DEBUG_MSG("KBEngineApp::Login_baseapp: start connect to " + addr + "!");
 
             this.networkInterface.ConnectTo(addr, (event: Event) => this.OnOpenBaseapp(event as MessageEvent));
         }
@@ -708,7 +721,7 @@ export class KBEngineApp {
     }
 
     private OnOpenBaseapp(event: MessageEvent) {
-        KBEDebug.INFO_MSG("KBEngineApp::onOpenBaseapp: successfully!");
+        KBEDebug.DEBUG_MSG("KBEngineApp::onOpenBaseapp: successfully!");
         this.currserver = "baseapp";
         this.currstate = "";
         this.Hello();
@@ -779,7 +792,7 @@ export class KBEngineApp {
     }
 
     Client_onCreatedProxies(rndUUID: DataTypes.KB_UINT64, eid: number, entityType: string) {
-        KBEDebug.INFO_MSG("KBEngineApp::Client_onCreatedProxies: uuid:(%s) eid(%d), entityType(%s)!", rndUUID.toString(), eid, entityType);
+        KBEDebug.DEBUG_MSG("KBEngineApp::Client_onCreatedProxies: uuid:(%s) eid(%d), entityType(%s)!", rndUUID.toString(), eid, entityType);
         this.entity_uuid = rndUUID;
         this.entity_id = eid;
         this.entity_type = entityType;
@@ -1121,7 +1134,7 @@ export class KBEngineApp {
             return;
         }
 
-        KBEDebug.INFO_MSG("KBEngineApp::Client_onCreateAccountResult: " + this.userName + " create is successfully!");
+        KBEDebug.DEBUG_MSG("KBEngineApp::Client_onCreateAccountResult: " + this.userName + " create is successfully!");
     }
 
     Client_onReqAccountResetPasswordCB(failcode: number) {
@@ -2779,7 +2792,7 @@ export class Entity
         let value = this[name];
         if(value == undefined)
         {
-            KBEDebug.INFO_MSG("Entity::GetPropertyValue: property(%s) not found(undefined).", name);
+            KBEDebug.DEBUG_MSG("Entity::GetPropertyValue: property(%s) not found(undefined).", name);
         }
 
         return value;
@@ -3723,7 +3736,7 @@ export class NetworkInterface
     {
         try
         {
-            KBEDebug.INFO_MSG("NetworkInterface::Close on good:" + this.IsGood)
+            KBEDebug.DEBUG_MSG("NetworkInterface::Close on good:" + this.IsGood)
             if(this.socket != undefined)
             {
                 this.socket.close();
