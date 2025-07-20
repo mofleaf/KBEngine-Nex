@@ -1339,17 +1339,17 @@ export class KBEngineApp {
     }
 
     Client_onUpdateBaseDir(stream: MemoryStream) {
-        let yaw = stream.ReadFloat() * 360 / (Math.PI * 2);
-        let pitch = stream.ReadFloat() * 360 / (Math.PI * 2);
-        let roll = stream.ReadFloat() * 360 / (Math.PI * 2);
+        // let yaw = stream.ReadFloat() * 360 / (Math.PI * 2);
+        // let pitch = stream.ReadFloat() * 360 / (Math.PI * 2);
+        // let roll = stream.ReadFloat() * 360 / (Math.PI * 2);
 
         let entity = this.Player();
         if (entity != null && entity.isControlled)
         {
             let oldDirection = new Vector3(entity.direction.x, entity.direction.y, entity.direction.z);
-            entity.direction.x = roll;
-            entity.direction.y = pitch;
-            entity.direction.z = yaw;
+            entity.direction.x = stream.ReadFloat();
+            entity.direction.y = stream.ReadFloat();
+            entity.direction.z = stream.ReadFloat();
             // KBEEvent.Fire("set_direction", entity);
             entity.onDirectionChanged(oldDirection);
             entity.OnUpdateVolatileData();
@@ -1398,16 +1398,16 @@ export class KBEngineApp {
         entity.position.y = stream.ReadFloat();
         entity.position.z = stream.ReadFloat();
 
-        let yaw = stream.ReadFloat() * 360 / (Math.PI * 2);
-        let pitch = stream.ReadFloat() * 360 / (Math.PI * 2);
-        let roll = stream.ReadFloat() * 360 / (Math.PI * 2);
-        // entity.direction.x = stream.ReadFloat();
-        // entity.direction.y = stream.ReadFloat();
-        // entity.direction.z = stream.ReadFloat();
+        // let yaw = stream.ReadFloat() * 360 / (Math.PI * 2);
+        // let pitch = stream.ReadFloat() * 360 / (Math.PI * 2);
+        // let roll = stream.ReadFloat() * 360 / (Math.PI * 2);
+        entity.direction.x = stream.ReadFloat();
+        entity.direction.y = stream.ReadFloat();
+        entity.direction.z = stream.ReadFloat();
 
-        entity.direction.x = roll;
-        entity.direction.y = pitch;
-        entity.direction.z = yaw;
+        // entity.direction.x = roll;
+        // entity.direction.y = pitch;
+        // entity.direction.z = yaw;
 
         // 记录玩家最后一次上报位置时自身当前的位置
         entity.entityLastLocalPos.x = entity.position.x;
@@ -3171,9 +3171,9 @@ export class Entity
     onDirectionChanged(oldVal: Vector3){
         if(this.inWorld){
             // this.direction.x
-            // this.direction.x = this.direction.x *360 / (2 * Math.PI);
-            // this.direction.y = this.direction.y *360 / (2 * Math.PI);
-            // this.direction.z = this.direction.z *360 / (2 * Math.PI);
+            this.direction.x = this.direction.x *360 / (2 * Math.PI);
+            this.direction.y = this.direction.y *360 / (2 * Math.PI);
+            this.direction.z = this.direction.z *360 / (2 * Math.PI);
             KBEEvent.Fire("set_direction", this);
         }else{
             this.direction = oldVal;
