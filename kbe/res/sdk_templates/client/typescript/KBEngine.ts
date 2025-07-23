@@ -2067,6 +2067,10 @@ export class Bundle
 
     WriteBlob(value: string|Uint8Array)
     {
+        if(typeof(value) == "string"){
+            value = new TextEncoder().encode(value);
+        }
+        
         this.CheckStream(value.length + 4);
         this.stream.WriteBlob(value);
     }
@@ -2079,7 +2083,7 @@ export class Bundle
 
     WriteUnicode(value: string)
     {
-        this.stream.WriteBlob(value);
+        this.WriteBlob(value);
     }
 }
 //#endregion
