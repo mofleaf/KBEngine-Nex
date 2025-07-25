@@ -1300,17 +1300,20 @@ export class KBEngineApp {
 
         if (roll != KBE_FLT_MAX) {
             changeDirection = true;
-            entity.direction.x = (isOptimized? Int8ToAngle(roll, false)  : roll) * 360 / (2 * Math.PI);
+            entity.direction.x = (isOptimized? Int8ToAngle(roll, false)  : roll);
+            // entity.direction.x = (isOptimized? Int8ToAngle(roll, false)  : roll) * 360 / (2 * Math.PI);
         }
 
         if (pitch != KBE_FLT_MAX) {
             changeDirection = true;
-            entity.direction.y = (isOptimized? Int8ToAngle(pitch, false)  : pitch) * 360 / (2 * Math.PI);
+            entity.direction.y = (isOptimized? Int8ToAngle(pitch, false)  : pitch);
+            // entity.direction.y = (isOptimized? Int8ToAngle(pitch, false)  : pitch) * 360 / (2 * Math.PI);
         }
 
         if (yaw != KBE_FLT_MAX) {
             changeDirection = true;
-            entity.direction.z = (isOptimized? Int8ToAngle(yaw, false)  : yaw) * 360 / (2 * Math.PI);
+            entity.direction.z = (isOptimized? Int8ToAngle(yaw, false)  : yaw);
+            // entity.direction.z = (isOptimized? Int8ToAngle(yaw, false)  : yaw) * 360 / (2 * Math.PI);
         }
 
         let done = false;
