@@ -2828,6 +2828,9 @@ export class Entity
     // cell: EntityCall;
     // base: EntityCall;
 
+
+    renderObj:any = null; // 渲染对象
+
     __init__()
     {
     }
