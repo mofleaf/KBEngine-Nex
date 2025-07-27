@@ -142,6 +142,12 @@ export class KBEngineApp {
             clearInterval(KBEngineApp.app.idInterval);
         }
 
+        
+        if (KBEngineApp.app.updatePlayerToServerInterval) {
+            clearInterval(KBEngineApp.app.updatePlayerToServerInterval);
+        }
+
+
         KBEngineApp.app.UninstallEvents();
         KBEngineApp.app.Reset();
         KBEngineApp._app = undefined;
