@@ -40,6 +40,7 @@ export class KBEngineApp {
     private args: KBEngineArgs;
     private idInterval: number;
     private updatePlayerToServerInterval: number;
+    private kbEventInterval: number;
 
     private userName: string = "test";
     private password: string = "123456";
@@ -147,6 +148,9 @@ export class KBEngineApp {
             clearInterval(KBEngineApp.app.updatePlayerToServerInterval);
         }
 
+        if(KBEngineApp.app.kbEventInterval){
+            clearInterval(KBEngineApp.app.kbEventInterval);
+        }
 
         KBEngineApp.app.UninstallEvents();
         KBEngineApp.app.Reset();
@@ -177,6 +181,11 @@ export class KBEngineApp {
         this.lastTickCBTime = now;
         this.idInterval = setInterval(this.Update.bind(this), this.args.updateTick);
         this.updatePlayerToServerInterval = setInterval(this.UpdatePlayer.bind(this), this.args.syncPlayerMS);
+        this.kbEventInterval = setInterval(this.ProcessOutEvents.bind(this), 100);
+    }
+
+    ProcessOutEvents(){
+        KBEEvent.processOutEvents();
     }
 
     InstallEvents(): void {
