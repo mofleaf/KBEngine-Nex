@@ -306,20 +306,23 @@
 		{
 			// KBELog.DEBUG_MSG(className + "::enterSpace(" + getDefinedProperty("uid") + "): " + id); 
 			inWorld = true;
-			
-			try{
+
+			try
+			{
 				onEnterSpace();
 			}
 			catch (Exception e)
 			{
 				KBELog.ERROR_MSG(className + "::onEnterSpace: error=" + e.ToString());
 			}
-			
+
 			Event.fireOut(EventOutTypes.onEnterSpace, this);
-			
+
 			// 要立即刷新表现层对象的位置
-			Event.fireOut(EventOutTypes.set_position, this);
-			Event.fireOut(EventOutTypes.set_direction, this);
+			// Event.fireOut(EventOutTypes.set_position, this);
+			// Event.fireOut(EventOutTypes.set_direction, this);
+			onPositionChanged(this.position);
+			onDirectionChanged(this.direction);
 		}
 		
 		public virtual void onEnterSpace()
@@ -355,6 +358,20 @@
 			
 			if(inWorld)
 				Event.fireOut(EventOutTypes.set_position, this);
+		}
+
+
+		/// <summary>
+		/// 平滑移动
+		/// </summary>
+		public virtual void onSmoothPositionChanged(KBVector3 oldValue)
+		{
+
+			if (isPlayer())
+				KBEngineApp.app.entityServerPos(position);
+
+			if (inWorld)
+				Event.fireOut(EventOutTypes.updatePosition, this);
 		}
 
 		public virtual void onUpdateVolatileData()

@@ -1632,6 +1632,8 @@ namespace KBEngine
 		*/
 		public void Client_onUpdateBasePos(float x, float y, float z)
 		{
+			KBVector3 oldVector3 = new KBVector3(_entityServerPos.x, _entityServerPos.y, _entityServerPos.z);
+			
 			_entityServerPos.x = x;
 			_entityServerPos.y = y;
 			_entityServerPos.z = z;
@@ -1640,13 +1642,15 @@ namespace KBEngine
 			if (entity != null && entity.isControlled)
 			{
 				entity.position.Set(_entityServerPos.x, _entityServerPos.y, _entityServerPos.z);
-				Event.fireOut(EventOutTypes.updatePosition, entity);
+				// Event.fireOut(EventOutTypes.updatePosition, entity);
+				entity.onSmoothPositionChanged(oldVector3);
 				entity.onUpdateVolatileData();
 			}
 		}
 		
 		public void Client_onUpdateBasePosXZ(float x, float z)
 		{
+			KBVector3 oldVector3 = new KBVector3(_entityServerPos.x, _entityServerPos.y, _entityServerPos.z);
 			_entityServerPos.x = x;
 			_entityServerPos.z = z;
 
@@ -1655,7 +1659,8 @@ namespace KBEngine
 			{
 				entity.position.x = _entityServerPos.x;
 				entity.position.z = _entityServerPos.z;
-				Event.fireOut(EventOutTypes.updatePosition, entity);
+				// Event.fireOut(EventOutTypes.updatePosition, entity);
+				entity.onSmoothPositionChanged(oldVector3);
 				entity.onUpdateVolatileData();
 			}
 		}
@@ -1663,15 +1668,22 @@ namespace KBEngine
 		public void Client_onUpdateBaseDir(MemoryStream stream)
 		{
 			float yaw, pitch, roll;
-			yaw = stream.readFloat() * 360 / ((float)System.Math.PI * 2);
-			pitch = stream.readFloat() * 360 / ((float)System.Math.PI * 2);
-			roll = stream.readFloat() * 360 / ((float)System.Math.PI * 2);
+			yaw = stream.readFloat();
+			pitch = stream.readFloat();
+			roll = stream.readFloat();
+
+			
+			// yaw = stream.readFloat() * 360 / ((float)System.Math.PI * 2);
+			// pitch = stream.readFloat() * 360 / ((float)System.Math.PI * 2);
+			// roll = stream.readFloat() * 360 / ((float)System.Math.PI * 2);
 
 			var entity = player();
 			if (entity != null && entity.isControlled)
 			{
+				KBVector3 oldDirection = new KBVector3(entity.direction.x, entity.direction.y, entity.direction.z);
 				entity.direction.Set(roll, pitch, yaw);
-				Event.fireOut(EventOutTypes.set_direction, entity);
+				// Event.fireOut(EventOutTypes.set_direction, entity);
+				entity.onDirectionChanged(oldDirection);
 				entity.onUpdateVolatileData();
 			}
 		}
@@ -2261,7 +2273,7 @@ namespace KBEngine
 				KBELog.ERROR_MSG("KBEngine::_updateVolatileData: entity(" + entityID + ") not found!");
 				return;
 			}
-			
+			KBVector3 oldDirection = new KBVector3(entity.direction.x, entity.direction.y, entity.direction.z);
 			// 小于0不设置
 			if(isOnGround >= 0)
 			{
@@ -2273,25 +2285,29 @@ namespace KBEngine
 			if(roll != KBEMath.KBE_FLT_MAX)
 			{
 				changeDirection = true;
-				entity.direction.x = (isOptimized ? KBEMath.int82angle((SByte)roll, false) : roll) * 360 / ((float)System.Math.PI * 2);
+				entity.direction.x = isOptimized ? KBEMath.int82angle((SByte)roll, false) : roll;
+				// entity.direction.x = (isOptimized ? KBEMath.int82angle((SByte)roll, false) : roll) * 360 / ((float)System.Math.PI * 2);
 			}
 
 			if(pitch != KBEMath.KBE_FLT_MAX)
 			{
 				changeDirection = true;
-				entity.direction.y = (isOptimized ? KBEMath.int82angle((SByte)pitch, false) : pitch) * 360 / ((float)System.Math.PI * 2);
+				entity.direction.y = isOptimized ? KBEMath.int82angle((SByte)pitch, false) : pitch;
+				// entity.direction.y = (isOptimized ? KBEMath.int82angle((SByte)pitch, false) : pitch) * 360 / ((float)System.Math.PI * 2);
 			}
 			
 			if(yaw != KBEMath.KBE_FLT_MAX)
 			{
 				changeDirection = true;
-				entity.direction.z = (isOptimized ? KBEMath.int82angle((SByte)yaw, false) : yaw) * 360 / ((float)System.Math.PI * 2);
+				entity.direction.z = isOptimized ? KBEMath.int82angle((SByte)yaw, false) : yaw ;
+				// entity.direction.z = (isOptimized ? KBEMath.int82angle((SByte)yaw, false) : yaw) * 360 / ((float)System.Math.PI * 2);
 			}
 			
 			bool done = false;
 			if(changeDirection == true)
 			{
-				Event.fireOut(EventOutTypes.set_direction, entity);
+				// Event.fireOut(EventOutTypes.set_direction, entity);
+				entity.onDirectionChanged(oldDirection);
 				done = true;
 			}
 			
@@ -2299,14 +2315,17 @@ namespace KBEngine
 			if (x == KBEMath.KBE_FLT_MAX) x = isOptimized ? 0.0f : entity.position.x;
 			if (y == KBEMath.KBE_FLT_MAX) y = isOptimized ? 0.0f : entity.position.y;
 			if (z == KBEMath.KBE_FLT_MAX) z = isOptimized ? 0.0f : entity.position.z;
-			
-			if(positionChanged)
+
+			if (positionChanged)
 			{
 				KBVector3 pos = isOptimized ? new KBVector3(x + _entityServerPos.x, y + _entityServerPos.y, z + _entityServerPos.z) : new KBVector3(x, y, z);
-				 
+				KBVector3 oldVector3 = new KBVector3(_entityServerPos.x, _entityServerPos.y, _entityServerPos.z);
+
 				entity.position = pos;
 				done = true;
-				Event.fireOut(EventOutTypes.updatePosition, entity);
+				// Event.fireOut(EventOutTypes.updatePosition, entity);
+				
+				entity.onSmoothPositionChanged(oldVector3);
 			}
 			
 			if(done)
