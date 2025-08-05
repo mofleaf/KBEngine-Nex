@@ -961,7 +961,6 @@ bool ClientSDKTypeScript::writeEngineMessagesModuleBegin()
 
 	
 	sourcefileBody_ += R"delimiter(
-import KBEDebug from "./KBEDebug";
 import { KBEngineApp ,MemoryStream , DataTypes } from "./KBEngine";
 
 
