@@ -4,7 +4,7 @@ import * as KBEEncoding from "./KBEEncoding";
 import { ScriptModule } from "./ScriptModule";
 import { Property } from "./Property";
 import { Method } from "./Method";
-import KBEEvent from "./Event";
+import KBEEvent, { EventOutTypes } from "./Event";
 import * as ExportEntity from "./ExportEntity";
 import { Vector2, Vector3, Vector4, Int8ToAngle,AngleToInt8 } from "./KBEMath";
 
@@ -749,6 +749,7 @@ export class KBEngineApp {
 
     private Login_baseapp(noconnect: boolean) {
         if (noconnect) {
+            KBEEvent.Fire(EventOutTypes.onLoginBaseapp);
             let addr: string = this.GetBaseappAddr();
             KBEDebug.DEBUG_MSG("KBEngineApp::Login_baseapp: start connect to " + addr + "!");
 
