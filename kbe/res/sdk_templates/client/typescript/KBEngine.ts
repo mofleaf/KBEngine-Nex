@@ -1,4 +1,4 @@
-import KBEDebug from "./KBEDebug";
+import KBELog from "./KBELog";
 import * as KBEEncoding from "./KBEEncoding";
 
 import { ScriptModule } from "./ScriptModule";
@@ -158,7 +158,7 @@ export class KBEngineApp {
     }
 
     private constructor(args: KBEngineArgs) {
-        KBEDebug.ASSERT(KBEngineApp._app === undefined, "KBEngineApp::constructor:singleton KBEngineApp._app must be undefined.");
+        KBELog.ASSERT(KBEngineApp._app === undefined, "KBEngineApp::constructor:singleton KBEngineApp._app must be undefined.");
         KBEngineApp._app = this;
 
         this.args = args;
@@ -189,7 +189,7 @@ export class KBEngineApp {
     }
 
     InstallEvents(): void {
-        KBEDebug.DEBUG_MSG("KBEngineApp::InstallEvents");
+        KBELog.DEBUG_MSG("KBEngineApp::InstallEvents");
         KBEEvent.Register("createAccount", this, this.CreateAccount);
         KBEEvent.Register("login", this, this.Login);
         KBEEvent.Register("logout", this, this.Logout);
@@ -209,7 +209,7 @@ export class KBEngineApp {
     }
 
     OnNetworkError(event: MessageEvent) {
-        KBEDebug.ERROR_MSG("KBEngineApp::OnNetworkError:%s.", event.toString())
+        KBELog.ERROR_MSG("KBEngineApp::OnNetworkError:%s.", event.toString())
         this.networkInterface.Close();
     }
 
@@ -279,15 +279,15 @@ export class KBEngineApp {
      */
     private SendTick() {
         if (!this.networkInterface.IsGood) {
-            //KBEDebug.DEBUG_MSG("KBEngineApp::SendTick...this.networkInterface is not ready.");
+            //KBELog.DEBUG_MSG("KBEngineApp::SendTick...this.networkInterface is not ready.");
             return;
         }
 
         let now = (new Date()).getTime();
-        //KBEDebug.DEBUG_MSG("KBEngineApp::SendTick...now(%d), this.lastTickTime(%d), this.lastTickCBTime(%d).", now, this.lastTickTime, this.lastTickCBTime);
+        //KBELog.DEBUG_MSG("KBEngineApp::SendTick...now(%d), this.lastTickTime(%d), this.lastTickCBTime(%d).", now, this.lastTickTime, this.lastTickCBTime);
         if ((now - this.lastTickTime) / 1000 > 15) {
             if (this.lastTickCBTime < this.lastTickTime) {
-                KBEDebug.ERROR_MSG("KBEngineApp::Update: Receive appTick timeout!");
+                KBELog.ERROR_MSG("KBEngineApp::Update: Receive appTick timeout!");
                 this.networkInterface.Close();
                 return;
             }
@@ -309,7 +309,7 @@ export class KBEngineApp {
     }
 
     Reset(): void {
-        KBEDebug.DEBUG_MSG("KBEngineApp::Reset");
+        KBELog.DEBUG_MSG("KBEngineApp::Reset");
 
         // todo 需要实现
         // KBEngine.Event.clearFiredEvents(); 
@@ -374,7 +374,7 @@ export class KBEngineApp {
     private Login_loginapp(noconnect: boolean): void {
         if (noconnect) {
             let addr: string = this.GetLoginappAddr();
-            KBEDebug.DEBUG_MSG("KBEngineApp::Login_loginapp: start connect to " + addr + "!");
+            KBELog.DEBUG_MSG("KBEngineApp::Login_loginapp: start connect to " + addr + "!");
 
             this.networkInterface.ConnectTo(addr, (event: Event) => this.OnOpenLoginapp_login(event as MessageEvent));
         }
@@ -390,13 +390,13 @@ export class KBEngineApp {
     }
 
     private OnOpenLoginapp_login(event: MessageEvent) {
-        KBEDebug.DEBUG_MSG("KBEngineApp::onOpenLoginapp_login:success to %s.", this.serverAddress);
+        KBELog.DEBUG_MSG("KBEngineApp::onOpenLoginapp_login:success to %s.", this.serverAddress);
         
         this.lastTickCBTime = (new Date()).getTime();
 
         if (!this.networkInterface.IsGood)   // 有可能在连接过程中被关闭
         {
-            KBEDebug.WARNING_MSG("KBEngineApp::onOpenLoginapp_login:network has been closed in connecting!");
+            KBELog.WARNING_MSG("KBEngineApp::onOpenLoginapp_login:network has been closed in connecting!");
             return;
         }
 
@@ -405,7 +405,7 @@ export class KBEngineApp {
 
         KBEEvent.Fire("onConnectionState", true);
 
-        KBEDebug.DEBUG_MSG(`KBEngine::login_loginapp(): connect ${this.serverAddress}:${this.port} success!`);
+        KBELog.DEBUG_MSG(`KBEngine::login_loginapp(): connect ${this.serverAddress}:${this.port} success!`);
 
         this.Hello();
     }
@@ -438,7 +438,7 @@ export class KBEngineApp {
     Resetpassword_loginapp(noconnect: boolean) {
         if (noconnect) {
             let addr = this.GetLoginappAddr();
-            KBEDebug.DEBUG_MSG("KBEngineApp::Resetpassword_loginapp: start connect to %s!", addr);
+            KBELog.DEBUG_MSG("KBEngineApp::Resetpassword_loginapp: start connect to %s!", addr);
             this.networkInterface.ConnectTo(addr, (event: Event) => this.OnOpenLoginapp_resetpassword(event as MessageEvent));
         }
         else {
@@ -450,7 +450,7 @@ export class KBEngineApp {
     }
 
     private OnOpenLoginapp_resetpassword(event: MessageEvent) {
-        KBEDebug.DEBUG_MSG("KBEngineApp::onOpenLoginapp_resetpassword: successfully!");
+        KBELog.DEBUG_MSG("KBEngineApp::onOpenLoginapp_resetpassword: successfully!");
         this.currserver = "loginapp";
         this.currstate = "resetpassword";
 
@@ -469,7 +469,7 @@ export class KBEngineApp {
 
     OnOpenLoginapp_createAccount(event: MessageEvent) {
         KBEEvent.Fire("onConnectionState", true);
-        KBEDebug.DEBUG_MSG("KBEngineApp::OnOpenLoginapp_createAccount: successfully!");
+        KBELog.DEBUG_MSG("KBEngineApp::OnOpenLoginapp_createAccount: successfully!");
         this.currserver = "loginapp";
         this.currstate = "createAccount";
 
@@ -479,7 +479,7 @@ export class KBEngineApp {
     CreateAccount_loginapp(noconnect: boolean) {
         if (noconnect) {
             let addr = this.GetLoginappAddr();
-            KBEDebug.DEBUG_MSG("KBEngineApp::CreateAccount_loginapp: start connect to %s!", addr);
+            KBELog.DEBUG_MSG("KBEngineApp::CreateAccount_loginapp: start connect to %s!", addr);
             this.networkInterface.ConnectTo(addr, (event: Event) => this.OnOpenLoginapp_createAccount(event as MessageEvent));
         }
         else {
@@ -503,12 +503,12 @@ export class KBEngineApp {
         this.networkInterface.Close();
         KBEEvent.Fire("onReloginBaseapp");
         let addr = this.GetBaseappAddr();
-        KBEDebug.DEBUG_MSG("KBEngineApp::reloginBaseapp: start connect to %s!", addr);
+        KBELog.DEBUG_MSG("KBEngineApp::reloginBaseapp: start connect to %s!", addr);
         this.networkInterface.ConnectTo(addr, (event: Event) => this.OnReOpenBaseapp(event as MessageEvent));
     }
 
     OnReOpenBaseapp(event: MessageEvent) {
-        KBEDebug.DEBUG_MSG("KBEngineApp::onReOpenBaseapp: successfully!");
+        KBELog.DEBUG_MSG("KBEngineApp::onReOpenBaseapp: successfully!");
         this.currserver = "baseapp";
 
         let bundle = new Bundle();
@@ -556,7 +556,7 @@ export class KBEngineApp {
      *  与服务端握手，与任何一个进程连接之后应该第一时间进行握手
      */
     private Hello() {
-        KBEDebug.DEBUG_MSG("KBEngine::Hello.........current server:%s.", this.currserver);
+        KBELog.DEBUG_MSG("KBEngine::Hello.........current server:%s.", this.currserver);
         let bundle: Bundle = new Bundle();
         if (this.currserver === "loginapp") {
             bundle.NewMessage(Messages.messages["Loginapp_hello"]);
@@ -576,14 +576,14 @@ export class KBEngineApp {
      * @param stream 
      */
     Client_onHelloCB(stream: MemoryStream) {
-        KBEDebug.DEBUG_MSG("KBEngine::Client_onHelloCB.........stream length:%d.", stream.Length());
+        KBELog.DEBUG_MSG("KBEngine::Client_onHelloCB.........stream length:%d.", stream.Length());
         this.serverVersion = stream.ReadString();
         this.serverScriptVersion = stream.ReadString();
         this.serverProtocolMD5 = stream.ReadString();
         this.serverEntityDefMD5 = stream.ReadString();
         let ctype = stream.ReadInt32();
 
-        KBEDebug.DEBUG_MSG("KBEngineApp::Client_onHelloCB: verInfo(" + this.serverVersion + "), scriptVerInfo(" +
+        KBELog.DEBUG_MSG("KBEngineApp::Client_onHelloCB: verInfo(" + this.serverVersion + "), scriptVerInfo(" +
             this.serverScriptVersion + "), serverProtocolMD5(" + this.serverProtocolMD5 + "), serverEntityDefMD5(" +
             this.serverEntityDefMD5 + "), ctype(" + ctype + ")!");
 
@@ -601,15 +601,15 @@ export class KBEngineApp {
     }
 
     Client_onVersionNotMatch(stream: MemoryStream) {
-        KBEDebug.DEBUG_MSG("KBEngine::Client_onVersionNotMatch.........stream length:%d.", stream.Length());
+        KBELog.DEBUG_MSG("KBEngine::Client_onVersionNotMatch.........stream length:%d.", stream.Length());
         this.serverVersion = stream.ReadString();
-        KBEDebug.ERROR_MSG("Client_onVersionNotMatch: verInfo=" + this.clientVersion + " not match(server: " + this.serverVersion + ")");
+        KBELog.ERROR_MSG("Client_onVersionNotMatch: verInfo=" + this.clientVersion + " not match(server: " + this.serverVersion + ")");
         KBEEvent.Fire("onVersionNotMatch", this.clientVersion, this.serverVersion);
     }
 
     Client_onScriptVersionNotMatch(stream: MemoryStream) {
         this.serverScriptVersion = stream.ReadString();
-        KBEDebug.ERROR_MSG("Client_onScriptVersionNotMatch: verInfo=" + this.clientScriptVersion + " not match(server: " + this.serverScriptVersion + ")");
+        KBELog.ERROR_MSG("Client_onScriptVersionNotMatch: verInfo=" + this.clientScriptVersion + " not match(server: " + this.serverScriptVersion + ")");
         KBEEvent.Fire("onScriptVersionNotMatch", this.clientScriptVersion, this.serverScriptVersion);
     }
 
@@ -619,7 +619,7 @@ export class KBEngineApp {
     Client_onAppActiveTickCB() {
         let dateObject = new Date();
         this.lastTickCBTime = dateObject.getTime();
-        KBEDebug.DEBUG_MSG("KBEngine::Client_onAppActiveTickCB.........lastTickCBTime:%d.", this.lastTickCBTime);
+        KBELog.DEBUG_MSG("KBEngine::Client_onAppActiveTickCB.........lastTickCBTime:%d.", this.lastTickCBTime);
     }
 
     /**
@@ -727,12 +727,12 @@ export class KBEngineApp {
     Client_onLoginFailed(stream: MemoryStream) {
         var failedcode = stream.ReadUint16();
         this.serverdatas = stream.ReadBlob();
-        KBEDebug.ERROR_MSG("KBEngineApp::Client_onLoginFailed: failedcode(" + this.serverErrors.serverErr(failedcode)?.name + "), datas(" + this.serverdatas.length + ")!");
+        KBELog.ERROR_MSG("KBEngineApp::Client_onLoginFailed: failedcode(" + this.serverErrors.serverErr(failedcode)?.name + "), datas(" + this.serverdatas.length + ")!");
         KBEEvent.Fire("onLoginFailed", failedcode);
     }
 
     Client_onLoginSuccessfully(stream: MemoryStream) {
-        KBEDebug.DEBUG_MSG("Client_onLoginSuccessfully------------------->>>");
+        KBELog.DEBUG_MSG("Client_onLoginSuccessfully------------------->>>");
         var accountName = stream.ReadString();
         this.userName = accountName;
         this.baseappAddress = stream.ReadString();
@@ -740,7 +740,7 @@ export class KBEngineApp {
         this.baseappUDPPort = stream.ReadUint16();
         this.serverdatas = stream.ReadBlob();
 
-        KBEDebug.DEBUG_MSG("KBEngineApp::Client_onLoginSuccessfully: accountName(" + accountName + "), addr(" +
+        KBELog.DEBUG_MSG("KBEngineApp::Client_onLoginSuccessfully: accountName(" + accountName + "), addr(" +
             this.baseappAddress + ":" + this.baseappPort + "), datas(" + this.serverdatas.length + ")!");
 
         this.networkInterface.Close();
@@ -751,7 +751,7 @@ export class KBEngineApp {
         if (noconnect) {
             KBEEvent.Fire(EventOutTypes.onLoginBaseapp);
             let addr: string = this.GetBaseappAddr();
-            KBEDebug.DEBUG_MSG("KBEngineApp::Login_baseapp: start connect to " + addr + "!");
+            KBELog.DEBUG_MSG("KBEngineApp::Login_baseapp: start connect to " + addr + "!");
 
             this.networkInterface.ConnectTo(addr, (event: Event) => this.OnOpenBaseapp(event as MessageEvent));
         }
@@ -765,7 +765,7 @@ export class KBEngineApp {
     }
 
     private OnOpenBaseapp(event: MessageEvent) {
-        KBEDebug.DEBUG_MSG("KBEngineApp::onOpenBaseapp: successfully!");
+        KBELog.DEBUG_MSG("KBEngineApp::onOpenBaseapp: successfully!");
         this.currserver = "baseapp";
         this.currstate = "";
         this.Hello();
@@ -775,18 +775,18 @@ export class KBEngineApp {
 
 
     Client_onLoginBaseappFailed(failedcode) {
-        KBEDebug.ERROR_MSG("KBEngineApp::Client_onLoginBaseappFailed: failedcode(" + this.serverErrors.serverErr(failedcode)?.name + ")!");
+        KBELog.ERROR_MSG("KBEngineApp::Client_onLoginBaseappFailed: failedcode(" + this.serverErrors.serverErr(failedcode)?.name + ")!");
         KBEEvent.Fire("onLoginBaseappFailed", failedcode);
     }
 
     Client_onReloginBaseappFailed(failedcode) {
-        KBEDebug.ERROR_MSG("KBEngineApp::Client_onReloginBaseappFailed: failedcode(" + this.serverErrors.serverErr(failedcode)?.name + ")!");
+        KBELog.ERROR_MSG("KBEngineApp::Client_onReloginBaseappFailed: failedcode(" + this.serverErrors.serverErr(failedcode)?.name + ")!");
         KBEEvent.Fire("onReloginBaseappFailed", failedcode);
     }
 
     Client_onReloginBaseappSuccessfully(stream: MemoryStream) {
         this.entity_uuid = stream.ReadUint64();
-        KBEDebug.DEBUG_MSG("KBEngineApp::Client_onReloginBaseappSuccessfully: " + this.userName);
+        KBELog.DEBUG_MSG("KBEngineApp::Client_onReloginBaseappSuccessfully: " + this.userName);
         KBEEvent.Fire("onReloginBaseappSuccessfully");
     }
 
@@ -813,7 +813,7 @@ export class KBEngineApp {
 
     Client_onUpdatePropertys(stream: MemoryStream) {
         let eid = stream.ReadInt32();
-        //KBEDebug.DEBUG_MSG("Client_onUpdatePropertys------------------->>>eid:%s.", eid);
+        //KBELog.DEBUG_MSG("Client_onUpdatePropertys------------------->>>eid:%s.", eid);
         this.OnUpdatePropertys(eid, stream);
     }
 
@@ -822,7 +822,7 @@ export class KBEngineApp {
         if (entity === undefined) {
             let entityStream = this.bufferedCreateEntityMessage[eid];
             if (entityStream !== undefined) {
-                KBEDebug.ERROR_MSG("KBEngineApp::OnUpdatePropertys: entity(%i) not found.", eid);
+                KBELog.ERROR_MSG("KBEngineApp::OnUpdatePropertys: entity(%i) not found.", eid);
                 return;
             }
 
@@ -836,7 +836,7 @@ export class KBEngineApp {
     }
 
     Client_onCreatedProxies(rndUUID: DataTypes.KB_UINT64, eid: number, entityType: string) {
-        KBEDebug.DEBUG_MSG("KBEngineApp::Client_onCreatedProxies: uuid:(%s) eid(%d), entityType(%s)!", rndUUID.toString(), eid, entityType);
+        KBELog.DEBUG_MSG("KBEngineApp::Client_onCreatedProxies: uuid:(%s) eid(%d), entityType(%s)!", rndUUID.toString(), eid, entityType);
         this.entity_uuid = rndUUID;
         this.entity_id = eid;
         this.entity_type = entityType;
@@ -845,7 +845,7 @@ export class KBEngineApp {
         if (entity === undefined) {
             let scriptModule: ScriptModule = EntityDef.moduledefs[entityType];
             if (scriptModule === undefined) {
-                KBEDebug.ERROR_MSG("KBEngineApp::Client_onCreatedProxies:script(%s) is undefined.", entityType);
+                KBELog.ERROR_MSG("KBEngineApp::Client_onCreatedProxies:script(%s) is undefined.", entityType);
                 return;
             }
 
@@ -886,7 +886,7 @@ export class KBEngineApp {
     OnRemoteMethodCall(eid: number, stream: MemoryStream) {
         let entity = this.entities[eid];
         if (entity === undefined) {
-            KBEDebug.ERROR_MSG("KBEngineApp::Client_onRemoteMethodCall: entity(%d) not found!", eid);
+            KBELog.ERROR_MSG("KBEngineApp::Client_onRemoteMethodCall: entity(%d) not found!", eid);
             return;
         }
         entity.onRemoteMethodCall(stream);
@@ -899,13 +899,13 @@ export class KBEngineApp {
     }
 
     Client_onRemoteMethodCallOptimized(stream: MemoryStream) {
-        //KBEDebug.DEBUG_MSG("Client_onRemoteMethodCallOptimized------------------->>>.");
+        //KBELog.DEBUG_MSG("Client_onRemoteMethodCallOptimized------------------->>>.");
         let eid = this.GetViewEntityIDFromStream(stream);
         this.OnRemoteMethodCall(eid, stream);
     }
 
     Client_onEntityEnterWorld(stream: MemoryStream) {
-        //KBEDebug.DEBUG_MSG("Client_onEntityEnterWorld------------------->>>.");
+        //KBELog.DEBUG_MSG("Client_onEntityEnterWorld------------------->>>.");
 
         let eid = stream.ReadInt32();
         if (this.entity_id > 0 && this.entity_id !== eid)
@@ -926,14 +926,14 @@ export class KBEngineApp {
         if (entity === undefined) {
             let entityStream = this.bufferedCreateEntityMessage[eid];
             if (entityStream === undefined) {
-                KBEDebug.ERROR_MSG("KBEngine::Client_onEntityEnterWorld: entity(%d) not found!", eid);
+                KBELog.ERROR_MSG("KBEngine::Client_onEntityEnterWorld: entity(%d) not found!", eid);
                 return;
             }
 
             let entityType  = EntityDef.idmoduledefs[uentityType].name
             let module: ScriptModule = EntityDef.moduledefs[entityType]
             if (module === undefined) {
-                KBEDebug.ERROR_MSG("KBEngine::Client_onEntityEnterWorld: not found module(" + entityType + ")!");
+                KBELog.ERROR_MSG("KBEngine::Client_onEntityEnterWorld: not found module(" + entityType + ")!");
                 return;
             }
 
@@ -998,7 +998,7 @@ export class KBEngineApp {
     Client_onEntityLeaveWorld(eid: number) {
         let entity = this.entities[eid];
         if (entity === undefined) {
-            KBEDebug.ERROR_MSG("KBEngineApp::Client_onEntityLeaveWorld: entity(" + eid + ") not found!");
+            KBELog.ERROR_MSG("KBEngineApp::Client_onEntityLeaveWorld: entity(" + eid + ") not found!");
             return;
         }
 
@@ -1035,11 +1035,11 @@ export class KBEngineApp {
             this.Client_setSpaceData(spaceID, key, value);
         }
 
-        KBEDebug.DEBUG_MSG("KBEngine::Client_initSpaceData: spaceID(" + spaceID + "), size(" + Object.keys(this.spacedata).length + ")!");
+        KBELog.DEBUG_MSG("KBEngine::Client_initSpaceData: spaceID(" + spaceID + "), size(" + Object.keys(this.spacedata).length + ")!");
     }
 
     Client_setSpaceData(spaceID: number, key: string, value: string) {
-        KBEDebug.DEBUG_MSG("KBEngine::Client_setSpaceData: spaceID(" + spaceID + "), key(" + key + "), value(" + value + ")!");
+        KBELog.DEBUG_MSG("KBEngine::Client_setSpaceData: spaceID(" + spaceID + "), key(" + key + "), value(" + value + ")!");
 
         this.spacedata[key] = value;
 
@@ -1051,7 +1051,7 @@ export class KBEngineApp {
 
     // 服务端删除客户端的spacedata， spacedata请参考API
     Client_delSpaceData(spaceID: number, key: string) {
-        KBEDebug.DEBUG_MSG("KBEngine::Client_delSpaceData: spaceID(" + spaceID + "), key(" + key + ")");
+        KBELog.DEBUG_MSG("KBEngine::Client_delSpaceData: spaceID(" + spaceID + "), key(" + key + ")");
         delete this.spacedata[key];
         KBEEvent.Fire("onDelSpaceData", spaceID, key);
     }
@@ -1066,7 +1066,7 @@ export class KBEngineApp {
 
         let entity = this.entities[eid];
         if (entity === undefined) {
-            KBEDebug.ERROR_MSG("KBEngine::Client_onEntityEnterSpace: entity(" + eid + ") not found!");
+            KBELog.ERROR_MSG("KBEngine::Client_onEntityEnterSpace: entity(" + eid + ") not found!");
             return;
         }
 
@@ -1080,7 +1080,7 @@ export class KBEngineApp {
     Client_onEntityLeaveSpace(eid: number) {
         let entity = this.entities[eid];
         if (entity === undefined) {
-            KBEDebug.ERROR_MSG("KBEngine::Client_onEntityLeaveSpace: entity(" + eid + ") not found!");
+            KBELog.ERROR_MSG("KBEngine::Client_onEntityLeaveSpace: entity(" + eid + ") not found!");
             return;
         }
 
@@ -1156,7 +1156,7 @@ export class KBEngineApp {
     // 当前space添加了关于几何等信息的映射资源
     // 客户端可以通过这个资源信息来加载对应的场景
     AddSpaceGeometryMapping(spaceID: number, resPath: string) {
-        KBEDebug.DEBUG_MSG("KBEngine::addSpaceGeometryMapping: spaceID(" + spaceID + "), resPath(" + resPath + ")!");
+        KBELog.DEBUG_MSG("KBEngine::addSpaceGeometryMapping: spaceID(" + spaceID + "), resPath(" + resPath + ")!");
 
         this.isLoadedGeometry = true;
         this.spaceID = spaceID;
@@ -1166,7 +1166,7 @@ export class KBEngineApp {
     }
 
     Client_onKicked(failedcode: number) {
-        KBEDebug.ERROR_MSG("KBEngineApp::Client_onKicked: failedcode(" + this.serverErrors.serverErr(failedcode)?.name + ")!");
+        KBELog.ERROR_MSG("KBEngineApp::Client_onKicked: failedcode(" + this.serverErrors.serverErr(failedcode)?.name + ")!");
         KBEEvent.Fire("onKicked", failedcode);
     }
 
@@ -1177,53 +1177,53 @@ export class KBEngineApp {
         KBEEvent.Fire("onCreateAccountResult", retcode, datas);
 
         if (retcode != 0) {
-            KBEDebug.ERROR_MSG("KBEngineApp::Client_onCreateAccountResult: " + this.userName + " create is failed! code=" + this.serverErrors.serverErr(retcode)?.name + "!");
+            KBELog.ERROR_MSG("KBEngineApp::Client_onCreateAccountResult: " + this.userName + " create is failed! code=" + this.serverErrors.serverErr(retcode)?.name + "!");
             return;
         }
 
-        KBEDebug.DEBUG_MSG("KBEngineApp::Client_onCreateAccountResult: " + this.userName + " create is successfully!");
+        KBELog.DEBUG_MSG("KBEngineApp::Client_onCreateAccountResult: " + this.userName + " create is successfully!");
     }
 
     Client_onReqAccountResetPasswordCB(failcode: number) {
         KBEEvent.Fire("onResetPassword", failcode);
         
         if (failcode != 0) {
-            KBEDebug.ERROR_MSG("KBEngine::Client_onReqAccountResetPasswordCB: " + this.userName + " is failed! code=" + failcode + "!");
+            KBELog.ERROR_MSG("KBEngine::Client_onReqAccountResetPasswordCB: " + this.userName + " is failed! code=" + failcode + "!");
             return;
         }
 
-        KBEDebug.DEBUG_MSG("KBEngine::Client_onReqAccountResetPasswordCB: " + this.userName + " is successfully!");
+        KBELog.DEBUG_MSG("KBEngine::Client_onReqAccountResetPasswordCB: " + this.userName + " is successfully!");
     }
 
     Client_onReqAccountBindEmailCB(failcode: number) {
         KBEEvent.Fire("onBindAccountEmail", failcode);
 
         if (failcode != 0) {
-            KBEDebug.ERROR_MSG("KBEngine::Client_onReqAccountBindEmailCB: " + this.userName + " is failed! code=" + failcode + "!");
+            KBELog.ERROR_MSG("KBEngine::Client_onReqAccountBindEmailCB: " + this.userName + " is failed! code=" + failcode + "!");
             return;
         }
 
-        KBEDebug.DEBUG_MSG("KBEngine::Client_onReqAccountBindEmailCB: " + this.userName + " is successfully!");
+        KBELog.DEBUG_MSG("KBEngine::Client_onReqAccountBindEmailCB: " + this.userName + " is successfully!");
     }
 
     Client_onReqAccountNewPasswordCB(failcode: number) {
         KBEEvent.Fire("onNewPassword", failcode);
         
         if (failcode != 0) {
-            KBEDebug.ERROR_MSG("KBEngine::Client_onReqAccountNewPasswordCB: " + this.userName + " is failed! code=" + failcode + "!");
+            KBELog.ERROR_MSG("KBEngine::Client_onReqAccountNewPasswordCB: " + this.userName + " is failed! code=" + failcode + "!");
             return;
         }
 
-        KBEDebug.DEBUG_MSG("KBEngine::Client_onReqAccountNewPasswordCB: " + this.userName + " is successfully!");
+        KBELog.DEBUG_MSG("KBEngine::Client_onReqAccountNewPasswordCB: " + this.userName + " is successfully!");
     }
 
     Client_onEntityDestroyed(eid: number) {
-        KBEDebug.DEBUG_MSG("KBEngine::Client_onEntityDestroyed: entity(" + eid + ")");
+        KBELog.DEBUG_MSG("KBEngine::Client_onEntityDestroyed: entity(" + eid + ")");
 
         let entity = this.entities[eid];
 
         if (entity === undefined) {
-            KBEDebug.ERROR_MSG("KBEngine::Client_onEntityDestroyed: entity(" + eid + ") not found!");
+            KBELog.ERROR_MSG("KBEngine::Client_onEntityDestroyed: entity(" + eid + ") not found!");
             return;
         }
 
@@ -1264,7 +1264,7 @@ export class KBEngineApp {
         let entity: Entity = this.entities[eid];
 
         if (entity == undefined) {
-            KBEDebug.ERROR_MSG("KBEngine::Client_onControlEntity: entity(%d) not found!", eid);
+            KBELog.ERROR_MSG("KBEngine::Client_onControlEntity: entity(%d) not found!", eid);
             return;
         }
 
@@ -1289,7 +1289,7 @@ export class KBEngineApp {
             KBEEvent.Fire("onControlled", entity, isCont);
         }
         catch (e) {
-            KBEDebug.ERROR_MSG("KBEngine::Client_onControlEntity: entity id = %d, is controlled = %s, error = %s", eid, isCont, e.toString());
+            KBELog.ERROR_MSG("KBEngine::Client_onControlEntity: entity id = %d, is controlled = %s, error = %s", eid, isCont, e.toString());
         }
     }
 
@@ -1299,7 +1299,7 @@ export class KBEngineApp {
             // 如果为0且客户端上一步是重登陆或者重连操作并且服务端entity在断线期间一直处于在线状态
             // 则可以忽略这个错误, 因为cellapp可能一直在向baseapp发送同步消息， 当客户端重连上时未等
             // 服务端初始化步骤开始则收到同步信息, 此时这里就会出错。
-            KBEDebug.ERROR_MSG("KBEngineApp::_updateVolatileData: entity(" + entityID + ") not found!");
+            KBELog.ERROR_MSG("KBEngineApp::_updateVolatileData: entity(" + entityID + ") not found!");
             return;
         }
 
@@ -1381,7 +1381,7 @@ export class KBEngineApp {
     }
 
     Client_onUpdateBasePos(x, y, z) {
-        //KBEDebug.WARNING_MSG("Client_onUpdateBasePos---------->>>:x(%s),z(%s)..entityServerPos:x(%s),y(%s),z(%s).", x,z,this.entityServerPos.x,this.entityServerPos.y,this.entityServerPos.z);
+        //KBELog.WARNING_MSG("Client_onUpdateBasePos---------->>>:x(%s),z(%s)..entityServerPos:x(%s),y(%s),z(%s).", x,z,this.entityServerPos.x,this.entityServerPos.y,this.entityServerPos.z);
 
         this.entityServerPos.x = x;
         this.entityServerPos.y = y;
@@ -1401,7 +1401,7 @@ export class KBEngineApp {
     }
 
     Client_onUpdateBasePosXZ(x, z) {
-        //KBEDebug.WARNING_MSG("Client_onUpdateBasePosXZ---------->>>:x(%s),z(%s)..entityServerPos:x(%s),y(%s),z(%s).", x,z,this.entityServerPos.x,this.entityServerPos.y,this.entityServerPos.z);
+        //KBELog.WARNING_MSG("Client_onUpdateBasePosXZ---------->>>:x(%s),z(%s)..entityServerPos:x(%s),y(%s),z(%s).", x,z,this.entityServerPos.x,this.entityServerPos.y,this.entityServerPos.z);
          this.entityServerPos.x = x;
         this.entityServerPos.z = z;
 
@@ -1421,7 +1421,7 @@ export class KBEngineApp {
         let eid = this.GetViewEntityIDFromStream(stream);
         let entity = this.entities[eid];
         if (entity == undefined) {
-            KBEDebug.ERROR_MSG("KBEngineApp::Client_onUpdateData: entity(" + eid + ") not found!");
+            KBELog.ERROR_MSG("KBEngineApp::Client_onUpdateData: entity(" + eid + ") not found!");
             return;
         }
     }
@@ -1430,7 +1430,7 @@ export class KBEngineApp {
         let eid = stream.ReadInt32();
         let entity = this.entities[eid];
         if (entity == undefined) {
-            KBEDebug.ERROR_MSG("KBEngineApp::Client_onSetEntityPosAndDir: entity(" + eid + ") not found!");
+            KBELog.ERROR_MSG("KBEngineApp::Client_onSetEntityPosAndDir: entity(" + eid + ") not found!");
             return;
         }
 
@@ -1990,7 +1990,7 @@ export class Bundle
     Fini(isSend: boolean)
     {
         if(isSend)
-            KBEDebug.DEBUG_MSG("Bundle::Fini............message(%s:%s):messageNum(%d).stream length(%d).", this.message!.name, isSend, this.messageNum, this.stream.Length());
+            KBELog.DEBUG_MSG("Bundle::Fini............message(%s:%s):messageNum(%d).stream length(%d).", this.message!.name, isSend, this.messageNum, this.stream.Length());
 
         if(this.messageNum > 0)
         {
@@ -2352,7 +2352,7 @@ export namespace DataTypes{
             low >>>= 0;
             let high = (data / TWO_PWR_32_DBL) | 0;
             high >>>= 0;
-            //KBEDebug.WARNING_MSG("Datatypes::BuildUINT64:low:%s, low hex(%s);high:%s, high hex(%s).", low, low.toString(16), high, high.toString(16));
+            //KBELog.WARNING_MSG("Datatypes::BuildUINT64:low:%s, low hex(%s);high:%s, high hex(%s).", low, low.toString(16), high, high.toString(16));
             return new KB_UINT64(low, high);
         }
     }
@@ -2818,7 +2818,7 @@ export namespace DataTypes{
 
         Bind() {
             for (let key in this.dictType) {
-                //KBEDebug.DEBUG_MSG("DATATYPE_FIXED_DICT::Bind------------------->>>show (key:%s, value:%s).", key, this.dictType[key]);
+                //KBELog.DEBUG_MSG("DATATYPE_FIXED_DICT::Bind------------------->>>show (key:%s, value:%s).", key, this.dictType[key]);
                 if (typeof (this.dictType[key]) == "number") {
                     let utype = Number(this.dictType[key]);
                     this.dictType[key] = EntityDef.datatypes[utype];
@@ -2829,7 +2829,7 @@ export namespace DataTypes{
         CreateFromStream(stream: MemoryStream): { [key: string]: any } {
             let datas = {};
             for (let key in this.dictType) {
-                KBEDebug.DEBUG_MSG("DATATYPE_FIXED_DICT::CreateFromStream------------------->>>FIXED_DICT(key:%s).", key);
+                KBELog.DEBUG_MSG("DATATYPE_FIXED_DICT::CreateFromStream------------------->>>FIXED_DICT(key:%s).", key);
                 datas[key] = this.dictType[key].CreateFromStream(stream);
             }
 
@@ -2897,7 +2897,7 @@ export class Entity
         let value = this[name];
         if(value == undefined)
         {
-            KBEDebug.DEBUG_MSG("Entity::GetPropertyValue: property(%s) not found(undefined).", name);
+            KBELog.DEBUG_MSG("Entity::GetPropertyValue: property(%s) not found(undefined).", name);
         }
 
         return value;
@@ -2914,7 +2914,7 @@ export class Entity
 
     OnControlled(isControlled: boolean)
     {
-        KBEDebug.DEBUG_MSG("Entity::OnControlled:entity(%id) controlled state(%s) change.", this.id, isControlled);
+        KBELog.DEBUG_MSG("Entity::OnControlled:entity(%id) controlled state(%s) change.", this.id, isControlled);
     }
 
     IsPlayer(): boolean
@@ -2925,24 +2925,24 @@ export class Entity
     BaseCall(methodName: string, ...args: any[])
     {
         if(KBEngineApp.app!.currserver == "loginapp"){
-            KBEDebug.ERROR_MSG("%s::baseCall(%s),currserver is loginapp.", this.className, methodName);
+            KBELog.ERROR_MSG("%s::baseCall(%s),currserver is loginapp.", this.className, methodName);
             return;
         }
 
         // if(this.base === undefined)
         // {
-        //     KBEDebug.ERROR_MSG("Entity::BaseCall: entity(%d) base is undefined.", this.id);
+        //     KBELog.ERROR_MSG("Entity::BaseCall: entity(%d) base is undefined.", this.id);
         // }
 
         let method: Method = EntityDef.moduledefs[this.className].baseMethods[methodName];
         if(method === undefined)
         {
-            KBEDebug.ERROR_MSG("Entity::BaseCall: entity(%d) method(%s) not found.", this.id, methodName);
+            KBELog.ERROR_MSG("Entity::BaseCall: entity(%d) method(%s) not found.", this.id, methodName);
         }
 
         if(args.length !== method.args.length)
         {
-            KBEDebug.ERROR_MSG("Entity::BaseCall: args(%d != %d) size is error!", args.length, method.args.length);  
+            KBELog.ERROR_MSG("Entity::BaseCall: args(%d != %d) size is error!", args.length, method.args.length);  
 			return;
         }
 
@@ -2950,7 +2950,7 @@ export class Entity
         let baseEntityCall = this.getBaseEntityCall();
 
         if (!baseEntityCall) {
-            KBEDebug.ERROR_MSG(this.className + "::baseCall(%s),baseEntityCall is null.", methodName);
+            KBELog.ERROR_MSG(this.className + "::baseCall(%s),baseEntityCall is null.", methodName);
             return;
         }
 
@@ -2974,8 +2974,8 @@ export class Entity
         }
         catch(e)
         {
-            KBEDebug.ERROR_MSG(e.toString());
-            KBEDebug.ERROR_MSG("KBEngine.Entity::baseCall: args is error!");
+            KBELog.ERROR_MSG(e.toString());
+            KBELog.ERROR_MSG("KBEngine.Entity::baseCall: args is error!");
             baseEntityCall.bundle = undefined;
             return;
         }
@@ -2986,7 +2986,7 @@ export class Entity
     CellCall(methodName: string, ...args: any[])
     {
         if(KBEngineApp.app!.currserver == "loginapp"){
-            KBEDebug.ERROR_MSG("%s::cellCall(%s),currserver is loginapp.", this.className, methodName);
+            KBELog.ERROR_MSG("%s::cellCall(%s),currserver is loginapp.", this.className, methodName);
             return;
         }
 
@@ -2994,19 +2994,19 @@ export class Entity
         let method: Method = EntityDef.moduledefs[this.className].cellMethods[methodName];
         if(method === undefined)
         {
-            KBEDebug.ERROR_MSG("Entity::CellCall: entity(%d) method(%s) not found.", this.id, methodName);
+            KBELog.ERROR_MSG("Entity::CellCall: entity(%d) method(%s) not found.", this.id, methodName);
         }
 
         if(args.length !== method.args.length)
         {
-            KBEDebug.ERROR_MSG("Entity::CellCall: args(%d != %d) size is error!", args.length, method.args.length);  
+            KBELog.ERROR_MSG("Entity::CellCall: args(%d != %d) size is error!", args.length, method.args.length);  
 			return;
         }
 
         let cellEntityCall = this.getCellEntityCall();
 
         if (cellEntityCall == null) {
-            KBEDebug.ERROR_MSG(this.className + "::cellCall(%s),cellEntityCall is null.", methodName);
+            KBELog.ERROR_MSG(this.className + "::cellCall(%s),cellEntityCall is null.", methodName);
             return;
         }
 
@@ -3030,8 +3030,8 @@ export class Entity
         }
         catch(e)
         {
-            KBEDebug.ERROR_MSG(e.tostring());
-            KBEDebug.ERROR_MSG("KBEngine.Entity::baseCall: args is error!");
+            KBELog.ERROR_MSG(e.tostring());
+            KBELog.ERROR_MSG("KBEngine.Entity::baseCall: args is error!");
             cellEntityCall.bundle = undefined;
             return;
         }
@@ -3041,14 +3041,14 @@ export class Entity
 
     EnterWorld()
     {
-        KBEDebug.DEBUG_MSG(this.className + "::EnterWorld------------------->>>id:%s.", this.id);
+        KBELog.DEBUG_MSG(this.className + "::EnterWorld------------------->>>id:%s.", this.id);
         this.inWorld = true;
        
         try{
             this.OnEnterWorld();
             this.onComponentsEnterworld();
         }catch(e){
-            KBEDebug.ERROR_MSG(this.className + "::EnterWorld: error(%s).", e.toString());
+            KBELog.ERROR_MSG(this.className + "::EnterWorld: error(%s).", e.toString());
         }
 
         KBEEvent.Fire("onEnterWorld", this);
@@ -3056,7 +3056,7 @@ export class Entity
 
     OnEnterWorld()
     {
-        KBEDebug.DEBUG_MSG(this.className + "::OnEnterWorld------------------->>>id:%s.", this.id);
+        KBELog.DEBUG_MSG(this.className + "::OnEnterWorld------------------->>>id:%s.", this.id);
     }
 
     LeaveWorld()
@@ -3065,7 +3065,7 @@ export class Entity
             this.OnLeaveWorld();
             this.onComponentsLeaveworld();
         }catch(e){
-            KBEDebug.ERROR_MSG(this.className + "::LeaveWorld: error(%s).", e.toString());
+            KBELog.ERROR_MSG(this.className + "::LeaveWorld: error(%s).", e.toString());
         }
 
         KBEEvent.Fire("onLeaveWorld", this);
@@ -3073,7 +3073,7 @@ export class Entity
 
     OnLeaveWorld()
     {
-        KBEDebug.DEBUG_MSG(this.className + "::OnLeaveWorld------------------->>>id:%s.", this.id);
+        KBELog.DEBUG_MSG(this.className + "::OnLeaveWorld------------------->>>id:%s.", this.id);
     }
 
     EnterSpace()
@@ -3082,7 +3082,7 @@ export class Entity
         try{
             this.OnEnterSpace();
         }catch(e){
-            KBEDebug.ERROR_MSG(this.className + "::EnterSpace: error(%s).", e.toString());
+            KBELog.ERROR_MSG(this.className + "::EnterSpace: error(%s).", e.toString());
         }
 
         KBEEvent.Fire("onEnterSpace", this);
@@ -3096,7 +3096,7 @@ export class Entity
 
     OnEnterSpace()
     {
-        KBEDebug.DEBUG_MSG(this.className + "::OnEnterSpace------------------->>>id:%s.", this.id);
+        KBELog.DEBUG_MSG(this.className + "::OnEnterSpace------------------->>>id:%s.", this.id);
     }
 
     LeaveSpace()
@@ -3105,7 +3105,7 @@ export class Entity
         try{
             this.OnLeaveSpace();
         }catch(e){
-            KBEDebug.ERROR_MSG(this.className + "::LeaveSpace: error(%s).", e.toString());
+            KBELog.ERROR_MSG(this.className + "::LeaveSpace: error(%s).", e.toString());
         }
 
         KBEEvent.Fire("onLeaveSpace", this);
@@ -3113,7 +3113,7 @@ export class Entity
 
     OnLeaveSpace()
     {
-        KBEDebug.DEBUG_MSG(this.className + "::OnLeaveSpace------------------->>>id:%s.", this.id);
+        KBELog.DEBUG_MSG(this.className + "::OnLeaveSpace------------------->>>id:%s.", this.id);
     }
 
     OnUpdateVolatileData()
@@ -3288,7 +3288,7 @@ export abstract class EntityCall
 
     SendCall(bundle?: Bundle)
     {
-        KBEDebug.ASSERT(this.bundle !== undefined);
+        KBELog.ASSERT(this.bundle !== undefined);
 
         if(bundle === undefined)
             bundle = this.bundle;
@@ -3322,13 +3322,13 @@ export abstract class EntityCall
 
     NewCallToMethod(methodName:string, entitycomponentPropertyID:number = 0){
         if(KBEngineApp.app!.currserver == "loginapp"){
-            KBEDebug.ERROR_MSG(this.className + "::newCall(" + methodName + "), currserver=!" + KBEngineApp.app!.currserver);  
+            KBELog.ERROR_MSG(this.className + "::newCall(" + methodName + "), currserver=!" + KBEngineApp.app!.currserver);  
             return null;
         }
 
         const module = EntityDef.moduledefs[this.className];
         if(!module){
-            KBEDebug.ERROR_MSG(this.className + "::newCall: entity-module(" + this.className + ") error, can not find from EntityDef.moduledefs");
+            KBELog.ERROR_MSG(this.className + "::newCall: entity-module(" + this.className + ") error, can not find from EntityDef.moduledefs");
             return null;
         }
 
@@ -3340,7 +3340,7 @@ export abstract class EntityCall
         }
         
         if(!method){
-            KBEDebug.ERROR_MSG(this.className + "::newCall: entity-method(" + this.className + ") error, can not find from EntityDef.moduledefs");
+            KBELog.ERROR_MSG(this.className + "::newCall: entity-method(" + this.className + ") error, can not find from EntityDef.moduledefs");
         }
 
 
@@ -3739,7 +3739,7 @@ export class MemoryStream
         let size = value.length;
         if(size + 4 > this.Space())
         {
-            KBEDebug.ERROR_MSG("KBE.MemoryStream:WriteBlob:there is no space for size:%d", size + 4);
+            KBELog.ERROR_MSG("KBE.MemoryStream:WriteBlob:there is no space for size:%d", size + 4);
             return;
         }
 
@@ -3769,7 +3769,7 @@ export class MemoryStream
 
         if(value.length + 1 > this.Space())
         {
-            KBEDebug.ERROR_MSG("KBE.MemoryStream:WriteString:there is no space for size:%d", value.length + 1);
+            KBELog.ERROR_MSG("KBE.MemoryStream:WriteString:there is no space for size:%d", value.length + 1);
             return;
         }
 
@@ -3836,7 +3836,7 @@ export class NetworkInterface
         }
         catch(e)
         {
-            KBEDebug.ERROR_MSG("NetworkInterface::Connect:Init socket error:" + e);
+            KBELog.ERROR_MSG("NetworkInterface::Connect:Init socket error:" + e);
             KBEEvent.Fire("onConnectionState", false);
             return;
         }
@@ -3857,7 +3857,7 @@ export class NetworkInterface
     {
         try
         {
-            KBEDebug.DEBUG_MSG("NetworkInterface::Close on good:" + this.IsGood)
+            KBELog.DEBUG_MSG("NetworkInterface::Close on good:" + this.IsGood)
             if(this.socket != undefined)
             {
                 this.socket.close();
@@ -3867,7 +3867,7 @@ export class NetworkInterface
         }
         catch(e)
         {
-            KBEDebug.ERROR_MSG("NetworkInterface::Close error:%s.", e);
+            KBELog.ERROR_MSG("NetworkInterface::Close error:%s.", e);
         }
     }
 
@@ -3875,24 +3875,24 @@ export class NetworkInterface
     {
         if(!this.IsGood)
         {
-            KBEDebug.ERROR_MSG("NetworkInterface::Send:socket is unavailable.");
+            KBELog.ERROR_MSG("NetworkInterface::Send:socket is unavailable.");
             return;
         }
 
         try
         {
-            KBEDebug.DEBUG_MSG("NetworkInterface::Send buffer length:[%d].", buffer.byteLength);
+            KBELog.DEBUG_MSG("NetworkInterface::Send buffer length:[%d].", buffer.byteLength);
             this.socket!.send(buffer);
         }
         catch(e)
         {
-            KBEDebug.ERROR_MSG("NetworkInterface::Send error:%s.", e);
+            KBELog.ERROR_MSG("NetworkInterface::Send error:%s.", e);
         }
     }
 
     private onopen = (event: Event) =>
     {
-        KBEDebug.DEBUG_MSG("NetworkInterface::onopen:success!");
+        KBELog.DEBUG_MSG("NetworkInterface::onopen:success!");
         if(this.onOpenCB)
         {
             this.onOpenCB(event as MessageEvent);
@@ -3902,26 +3902,26 @@ export class NetworkInterface
     
     private onerror = (event: Event) =>
     {
-        KBEDebug.DEBUG_MSG("NetworkInterface::onerror:...!");
+        KBELog.DEBUG_MSG("NetworkInterface::onerror:...!");
         KBEEvent.Fire("onNetworkError", event as MessageEvent);
     }
 
     private onmessage = (event: MessageEvent) =>
     {
         let data: ArrayBuffer = event.data;
-        //KBEDebug.DEBUG_MSG("NetworkInterface::onmessage:...!" + data.byteLength);
+        //KBELog.DEBUG_MSG("NetworkInterface::onmessage:...!" + data.byteLength);
         let stream: MemoryStream = new MemoryStream(data);
         stream.wpos = data.byteLength;
 
         while(stream.rpos < stream.wpos)
         {
             let msgID = stream.ReadUint16();
-            //KBEDebug.DEBUG_MSG("NetworkInterface::onmessage:...!msgID:" + msgID);
+            //KBELog.DEBUG_MSG("NetworkInterface::onmessage:...!msgID:" + msgID);
 
             let handler: Message = Messages.clientMessages[msgID];
             if(!handler)
             {
-                KBEDebug.ERROR_MSG("NetworkInterface::onmessage:message(%d) has not found.", msgID);
+                KBELog.ERROR_MSG("NetworkInterface::onmessage:message(%d) has not found.", msgID);
             }
             else
             {
@@ -3947,7 +3947,7 @@ export class NetworkInterface
 
     private onclose = () =>
     {
-        KBEDebug.DEBUG_MSG("NetworkInterface::onclose:...!");
+        KBELog.DEBUG_MSG("NetworkInterface::onclose:...!");
         KBEEvent.Fire("onDisconnected");
     }
 }

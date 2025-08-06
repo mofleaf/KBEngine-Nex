@@ -1,5 +1,5 @@
 
-import KBEDebug from "./KBEDebug";
+import KBELog from "./KBELog";
 
 class EventInfo
 {
@@ -53,7 +53,7 @@ export default class KBEEvent
         let eventList: Array<EventInfo> = this._events[eventName];
         if(eventList === undefined)
         {
-            // KBEDebug.ERROR_MSG("Event::Deregister:cant find event by name(%s).", eventName);
+            // KBELog.ERROR_MSG("Event::Deregister:cant find event by name(%s).", eventName);
             return;
         }
 
@@ -61,20 +61,20 @@ export default class KBEEvent
         for (let item of eventList)
         {
             // 注意，严格模式下，arguments,call等被禁用，不可访问这些成员
-            //KBEDebug.WARNING_MSG("Event::Deregister:let key of eventList.:" +item.m_cbFunction.toString());
+            //KBELog.WARNING_MSG("Event::Deregister:let key of eventList.:" +item.m_cbFunction.toString());
 
             if(p_object === item.m_object && item.m_cbFunction === cbFunction)
             {
                 let index: number = eventList.indexOf(item);
                 eventList.splice(index, 1);
-                KBEDebug.WARNING_MSG("Event::Deregister:item.m_cbFunction === cbFunction...delete index:%d", index);
+                KBELog.WARNING_MSG("Event::Deregister:item.m_cbFunction === cbFunction...delete index:%d", index);
                 hasFound = true;
                 break;
             }
         }
         if(!hasFound)
         {
-            // KBEDebug.ERROR_MSG("Event::Deregister:cant find event by Function(event name:%s).", eventName);
+            // KBELog.ERROR_MSG("Event::Deregister:cant find event by Function(event name:%s).", eventName);
         }
     }
 
@@ -86,7 +86,7 @@ export default class KBEEvent
         // let eventList: Array<EventInfo> = this._events[eventName];
         // if(eventList === undefined)
         // {
-        //     // KBEDebug.DEBUG_MSG("Event::Fire:cant find event by name(%s).", eventName);
+        //     // KBELog.DEBUG_MSG("Event::Fire:cant find event by name(%s).", eventName);
         //     return;
         // }
 
@@ -99,7 +99,7 @@ export default class KBEEvent
         //     }
         //     catch(e)
         //     {
-        //         KBEDebug.ERROR_MSG("Event::Fire(%s):%s", eventName, e);
+        //         KBELog.ERROR_MSG("Event::Fire(%s):%s", eventName, e);
         //     }
         // }
     }
@@ -118,7 +118,7 @@ export default class KBEEvent
                 let eventList: Array<EventInfo> = this._events[eventName];
                 if(eventList === undefined)
                 {
-                    // KBEDebug.DEBUG_MSG("Event::Fire:cant find event by name(%s).", eventName);
+                    // KBELog.DEBUG_MSG("Event::Fire:cant find event by name(%s).", eventName);
                     continue;
                 }
 
@@ -131,7 +131,7 @@ export default class KBEEvent
                     }
                     catch(e)
                     {
-                        KBEDebug.ERROR_MSG("Event::Fire(%s):%s", eventName, e);
+                        KBELog.ERROR_MSG("Event::Fire(%s):%s", eventName, e);
                     }
                 }
             }
@@ -148,7 +148,7 @@ export default class KBEEvent
     {
         if(p_object === null)
         {
-            KBEDebug.ERROR_MSG("Event::DeregisterObject:object cannot be null.");
+            KBELog.ERROR_MSG("Event::DeregisterObject:object cannot be null.");
             return;
         }
 
@@ -167,7 +167,7 @@ export default class KBEEvent
             }
         }
 
-        KBEDebug.DEBUG_MSG("KBEEvent::DeregisterObject %s:delete count:%d.", p_object.toString(), deleteCount);
+        KBELog.DEBUG_MSG("KBEEvent::DeregisterObject %s:delete count:%d.", p_object.toString(), deleteCount);
     }
 }
 

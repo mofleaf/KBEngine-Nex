@@ -2057,30 +2057,43 @@ bool ClientSDKTypeScript::writeCustomDataType(const DataType* pDataType)
 		}
 		else if (strcmp(pFixedArrayType->getDataType()->getName(), "ARRAY") == 0)
 		{
-			readName = fmt::format("itemType.createFromStreamEx(stream){{", readName);
+			readName = fmt::format("this.itemType.createFromStreamEx(stream)", readName);
 
-			sourcefileBody_ += fmt::format("\tprivate DATATYPE_{} itemType = new DATATYPE_{}();\n\n",
+			sourcefileBody_ += fmt::format("\tprivate itemType:DATATYPE_{} = new DATATYPE_{}();\n\n",
 				className + "_ChildArray", className + "_ChildArray");
 
-			createArrayChildClass(pFixedArrayType, pFixedArrayType->getDataType(), className + "_ChildArray", "\t\t");
+			
 
-			sourcefileBody_ += fmt::format("\tpublic {} createFromStreamEx(MemoryStream stream){{\n", typeName);
+			sourcefileBody_ += fmt::format("\tpublic createFromStreamEx(stream:MemoryStream):{}{{\n", typeName);
 			sourcefileBody_ += fmt::format("\t\treturn {};\n", readName);
 			sourcefileBody_ += fmt::format("\t}}\n\n");
 
-			sourcefileBody_ += fmt::format("\tpublic void addToStreamEx(Bundle stream, {} v) {{\n", typeName);
-			std::string writeName = fmt::format("itemType.addToStreamEx(stream, v)", writeName);
+			sourcefileBody_ += fmt::format("\tpublic addToStreamEx(stream:Bundle, v:{}) {{\n", typeName);
+			std::string writeName = fmt::format("this.itemType.addToStreamEx(stream, v)", writeName);
 			sourcefileBody_ += fmt::format("\t\t{};\n", writeName);
 			sourcefileBody_ += fmt::format("\t}}\n");
 
 			sourcefileBody_ += fmt::format("}}\n\n");
+
+
+
+			createArrayChildClass(pFixedArrayType, pFixedArrayType->getDataType(), className + "_ChildArray", "\t\t");
 		}
 		else
 		{
 			readName = datatype2nativetype(pFixedArrayType->getDataType()->getName());
 			std::transform(readName.begin(), readName.end(), readName.begin(), tolower);
 			readName[0] = std::toupper(readName[0]);
-			readName = fmt::format("stream.Read{}()", readName);
+			//readName = fmt::format("stream.Read{}()", readName);
+
+
+
+			if (readName == "Uint64" || readName == "Int64") {
+				readName = fmt::format("stream.Read{}().toBigInt()", readName);
+			}
+			else {
+				readName = fmt::format("stream.Read{}()", readName);
+			}
 
 			sourcefileBody_ += fmt::format("\tpublic createFromStreamEx(stream:MemoryStream): {}{{\n", typeName);
 			sourcefileBody_ += fmt::format("\t\tlet size = stream.ReadUint32();\n");
@@ -2107,7 +2120,17 @@ bool ClientSDKTypeScript::writeCustomDataType(const DataType* pDataType)
 				writeName = datatype2nativetype(pFixedArrayType->getDataType()->getName());
 				std::transform(writeName.begin(), writeName.end(), writeName.begin(), tolower);
 				writeName[0] = std::toupper(writeName[0]);
-				writeName = fmt::format("stream.Write{}(v[i])", writeName);
+
+				if (writeName == "Uint64") {
+					writeName = fmt::format("stream.Write{}(DataTypes.KB_UINT64.fromBigInt(v[i]))", writeName);
+				}
+				else if (writeName == "Int64") {
+					writeName = fmt::format("stream.Write{}(DataTypes.KB_INT64.fromBigInt(v[i]))", writeName);
+				}
+				else {
+					writeName = fmt::format("stream.Write{}(v[i])", writeName);
+				}
+				//writeName = fmt::format("stream.Write{}(v[i])", writeName);
 			}
 
 			sourcefileBody_ += fmt::format("\t\t\t{};\n", writeName);
@@ -3216,7 +3239,7 @@ bool ClientSDKTypeScript::writeEntityProcessMessagesMethod(ScriptDefModule* pEnt
 				}
 				else
 				{
-					sourcefileBody_ += fmt::format("\t\t\t\tlet {}_arg{}:{}{} = (method.args[{}] as DATATYPE_AnonymousArray_{}).createFromStreamEx(stream);\n",
+					sourcefileBody_ += fmt::format("\t\t\t\tlet {}_arg{}:{}{} = (method.args[{}] as KBETypes.DATATYPE_AnonymousArray_{}).createFromStreamEx(stream);\n",
 						pMethodDescription->getName(), i, (datatype2nativetype(typestr) == "" ? "KBETypes." : ""), typestr, typeID, (i - 1));
 				}
 			}
@@ -3444,19 +3467,19 @@ bool ClientSDKTypeScript::writeEntityProcessMessagesMethod(ScriptDefModule* pEnt
 
 		if (pPropertyDescription->getDataType()->type() == DATA_TYPE_FIXEDDICT)
 		{
-			readName = fmt::format("(EntityDef.id2datatypes[{}] as DATATYPE_{}).createFromStreamEx(stream)", 
+			readName = fmt::format("(EntityDef.id2datatypes[{}] as KBETypes.DATATYPE_{}).createFromStreamEx(stream)", 
 				 pPropertyDescription->getDataType()->id(), pPropertyDescription->getDataType()->aliasName());
 		}
 		else if (pPropertyDescription->getDataType()->type() == DATA_TYPE_FIXEDARRAY)
 		{
 			if (strlen(pPropertyDescription->getDataType()->aliasName()) > 0)
 			{
-				readName = fmt::format("(EntityDef.id2datatypes[{}] as DATATYPE_{}).createFromStreamEx(stream)", 
+				readName = fmt::format("(EntityDef.id2datatypes[{}] as KBETypes.DATATYPE_{}).createFromStreamEx(stream)", 
 					pPropertyDescription->getDataType()->id(), pPropertyDescription->getDataType()->aliasName());
 			}
 			else
 			{
-				readName = fmt::format("(EntityDef.id2datatypes[{}] as DATATYPE_AnonymousArray_{}).createFromStreamEx(stream)", 
+				readName = fmt::format("(EntityDef.id2datatypes[{}] as KBETypes.DATATYPE_AnonymousArray_{}).createFromStreamEx(stream)", 
 					pPropertyDescription->getDataType()->id(),pPropertyDescription->getDataType()->id());
 			}
 		}
@@ -3779,22 +3802,44 @@ bool ClientSDKTypeScript::writeEntityProperty_ARRAY(ScriptDefModule* pEntityScri
 
 		bool ret = writeTypeItemType_ARRAY(pPropertyDescription->getName(), pPropertyDescription->getDataType()->aliasName(), pPropertyDescription->getDataType());
 		std::vector<std::string> values;
-		KBEngine::strutil::kbe_splits(sourcefileBody_, " ", values);
+
+		size_t pos_public = sourcefileBody_.find("public ");
+		size_t colon = sourcefileBody_.find(':', pos_public);
+		size_t equal = sourcefileBody_.find('=', colon);
+
+		std::string fieldName = sourcefileBody_.substr(colon + 1, equal - colon - 2);           // -2 to trim " =" before "new"
+
+
+		std::string tempFiledName = fieldName;
+		// 先获取到类型名称
+		strutil::kbe_replace(tempFiledName, "Array<", "");
+		strutil::kbe_replace(tempFiledName, ">", "");
+
+
+		// 判断是不是基础类型
+		if (datatype2nativetype(tempFiledName) == "" && tempFiledName != "number" && tempFiledName != "bigint") {
+			strutil::kbe_replace(sourcefileBody_, tempFiledName, "KBETypes." + tempFiledName);
+			strutil::kbe_replace(fieldName, tempFiledName, "KBETypes."+ tempFiledName);
+		}
+
+
 		sourcefileBody_ = s + sourcefileBody_;
 
 		std::string name = pPropertyDescription->getName();
 		name[0] = std::toupper(name[0]);
-		sourcefileBody_ += fmt::format("\tpublic on{}Changed(oldValue:{}) {{}}\n", name, values[1]);
+		sourcefileBody_ += fmt::format("\tpublic on{}Changed(oldValue:{}) {{}}\n", name, fieldName);
 		return ret;
 	}
 	else
 	{
-		sourcefileBody_ += fmt::format("\tpublic {}:{}  = new {}();\n", pPropertyDescription->getName(), pPropertyDescription->getDataTypeName(),
-			pPropertyDescription->getDataTypeName());
+		std::string  typePrefix = datatype2nativetype(pPropertyDescription->getDataTypeName()) == "" ? "KBETypes." : "";
+
+		sourcefileBody_ += fmt::format("\tpublic {}:{}{}  = new {}{}();\n", pPropertyDescription->getName(), typePrefix, pPropertyDescription->getDataTypeName(),
+			typePrefix,pPropertyDescription->getDataTypeName());
 
 		std::string name = pPropertyDescription->getName();
 		name[0] = std::toupper(name[0]);
-		sourcefileBody_ += fmt::format("\tpublic on{}Changed(oldValue:{}) {{}}\n", name, pPropertyDescription->getDataTypeName());
+		sourcefileBody_ += fmt::format("\tpublic on{}Changed(oldValue:{}{}) {{}}\n", name, typePrefix, pPropertyDescription->getDataTypeName());
 	}
 
 	return true;
@@ -3804,12 +3849,13 @@ bool ClientSDKTypeScript::writeEntityProperty_ARRAY(ScriptDefModule* pEntityScri
 bool ClientSDKTypeScript::writeEntityProperty_FIXED_DICT(ScriptDefModule* pEntityScriptDefModule,
 	ScriptDefModule* pCurrScriptDefModule, PropertyDescription* pPropertyDescription)
 {
-	sourcefileBody_ += fmt::format("\tpublic {}:{} = new {}();\n", pPropertyDescription->getName(), pPropertyDescription->getDataTypeName(),
-		pPropertyDescription->getDataTypeName());
+	std::string  typePrefix = datatype2nativetype(pPropertyDescription->getDataTypeName()) == "" ? "KBETypes." : "";
+	sourcefileBody_ += fmt::format("\tpublic {}:{}{} = new {}{}();\n", pPropertyDescription->getName(), typePrefix, pPropertyDescription->getDataTypeName(),
+		typePrefix,pPropertyDescription->getDataTypeName());
 
 	std::string name = pPropertyDescription->getName();
 	name[0] = std::toupper(name[0]);
-	sourcefileBody_ += fmt::format("\tpublic on{}Changed(oldValue:{}) {{}}\n", name, pPropertyDescription->getDataTypeName());
+	sourcefileBody_ += fmt::format("\tpublic on{}Changed(oldValue:{}{}) {{}}\n", name, typePrefix, pPropertyDescription->getDataTypeName());
 	return true;
 }
 
