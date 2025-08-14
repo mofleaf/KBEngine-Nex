@@ -275,7 +275,7 @@ public struct KBVector4 : IEquatable<KBVector4>
 	public static implicit operator UnityEngine.Vector4(KBVector4 v) => new UnityEngine.Vector4(v.x, v.y, v.z,v.w);
 
 	//  从 UnityEngine.Vector4 转换
-	public static implicit operator KBVector4(UnityEngine.Vector4 v) => new KBVector4(v.x, v.y, v.z,v.W);
+	public static implicit operator KBVector4(UnityEngine.Vector4 v) => new KBVector4(v.x, v.y, v.z,v.w);
 #endif
 }
 

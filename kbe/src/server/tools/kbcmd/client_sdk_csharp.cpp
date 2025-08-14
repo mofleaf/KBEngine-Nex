@@ -247,7 +247,7 @@ bool ClientSDKCSharp::writeEngineMessagesModuleBegin()
 
 	sourcefileBody_ += "\t\t\targtypes = msgargtypes;\n";
 
-	sourcefileBody_ += "\t\t\t// Dbg.DEBUG_MSG(string.Format(\"Message::Message() : ({ 0 } / {1} / {2})!\", \n";
+	sourcefileBody_ += "\t\t\t// KBELog.DEBUG_MSG(string.Format(\"Message::Message() : ({ 0 } / {1} / {2})!\", \n";
 	sourcefileBody_ += "\t\t\t//\t\tmsgname, msgid, msglen));";
 
 	sourcefileBody_ += "\n\t\t}\n\n";
@@ -1312,7 +1312,7 @@ bool ClientSDKCSharp::writeEntityDefsModuleInitScript_MethodDescr(ScriptDefModul
 		}
 	}
 
-	sourcefileBody_ += fmt::format("\t\t\t//Dbg.DEBUG_MSG(\"EntityDef::initScriptModules: add({}), method({} / {}).\");\n\n",
+	sourcefileBody_ += fmt::format("\t\t\t//KBELog.DEBUG_MSG(\"EntityDef::initScriptModules: add({}), method({} / {}).\");\n\n",
 		pScriptDefModule->getName(), pDescr->getName(), pDescr->getUType());
 
 	return true;
@@ -1386,7 +1386,7 @@ bool ClientSDKCSharp::writeEntityDefsModuleInitScript_PropertyDescr(ScriptDefMod
 			pScriptDefModule->getName(), pScriptDefModule->getName(), pDescr->getName(), pScriptDefModule->getName(), pDescr->getName());
 	}
 
-	sourcefileBody_ += fmt::format("\t\t\t//Dbg.DEBUG_MSG(\"EntityDef::initScriptModules: add({}), property({} / {}).\");\n\n",
+	sourcefileBody_ += fmt::format("\t\t\t//KBELog.DEBUG_MSG(\"EntityDef::initScriptModules: add({}), property({} / {}).\");\n\n",
 		pScriptDefModule->getName(), pDescr->getName(), pDescr->getUType());
 
 	return true;

@@ -43,7 +43,6 @@ public class UnityKBEMain : MonoBehaviour
 	protected virtual void Start () 
 	{
 		MonoBehaviour.print("clientapp::start()");
-		installEvents();
 		initKBEngine();
 	}
 	
