@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-
+﻿
 namespace KBEngine
 {
 	
@@ -14,6 +13,8 @@ namespace KBEngine
 
 	using MessageID = System.UInt16;
 	using MessageLength = System.UInt16;
+
+	using System.Threading.Tasks;
 
 	/// <summary>
 	/// 网络模块
@@ -45,6 +46,7 @@ namespace KBEngine
 			public AsyncConnectMethod caller = null;
 			public object userData = null;
 			public Socket socket = null;
+			public NativeWebSocket.WebSocket webSocket = null;
 			public NetworkInterfaceBase networkInterface = null;
 			public string error = "";
 		}
@@ -79,9 +81,9 @@ namespace KBEngine
 					if(_socket.RemoteEndPoint != null)
 						KBELog.DEBUG_MSG(string.Format("NetworkInterfaceBase::reset(), close socket from '{0}'", _socket.RemoteEndPoint.ToString()));
 				}
-				catch (Exception e)
+				catch (Exception)
 				{
-
+					// ignored
 				}
 				try
 				{
@@ -215,7 +217,7 @@ namespace KBEngine
 			Event.fireIn("_onConnectionState", new object[] { state });
 		}
 
-		public void connectTo(string ip, int port, ConnectCallback callback, object userData)
+		public virtual void connectTo(string ip, int port, ConnectCallback callback, object userData)
 		{
 			if (valid())
 				throw new InvalidOperationException("Have already connected!");
@@ -252,7 +254,7 @@ namespace KBEngine
 		}
 		
 		
-		private async Task ConnectAsync(ConnectState state)
+		protected virtual async Task ConnectAsync(ConnectState state)
 		{
 			try
 			{

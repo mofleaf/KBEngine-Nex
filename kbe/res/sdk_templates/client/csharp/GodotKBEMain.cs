@@ -24,8 +24,16 @@ public partial class GodotKBEMain : Node
 	public int port = @{KBE_LOGIN_PORT};
     [Export]
     public KBEngineApp.CLIENT_TYPE clientType = KBEngineApp.CLIENT_TYPE.CLIENT_TYPE_MINI;
+
+    [Export]
+	public KBEngineApp.NETWORK_TYPE networkType = KBEngineApp.NETWORK_TYPE.KCP;
+    [Export]
+	public bool enableWSS = false;
+
+
     [Export]
     public KBEngineApp.NETWORK_ENCRYPT_TYPE networkEncryptType = KBEngineApp.NETWORK_ENCRYPT_TYPE.ENCRYPT_TYPE_NONE;
+    
     [Export]
 	public int syncPlayerMS = 1000 / @{KBE_UPDATEHZ};
 
@@ -45,8 +53,6 @@ public partial class GodotKBEMain : Node
 	public bool useAliasEntityID = @{KBE_USE_ALIAS_ENTITYID};
     [Export]
     public bool isOnInitCallPropertysSetMethods = true;
-    [Export]
-    public bool forceDisableUDP = false;
 
 
     public override void _Ready()
@@ -93,13 +99,14 @@ public partial class GodotKBEMain : Node
         args.ip = ip;
         args.port = port;
         args.clientType = clientType;
+		args.networkType = networkType;
+		args.enableWSS =  enableWSS;
         args.networkEncryptType = networkEncryptType;
         args.syncPlayerMS = syncPlayerMS;
         args.threadUpdateHZ = threadUpdateHZ;
         args.serverHeartbeatTick = serverHeartbeatTick / 2;
         args.useAliasEntityID = useAliasEntityID;
         args.isOnInitCallPropertysSetMethods = isOnInitCallPropertysSetMethods;
-        args.forceDisableUDP = forceDisableUDP;
 
         args.TCP_SEND_BUFFER_MAX = (UInt32)TCP_SEND_BUFFER_MAX;
         args.TCP_RECV_BUFFER_MAX = (UInt32)TCP_RECV_BUFFER_MAX;

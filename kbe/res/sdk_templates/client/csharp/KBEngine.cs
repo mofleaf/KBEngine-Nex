@@ -68,6 +68,15 @@ namespace KBEngine
 			ENCRYPT_TYPE_BLOWFISH = 1,
 		};
 
+
+		public enum NETWORK_TYPE
+		{
+			TCP = 0,
+			KCP = 1,
+			UNITY_WEB_SOCKET = 2,
+		}
+
+
 		public string username = "kbengine";
 		public string password = "123456";
 		
@@ -180,8 +189,13 @@ namespace KBEngine
 		{
 			_filter = null;
 			Messages.init();
-			_networkInterface = new NetworkInterfaceTCP();
-			
+			if (_args.networkType is NETWORK_TYPE.TCP or NETWORK_TYPE.KCP)
+			{
+				_networkInterface = new NetworkInterfaceTCP();
+			}else if (_args.networkType is NETWORK_TYPE.UNITY_WEB_SOCKET)
+			{
+				_networkInterface = new NetworkInterfaceUnityWS();
+			}
 			
 		}
 		
@@ -274,8 +288,13 @@ namespace KBEngine
 				_networkInterface.reset();
 
 			_filter = null;
-			_networkInterface = new NetworkInterfaceTCP();
-			
+			if (_args.networkType is NETWORK_TYPE.TCP or NETWORK_TYPE.KCP)
+			{
+				_networkInterface = new NetworkInterfaceTCP();
+			}else if (_args.networkType is NETWORK_TYPE.UNITY_WEB_SOCKET)
+			{
+				_networkInterface = new NetworkInterfaceUnityWS();
+			}
 			
 			_spacedatas.Clear();
 		}
@@ -604,18 +623,22 @@ namespace KBEngine
 				
 				_networkInterface.reset();
 
-				if(_args.forceDisableUDP || baseappUdpPort == 0)
+				if (_args.networkType is NETWORK_TYPE.TCP)
 				{
 					_networkInterface = new NetworkInterfaceTCP();
 					
 					_networkInterface.connectTo(baseappIP, baseappTcpPort, onConnectTo_baseapp_callback, null);
-				}
-				else
+				}else if (_args.networkType is NETWORK_TYPE.KCP)
 				{
 					_networkInterface = new NetworkInterfaceKCP();
 					
 					_networkInterface.connectTo(baseappIP, baseappUdpPort, onConnectTo_baseapp_callback, null);
+				}else if (_args.networkType is NETWORK_TYPE.UNITY_WEB_SOCKET)
+				{
+					_networkInterface = new NetworkInterfaceUnityWS();
+					_networkInterface.connectTo(baseappIP, baseappTcpPort, onConnectTo_baseapp_callback, null);
 				}
+				
 			}
 			else
 			{
@@ -667,17 +690,20 @@ namespace KBEngine
 
 			_networkInterface.reset();
 
-			if(_args.forceDisableUDP || baseappUdpPort == 0)
+			if (_args.networkType is NETWORK_TYPE.TCP)
 			{
 				_networkInterface = new NetworkInterfaceTCP();
 				
 				_networkInterface.connectTo(baseappIP, baseappTcpPort, onReConnectTo_baseapp_callback, null);
-			}
-			else
+			}else if (_args.networkType is NETWORK_TYPE.KCP)
 			{
 				_networkInterface = new NetworkInterfaceKCP();
 				
 				_networkInterface.connectTo(baseappIP, baseappUdpPort, onReConnectTo_baseapp_callback, null);
+			}else if (_args.networkType is NETWORK_TYPE.UNITY_WEB_SOCKET)
+			{
+				_networkInterface = new NetworkInterfaceUnityWS();	
+				_networkInterface.connectTo(baseappIP, baseappTcpPort, onReConnectTo_baseapp_callback, null);
 			}
 		}
 
