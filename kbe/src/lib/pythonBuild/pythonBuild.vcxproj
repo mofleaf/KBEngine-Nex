@@ -108,23 +108,23 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PreBuildEvent>
-      <Command>call "$(SolutionDir)lib\python\PCbuild\build.bat"  -c Debug</Command>
+      <Command>call "..\python\PCbuild\build.bat"  -c Debug</Command>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>copy /Y "$(SolutionDir)lib\python\PCbuild\amd64\python313_d.lib" "$(SolutionDir)libs"
-copy /Y "$(SolutionDir)lib\python\PCbuild\amd64\python313_d.exp" "$(SolutionDir)libs"
+      <Command>copy /Y "..\python\PCbuild\amd64\python313_d.lib" "..\..\libs"
+copy /Y "..\python\PCbuild\amd64\python313_d.exp" "..\..\libs"
 
-copy /Y "$(SolutionDir)lib\python\PCbuild\amd64\python313_d.dll" "$(SolutionDir)..\bin\server"
-copy /Y "$(SolutionDir)lib\python\PCbuild\amd64\python313_d.ilk" "$(SolutionDir)..\bin\server"
-copy /Y "$(SolutionDir)lib\python\PCbuild\amd64\python313_d.pdb" "$(SolutionDir)..\bin\server"
+copy /Y "..\python\PCbuild\amd64\python313_d.dll" "..\..\..\bin\server"
+copy /Y "..\python\PCbuild\amd64\python313_d.ilk" "..\..\..\bin\server"
+copy /Y "..\python\PCbuild\amd64\python313_d.pdb" "..\..\..\bin\server"
 
-copy /Y "$(SolutionDir)lib\python\PCbuild\amd64\vcruntime140.dll" "$(SolutionDir)..\bin\server"
-copy /Y "$(SolutionDir)lib\python\PCbuild\amd64\vcruntime140_1.dll" "$(SolutionDir)..\bin\server"
+copy /Y "..\python\PCbuild\amd64\vcruntime140.dll" "..\..\..\bin\server"
+copy /Y "..\python\PCbuild\amd64\vcruntime140_1.dll" "..\..\..\bin\server"
 
-xcopy "$(SolutionDir)lib\python\Lib" "$(SolutionDir)..\res\scripts\common\Lib" /Y /i /e
-xcopy "$(SolutionDir)lib\python\PCbuild\amd64" "$(SolutionDir)..\res\scripts\common\DLLs" /Y /i /e
+xcopy "..\python\Lib" "..\..\..\res\scripts\common\Lib" /Y /i /e
+xcopy "..\python\PCbuild\amd64" "..\..\..\res\scripts\common\DLLs" /Y /i /e
 
-copy /Y "$(SolutionDir)lib\python\PCbuild\amd64\pyconfig.h" "$(SolutionDir)lib\python\Include"
+copy /Y "..\python\PCbuild\amd64\pyconfig.h" "..\python\Include"
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -142,24 +142,23 @@ copy /Y "$(SolutionDir)lib\python\PCbuild\amd64\pyconfig.h" "$(SolutionDir)lib\p
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PreBuildEvent>
-      <Command>call "$(SolutionDir)lib\python\PCbuild\build.bat"  -c Release</Command>
+      <Command>call "..\python\PCbuild\build.bat" -c Release</Command>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>copy /Y "$(SolutionDir)lib\python\PCbuild\amd64\python313.lib" "$(SolutionDir)libs"
-copy /Y "$(SolutionDir)lib\python\PCbuild\amd64\python313.exp" "$(SolutionDir)libs"
+      <Command>copy /Y "..\python\PCbuild\amd64\python313.lib" "..\..\libs"
+copy /Y "..\python\PCbuild\amd64\python313.exp" "..\..\libs"
 
-copy /Y "$(SolutionDir)lib\python\PCbuild\amd64\python313.dll" "$(SolutionDir)..\bin\server"
-copy /Y "$(SolutionDir)lib\python\PCbuild\amd64\python313.ilk" "$(SolutionDir)..\bin\server"
-copy /Y "$(SolutionDir)lib\python\PCbuild\amd64\python313.pdb" "$(SolutionDir)..\bin\server"
+copy /Y "..\python\PCbuild\amd64\python313.dll" "..\..\..\bin\server"
+copy /Y "..\python\PCbuild\amd64\python313.ilk" "..\..\..\bin\server"
+copy /Y "..\python\PCbuild\amd64\python313.pdb" "..\..\..\bin\server"
 
-copy /Y "$(SolutionDir)lib\python\PCbuild\amd64\vcruntime140.dll" "$(SolutionDir)..\bin\server"
-copy /Y "$(SolutionDir)lib\python\PCbuild\amd64\vcruntime140_1.dll" "$(SolutionDir)..\bin\server"
+copy /Y "..\python\PCbuild\amd64\vcruntime140.dll" "..\..\..\bin\server"
+copy /Y "..\python\PCbuild\amd64\vcruntime140_1.dll" "..\..\..\bin\server"
 
-xcopy "$(SolutionDir)lib\python\Lib" "$(SolutionDir)..\res\scripts\common\Lib" /Y /i /e
-xcopy "$(SolutionDir)lib\python\PCbuild\amd64" "$(SolutionDir)..\res\scripts\common\DLLs" /Y /i /e
+xcopy "..\python\Lib" "..\..\..\res\scripts\common\Lib" /Y /i /e
+xcopy "..\python\PCbuild\amd64" "..\..\..\res\scripts\common\DLLs" /Y /i /e
 
-copy /Y "$(SolutionDir)lib\python\PCbuild\amd64\pyconfig.h" "$(SolutionDir)lib\python\Include"
-</Command>
+copy /Y "..\python\PCbuild\amd64\pyconfig.h" "..\python\Include"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
