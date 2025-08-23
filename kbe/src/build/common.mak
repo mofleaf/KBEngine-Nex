@@ -294,8 +294,8 @@ CXXFLAGS += -Wno-error=class-memaccess
 CXXFLAGS += -Werror=format-truncation
 CXXFLAGS += -Wdeprecated-declarations
 
-CXXFLAGS += -DFMT_HEADER_ONLY
 
+CPPFLAGS += -DFMT_HEADER_ONLY
 CPPFLAGS += -DKBE_SERVER -MMD -DKBE_CONFIG=\"${KBE_CONFIG}\"
 
 ifeq (,$(findstring SingleThreaded,$(KBE_CONFIG)))
