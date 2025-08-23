@@ -236,7 +236,7 @@ CPPFLAGS += -DUSE_JEMALLOC
 
 LDLIBS += -ltinyxml
 LDLIBS += -lm
-LDLIBS += -lfmt
+# LDLIBS += -lfmt
 LDLIBS += -lz
 
 ifneq (,$(findstring 64,$(KBE_CONFIG)))
