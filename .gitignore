@@ -27,9 +27,11 @@ logs/
 *.exe
 *.pdb
 *.chw
+/kbe/src/vcpkg_installed
 
 /kbe/src/lib/pythonBuild/pythonBuild
 /kbe/src/lib/pythonBuild/x64
+/kbe/src/server/init/x64
 
 # -------------[ OS generated ]------------------------ #
 .DS_Store
