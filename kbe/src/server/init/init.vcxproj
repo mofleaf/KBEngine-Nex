@@ -44,6 +44,7 @@
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
+    <VCToolsVersion>14.44.35207</VCToolsVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -72,6 +73,9 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Label="Vcpkg">
     <VcpkgEnableManifest>true</VcpkgEnableManifest>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <VcpkgUseStatic>true</VcpkgUseStatic>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -115,24 +119,48 @@
       </Command>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>copy /Y "..\..\lib\python\PCbuild\amd64\python313_d.lib" "..\..\libs"
-copy /Y "..\..\lib\python\PCbuild\amd64\python313_d.exp" "..\..\libs"
+      <Command>if exist "..\..\lib\python\PCbuild\amd64\pyconfig.h" (
 
-copy /Y "..\..\lib\python\PCbuild\amd64\python313_d.dll" "..\..\..\bin\server"
-copy /Y "..\..\lib\python\PCbuild\amd64\python313_d.ilk" "..\..\..\bin\server"
-copy /Y "..\..\lib\python\PCbuild\amd64\python313_d.pdb" "..\..\..\bin\server"
+    if exist "..\..\lib\python\Include\pyconfig.h" (
+        echo [INFO] 已找到 Include\pyconfig.h，无需复制，跳过。
+    ) else (
+        echo [INFO] 找到 PCbuild\amd64\pyconfig.h，正在复制文件...
 
-copy /Y "..\..\lib\python\PCbuild\amd64\vcruntime140.dll" "..\..\..\bin\server"
-copy /Y "..\..\lib\python\PCbuild\amd64\vcruntime140_1.dll" "..\..\..\bin\server"
+        copy /Y "..\..\lib\python\PCbuild\amd64\python313_d.lib" "..\..\libs"
+        copy /Y "..\..\lib\python\PCbuild\amd64\python313_d.exp" "..\..\libs"
 
-xcopy "..\..\lib\python\Lib" "..\..\..\res\scripts\common\Lib" /Y /i /e
-xcopy "..\..\lib\python\PCbuild\amd64" "..\..\..\res\scripts\common\DLLs" /Y /i /e
+        copy /Y "..\..\lib\python\PCbuild\amd64\python313_d.dll" "..\..\..\bin\server"
+        copy /Y "..\..\lib\python\PCbuild\amd64\python313_d.ilk" "..\..\..\bin\server"
+        copy /Y "..\..\lib\python\PCbuild\amd64\python313_d.pdb" "..\..\..\bin\server"
 
-copy /Y "..\..\lib\python\PCbuild\amd64\pyconfig.h" "..\..\lib\python\Include"
+        copy /Y "..\..\lib\python\PCbuild\amd64\vcruntime140.dll" "..\..\..\bin\server"
+        copy /Y "..\..\lib\python\PCbuild\amd64\vcruntime140_1.dll" "..\..\..\bin\server"
+
+        xcopy "..\..\lib\python\Lib" "..\..\..\res\scripts\common\Lib" /Y /i /e
+        xcopy "..\..\lib\python\PCbuild\amd64" "..\..\..\res\scripts\common\DLLs" /Y /i /e
+
+        copy /Y "..\..\lib\python\PCbuild\amd64\pyconfig.h" "..\..\lib\python\Include"
+
+        echo [INFO] Python 文件复制完成。
+    )
+) else (
+    echo [ERROR] Python 构建失败，未找到 pyconfig.h！
+    exit /b 1
+)
 </Command>
     </PostBuildEvent>
     <PreLinkEvent>
-      <Command>call "..\..\lib\python\PCbuild\build.bat"  -c Debug</Command>
+      <Command>if not exist "..\..\lib\python\Include\pyconfig.h" (
+    echo [INFO] 未找到 pyconfig.h，正在构建 Python...
+    call "..\..\lib\python\PCbuild\build.bat" -c Debug
+    if errorlevel 1 (
+        echo [ERROR] Python 构建失败！
+        exit /b 1
+    )
+) else (
+    echo [INFO] 已找到 pyconfig.h，跳过 Python 构建。
+)
+</Command>
     </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

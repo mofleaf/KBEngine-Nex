@@ -96,10 +96,17 @@
   <PropertyGroup Label="Vcpkg">
     <VcpkgEnableManifest>true</VcpkgEnableManifest>
   </PropertyGroup>
+  <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <VcpkgConfiguration>Debug</VcpkgConfiguration>
+    <VcpkgUseStatic>true</VcpkgUseStatic>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <VcpkgUseStatic>true</VcpkgUseStatic>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>../../lib/python/PC;../../lib/python/Include;../../lib/python/Include/internal;../../lib;../../common;../../lib/dependencies/g3dlite;../../lib/dependencies/log4cxx/src/main/include;../../lib/dependencies;../../lib/dependencies/vsopenssl/include;../../lib/dependencies/jwsmtp/jwsmtp/jwsmtp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../lib/python/PC;../../lib/python/Include;../../lib/python/Include/internal;../../lib;../../common;../../lib/dependencies/g3dlite;../../lib/dependencies;../../lib/dependencies/vsopenssl/include;../../lib/dependencies/jwsmtp/jwsmtp/jwsmtp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>ENABLE_WATCHERS;WIN32;_DEBUG;_LIB;CODE_INLINE;ENABLE_WATCHERS;KBE_USE_ASSERTS;LOG4CXX_STATIC;KBE_SERVER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -120,7 +127,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>../../lib/python/PC;../../lib/python/Include;../../lib/python/Include/internal;../../lib;../../common;../../lib/dependencies/g3dlite;../../lib/dependencies/log4cxx/src/main/include;../../lib/dependencies;../../lib/dependencies/vsopenssl/include;../../lib/dependencies/jwsmtp/jwsmtp/jwsmtp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../lib/python/PC;../../lib/python/Include;../../lib/python/Include/internal;../../lib;../../common;../../lib/dependencies/g3dlite;../../lib/dependencies;../../lib/dependencies/vsopenssl/include;../../lib/dependencies/jwsmtp/jwsmtp/jwsmtp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>FMT_HEADER_ONLY;ENABLE_WATCHERS;WIN32;_DEBUG;_LIB;CODE_INLINE;ENABLE_WATCHERS;KBE_USE_ASSERTS;LOG4CXX_STATIC;KBE_SERVER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -141,7 +148,7 @@
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>../../lib/python/PC;../../lib/python/Include;../../lib/python/Include/internal;../../lib;../../common;../../lib/dependencies/g3dlite;../../lib/dependencies/log4cxx/src/main/include;../../lib/dependencies;../../lib/dependencies/vsopenssl/include;../../lib/dependencies/jwsmtp/jwsmtp/jwsmtp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../lib/python/PC;../../lib/python/Include;../../lib/python/Include/internal;../../lib;../../common;../../lib/dependencies/g3dlite;../../lib/dependencies;../../lib/dependencies/vsopenssl/include;../../lib/dependencies/jwsmtp/jwsmtp/jwsmtp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;CODE_INLINE;ENABLE_WATCHERS;KBE_USE_ASSERTS;LOG4CXX_STATIC;KBE_SERVER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -162,7 +169,7 @@
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>../../lib/python/PC;../../lib/python/Include;../../lib/python/Include/internal;../../lib;../../common;../../lib/dependencies/g3dlite;../../lib/dependencies/log4cxx/src/main/include;../../lib/dependencies;../../lib/dependencies/vsopenssl/include;../../lib/dependencies/jwsmtp/jwsmtp/jwsmtp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../lib/python/PC;../../lib/python/Include;../../lib/python/Include/internal;../../lib;../../common;../../lib/dependencies/g3dlite;../../lib/dependencies;../../lib/dependencies/vsopenssl/include;../../lib/dependencies/jwsmtp/jwsmtp/jwsmtp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>FMT_HEADER_ONLY;WIN32;NDEBUG;_LIB;CODE_INLINE;ENABLE_WATCHERS;KBE_USE_ASSERTS;LOG4CXX_STATIC;KBE_SERVER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
