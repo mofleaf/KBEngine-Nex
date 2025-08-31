@@ -26,10 +26,6 @@ set(SRCS
 # 创建可执行程序
 add_executable(baseapp ${SRCS})
 
-
-
-# link_directories(${KBE_ROOT}/kbe/src/build/vcpkg_installed/x64-linux/lib)
-
 # 链接依赖的库
 target_link_libraries(baseapp
     PRIVATE
@@ -44,16 +40,6 @@ target_link_libraries(baseapp
         math
         g3dlite
         log4cxx
-
-        debug ${KBE_ROOT}/kbe/src/build/vcpkg_installed/x64-linux/debug/lib/libaprutil-1.a
-        optimized ${KBE_ROOT}/kbe/src/build/vcpkg_installed/x64-linux/lib/libaprutil-1.a
-
-        debug ${KBE_ROOT}/kbe/src/build/vcpkg_installed/x64-linux/debug/lib/libapr-1.a
-        optimized ${KBE_ROOT}/kbe/src/build/vcpkg_installed/x64-linux/lib/libapr-1.a
-
-        debug ${KBE_ROOT}/kbe/src/build/vcpkg_installed/x64-linux/debug/lib/libexpat.a
-        optimized ${KBE_ROOT}/kbe/src/build/vcpkg_installed/x64-linux/lib/libexpat.a
-
 )
 
 target_compile_definitions(baseapp PUBLIC  LOG4CXX_STATIC)
@@ -67,15 +53,6 @@ target_link_options(baseapp PRIVATE -Wl,-export-dynamic)
 include(${CMAKE_SOURCE_DIR}/cmakefile/OpenSSL.cmake)
 target_link_libraries(baseapp PRIVATE OpenSSL::SSL)
 
-# 定义宏（可根据 Makefile 里的逻辑来迁移）
-# target_compile_definitions(baseapp
-#     PRIVATE
-#         $<$<CONFIG:Debug>:KBE_CONFIG=\"Debug\">
-#         $<$<CONFIG:Release>:KBE_CONFIG=\"Release\">
-#         $<$<CONFIG:RelWithDebInfo>:KBE_CONFIG=\"RelWithDebInfo\">
-#         $<$<CONFIG:MinSizeRel>:KBE_CONFIG=\"MinSizeRel\">
-#         ENABLE_WATCHERS=1
-# )
 # 设置可执行文件输出目录
 set_target_properties(baseapp PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${KBE_ROOT}/kbe/bin/server"

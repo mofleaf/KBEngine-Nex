@@ -26,6 +26,9 @@ target_link_libraries(helper PUBLIC fmt::fmt sigar)
 if(NOT NO_USE_LOG4CXX)
     target_link_libraries(helper PUBLIC
         log4cxx
+        ${APR_LIBRARIES}
+        ${APRUTIL_LIBRARIES}
+		expat::expat
     )
     target_compile_definitions(helper PUBLIC LOG4CXX_STATIC)
 else()

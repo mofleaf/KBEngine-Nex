@@ -27,16 +27,6 @@ target_link_libraries(loginapp
         g3dlite
         log4cxx
 		jwsmtp
-
-        debug ${KBE_ROOT}/kbe/src/build/vcpkg_installed/x64-linux/debug/lib/libaprutil-1.a
-        optimized ${KBE_ROOT}/kbe/src/build/vcpkg_installed/x64-linux/lib/libaprutil-1.a
-
-        debug ${KBE_ROOT}/kbe/src/build/vcpkg_installed/x64-linux/debug/lib/libapr-1.a
-        optimized ${KBE_ROOT}/kbe/src/build/vcpkg_installed/x64-linux/lib/libapr-1.a
-
-        debug ${KBE_ROOT}/kbe/src/build/vcpkg_installed/x64-linux/debug/lib/libexpat.a
-        optimized ${KBE_ROOT}/kbe/src/build/vcpkg_installed/x64-linux/lib/libexpat.a
-
 )
 
 target_compile_definitions(loginapp PUBLIC  LOG4CXX_STATIC)

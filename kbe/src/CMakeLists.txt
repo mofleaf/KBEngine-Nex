@@ -54,43 +54,44 @@ include_directories(
 )
 
 
+
+
 # vcpkg 包
+
+find_package(PkgConfig REQUIRED)
+# jemalloc 包
+pkg_check_modules(JEMALLOC REQUIRED jemalloc)
+# 头文件路径
+include_directories(${JEMALLOC_INCLUDE_DIRS})
+# 宏定义
+add_definitions(${JEMALLOC_CFLAGS_OTHER})
+# 所有 target 默认都加 jemalloc 链接选项
+add_link_options(${JEMALLOC_LDFLAGS})
+add_compile_definitions(USE_JEMALLOC)
+
+
 find_package(fmt CONFIG REQUIRED)
 find_package(EXPAT  REQUIRED COMPONENTS core)
 
-# find_package(log4cxx CONFIG REQUIRED)
+find_package(log4cxx CONFIG REQUIRED)
 find_package(ZLIB REQUIRED)
 find_package(hiredis CONFIG REQUIRED)
 
 
 
-
-
-add_library(log4cxx STATIC IMPORTED)
-
-# Debug 版本
-set_target_properties(log4cxx PROPERTIES
-    IMPORTED_LOCATION_DEBUG "${KBE_ROOT}/kbe/src/build/vcpkg_installed/x64-linux/debug/lib/liblog4cxx.a"
-    INTERFACE_LINK_LIBRARIES_DEBUG
-        "${KBE_ROOT}/kbe/src/build/vcpkg_installed/x64-linux/debug/lib/libaprutil-1.a;
-         ${KBE_ROOT}/kbe/src/build/vcpkg_installed/x64-linux/debug/lib/libapr-1.a;
-         ${KBE_ROOT}/kbe/src/build/vcpkg_installed/x64-linux/debug/lib/libexpat.a"
-)
-
-# Release 版本
-set_target_properties(log4cxx PROPERTIES
-    IMPORTED_LOCATION_RELEASE "${KBE_ROOT}/kbe/src/build/vcpkg_installed/x64-linux/lib/liblog4cxx.a"
-    INTERFACE_LINK_LIBRARIES_RELEASE
-        "${KBE_ROOT}/kbe/src/build/vcpkg_installed/x64-linux/lib/libaprutil-1.a;
-         ${KBE_ROOT}/kbe/src/build/vcpkg_installed/x64-linux/lib/libapr-1.a;
-         ${KBE_ROOT}/kbe/src/build/vcpkg_installed/x64-linux/lib/libexpat.a"
-)
+# apr
+pkg_check_modules(APR REQUIRED apr-1)
+include_directories(${APR_INCLUDE_DIRS})
+link_libraries(${APR_LIBRARIES})
 
 
 
-# if(NOT DISABLE_WATCHERS)
-#     add_definitions(-DENABLE_WATCHERS)
-# endif()
+# apr-util
+pkg_check_modules(APRUTIL REQUIRED apr-util-1)
+include_directories(${APRUTIL_INCLUDE_DIRS})
+link_libraries(${APRUTIL_LIBRARIES})
+
+
 add_compile_definitions(
     $<$<CONFIG:Debug>:KBE_CONFIG=\"Debug\">
     $<$<CONFIG:Release>:KBE_CONFIG=\"Release\">
@@ -112,73 +113,6 @@ add_subdirectory(lib/dependencies/curl)
 add_subdirectory(lib/dependencies/g3dlite)
 add_subdirectory(lib/dependencies/jwsmtp/jwsmtp/jwsmtp)
 add_subdirectory(lib/dependencies/sigar/linux)
-
-# ------------------------
-# jemalloc 构建
-# # ------------------------
-# add_custom_target(jemalloc ALL
-#     COMMAND chmod -R 755 ${CMAKE_CURRENT_SOURCE_DIR}/lib/dependencies/jemalloc
-#     COMMAND ./autogen.sh
-#     COMMAND make
-#     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/lib/dependencies/jemalloc
-#     COMMENT "Building jemalloc"
-# )
-
-# # 构建完成后，把生成的库文件拷贝到 libs
-# # 假设 jemalloc 生成的是 libjemalloc.a 或 libjemalloc.so
-# add_custom_command(TARGET jemalloc POST_BUILD
-#     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-#         ${CMAKE_CURRENT_SOURCE_DIR}/lib/dependencies/jemalloc/lib/libjemalloc.a
-#         ${LIB_OUTPUT_DIR}/libjemalloc.a
-# )
-
-
-# jemalloc 头文件
-set(JEMALLOC_DIR ${KBE_ROOT}/kbe/src/lib/dependencies/jemalloc)
-
-add_custom_command(
-    OUTPUT ${LIB_OUTPUT_DIR}/libjemalloc.a
-    COMMAND chmod -R 755 ${CMAKE_CURRENT_SOURCE_DIR}/lib/dependencies/jemalloc
-    COMMAND ./autogen.sh
-    COMMAND make
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${JEMALLOC_DIR}/lib/libjemalloc.a
-        ${LIB_OUTPUT_DIR}/libjemalloc.a
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/lib/dependencies/jemalloc
-    COMMENT "Building jemalloc"
-)
-
-add_custom_target(jemalloc ALL
-    DEPENDS ${LIB_OUTPUT_DIR}/libjemalloc.a
-)
-
-add_compile_definitions(USE_JEMALLOC)
-include_directories(${JEMALLOC_DIR}/include)
-
-
-# 1. 创建一个 INTERFACE 库，统一传递 jemalloc 配置给所有目标
-add_library(jemalloc_interface INTERFACE)
-
-# 2. 添加头文件
-target_include_directories(jemalloc_interface INTERFACE ${JEMALLOC_DIR}/include)
-
-# 3. 添加宏定义
-target_compile_definitions(jemalloc_interface INTERFACE USE_JEMALLOC)
-
-# 4. 链接库
-target_link_libraries(jemalloc_interface 
-    INTERFACE
-        ${LIB_OUTPUT_DIR}/libjemalloc.a
-        Threads::Threads
-        dl
-        rt
-)
-
-# 5. 确保 jemalloc 构建完成后再链接
-add_dependencies(jemalloc_interface jemalloc)
-
-
-
 
 
 add_subdirectory(lib/dependencies/tinyxml)

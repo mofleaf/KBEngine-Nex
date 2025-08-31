@@ -6,7 +6,10 @@
     "log4cxx",
     "zlib",
     "hiredis",
-    "expat"
+    "expat",
+    "apr",
+    "apr-util",
+    "jemalloc"
   ],
   "overrides": [
     {
