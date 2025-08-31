@@ -35,9 +35,3 @@ target_link_libraries(pyscript PRIVATE KBE::Python)
 target_link_libraries(pyscript PRIVATE fmt::fmt)
 
 
-# 指定输出路径到 kbe/src/libs
-set_target_properties(pyscript PROPERTIES
-    ARCHIVE_OUTPUT_DIRECTORY ${KBE_ROOT}/kbe/src/libs
-    LIBRARY_OUTPUT_DIRECTORY ${KBE_ROOT}/kbe/src/libs
-    RUNTIME_OUTPUT_DIRECTORY ${KBE_ROOT}/kbe/src/libs
-)

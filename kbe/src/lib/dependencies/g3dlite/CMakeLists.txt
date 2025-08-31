@@ -26,10 +26,3 @@ target_include_directories(g3dlite
         ${CMAKE_CURRENT_SOURCE_DIR}        # g3dlite 根目录
         ${CMAKE_CURRENT_SOURCE_DIR}/G3D    # G3D/ 目录
 )
-
-# 指定输出路径到 kbe/src/libs
-set_target_properties(g3dlite PROPERTIES
-    ARCHIVE_OUTPUT_DIRECTORY ${KBE_ROOT}/kbe/src/libs
-    LIBRARY_OUTPUT_DIRECTORY ${KBE_ROOT}/kbe/src/libs
-    RUNTIME_OUTPUT_DIRECTORY ${KBE_ROOT}/kbe/src/libs
-)

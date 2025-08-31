@@ -36,9 +36,3 @@ target_link_libraries(server PRIVATE fmt::fmt)
 target_link_libraries(server PRIVATE jwsmtp)
 
 
-# 指定输出路径到 kbe/src/libs
-set_target_properties(server PROPERTIES
-    ARCHIVE_OUTPUT_DIRECTORY ${KBE_ROOT}/kbe/src/libs
-    LIBRARY_OUTPUT_DIRECTORY ${KBE_ROOT}/kbe/src/libs
-    RUNTIME_OUTPUT_DIRECTORY ${KBE_ROOT}/kbe/src/libs
-)

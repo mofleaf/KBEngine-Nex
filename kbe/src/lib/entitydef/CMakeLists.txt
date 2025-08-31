@@ -27,13 +27,9 @@ include(${CMAKE_SOURCE_DIR}/cmakefile/Python.cmake)
 target_link_libraries(entitydef PRIVATE KBE::Python)
 
 
-target_link_libraries(entitydef PRIVATE fmt::fmt)
-
-
-
-# 指定输出路径到 kbe/src/libs
-set_target_properties(entitydef PROPERTIES
-    ARCHIVE_OUTPUT_DIRECTORY ${KBE_ROOT}/kbe/src/libs
-    LIBRARY_OUTPUT_DIRECTORY ${KBE_ROOT}/kbe/src/libs
-    RUNTIME_OUTPUT_DIRECTORY ${KBE_ROOT}/kbe/src/libs
+target_link_libraries(entitydef PUBLIC 
+	fmt::fmt
 )
+
+
+

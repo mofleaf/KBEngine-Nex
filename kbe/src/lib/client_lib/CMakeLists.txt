@@ -38,9 +38,3 @@ target_link_libraries(client_lib PRIVATE fmt::fmt)
 target_link_libraries(client_lib PUBLIC helper)
 
 
-# 指定输出路径到 kbe/src/libs
-set_target_properties(client_lib PROPERTIES
-    ARCHIVE_OUTPUT_DIRECTORY ${KBE_ROOT}/kbe/src/libs
-    LIBRARY_OUTPUT_DIRECTORY ${KBE_ROOT}/kbe/src/libs
-    RUNTIME_OUTPUT_DIRECTORY ${KBE_ROOT}/kbe/src/libs
-)
