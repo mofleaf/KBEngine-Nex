@@ -1,5 +1,5 @@
 // Copyright 2008-2018 Yolo Technologies, Inc. All Rights Reserved. https://www.comblockengine.com
-
+ 
 #ifndef KBE_DB_INTERFACE_REDIS_H
 #define KBE_DB_INTERFACE_REDIS_H
 
@@ -10,14 +10,14 @@
 #include "helper/debug_helper.h"
 #include "db_interface/db_interface.h"
 
-#include "hiredis.h"
+#include "hiredis/hiredis.h"
 // #if KBE_PLATFORM == PLATFORM_WIN32
 // #ifdef _DEBUG
 // #pragma comment (lib, "hiredis_d.lib")
 // #else
 // #pragma comment (lib, "hiredis.lib")
 // #endif
-#endif
+//#endif
 
 namespace KBEngine { 
 
