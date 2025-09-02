@@ -42,6 +42,7 @@ Thumbs.db
 *.pyc
 
 # -------------[ make files ]------------------------ #
+/kbe/src/build
 /kbe/res/scripts/common/lib-dynload/
 /kbe/res/scripts/common/Lib
 /kbe/res/scripts/common/DLLs
