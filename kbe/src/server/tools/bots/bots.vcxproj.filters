@@ -45,9 +45,6 @@
     <ClCompile Include="tcp_packet_sender_ex.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\lib\dependencies\vsopenssl\include\openssl\applink.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="kcp_packet_receiver_ex.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

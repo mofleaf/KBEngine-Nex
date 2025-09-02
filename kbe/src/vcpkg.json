@@ -8,8 +8,13 @@
     "hiredis",
     "expat",
     "apr",
-    "apr-util",
     "curl",
+    "apr-util",
+    {
+      "name": "openssl",
+      "default-features": false,
+      "platform": "windows"
+    },
     {
       "name": "jemalloc",
       "platform": "!windows"
