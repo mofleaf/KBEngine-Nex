@@ -50,7 +50,6 @@ target_link_libraries(baseapp PRIVATE python_interface)
 target_link_options(baseapp PRIVATE -Wl,-export-dynamic)
 
 # ---------------- OpenSSL ----------------
-include(${CMAKE_SOURCE_DIR}/cmakefile/OpenSSL.cmake)
 target_link_libraries(baseapp PRIVATE OpenSSL::SSL)
 
 # 设置可执行文件输出目录

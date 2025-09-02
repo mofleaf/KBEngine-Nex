@@ -37,7 +37,6 @@ target_link_libraries(interfaces PRIVATE python_interface)
 target_link_options(interfaces PRIVATE -Wl,-export-dynamic)
 
 # ---------------- OpenSSL ----------------
-include(${CMAKE_SOURCE_DIR}/cmakefile/OpenSSL.cmake)
 target_link_libraries(interfaces PRIVATE OpenSSL::SSL)
 
 

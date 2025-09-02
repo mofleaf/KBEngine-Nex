@@ -42,7 +42,6 @@ target_link_libraries(cellappmgr PRIVATE python_interface)
 target_link_options(cellappmgr PRIVATE -Wl,-export-dynamic)
 
 # ---------------- OpenSSL ----------------
-include(${CMAKE_SOURCE_DIR}/cmakefile/OpenSSL.cmake)
 target_link_libraries(cellappmgr PRIVATE OpenSSL::SSL)
 
 

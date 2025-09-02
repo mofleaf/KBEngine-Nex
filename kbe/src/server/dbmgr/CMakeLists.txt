@@ -60,7 +60,6 @@ target_link_libraries(dbmgr PRIVATE python_interface)
 target_link_options(dbmgr PRIVATE -Wl,-export-dynamic)
 
 # ---------------- OpenSSL ----------------
-include(${CMAKE_SOURCE_DIR}/cmakefile/OpenSSL.cmake)
 target_link_libraries(dbmgr PRIVATE OpenSSL::SSL)
 
 

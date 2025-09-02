@@ -35,7 +35,6 @@ target_link_libraries(baseappmgr PRIVATE python_interface)
 target_link_options(baseappmgr PRIVATE -Wl,-export-dynamic)
 
 # ---------------- OpenSSL ----------------
-include(${CMAKE_SOURCE_DIR}/cmakefile/OpenSSL.cmake)
 target_link_libraries(baseappmgr PRIVATE OpenSSL::SSL)
 
 

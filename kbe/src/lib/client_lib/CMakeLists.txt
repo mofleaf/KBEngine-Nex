@@ -19,7 +19,6 @@ set(SRCS
 add_library(client_lib STATIC ${SRCS})
 
 # ---------------- OpenSSL ----------------
-include(${CMAKE_SOURCE_DIR}/cmakefile/OpenSSL.cmake)
 target_link_libraries(client_lib PRIVATE OpenSSL::SSL)
 
 # ---------------- log4cxx ----------------

@@ -44,7 +44,6 @@ target_link_libraries(kbcmd PRIVATE python_interface)
 target_link_options(kbcmd PRIVATE -Wl,-export-dynamic)
 
 # ---------------- OpenSSL ----------------
-include(${CMAKE_SOURCE_DIR}/cmakefile/OpenSSL.cmake)
 target_link_libraries(kbcmd PRIVATE OpenSSL::SSL)
 
 

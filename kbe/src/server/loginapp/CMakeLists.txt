@@ -37,7 +37,6 @@ target_link_libraries(loginapp PRIVATE python_interface)
 target_link_options(loginapp PRIVATE -Wl,-export-dynamic)
 
 # ---------------- OpenSSL ----------------
-include(${CMAKE_SOURCE_DIR}/cmakefile/OpenSSL.cmake)
 target_link_libraries(loginapp PRIVATE OpenSSL::SSL)
 
 

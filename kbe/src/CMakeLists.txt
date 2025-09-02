@@ -54,7 +54,7 @@ include_directories(
 )
 
 
-
+include(${CMAKE_SOURCE_DIR}/cmakefile/OpenSSL.cmake)
 
 # vcpkg 包
 
@@ -71,6 +71,7 @@ add_compile_definitions(USE_JEMALLOC)
 
 
 find_package(fmt CONFIG REQUIRED)
+find_package(CURL REQUIRED)
 find_package(EXPAT  REQUIRED COMPONENTS core)
 
 find_package(log4cxx CONFIG REQUIRED)
@@ -102,14 +103,14 @@ add_compile_definitions(
 
 
 # 关闭 curl 的一些不必要的组件
-set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared libraries")
-set(BUILD_CURL_EXE OFF CACHE BOOL "Disable curl executable")
-set(BUILD_TESTING OFF CACHE BOOL "Disable curl tests")
-set(ENABLE_MANUAL OFF CACHE BOOL "Disable curl manual")
-set(CURL_DISABLE_MANUAL ON CACHE BOOL "Disable curl man page")
-set(BUILD_DOC OFF CACHE BOOL "Disable curl documentation")
+# set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared libraries")
+# set(BUILD_CURL_EXE OFF CACHE BOOL "Disable curl executable")
+# set(BUILD_TESTING OFF CACHE BOOL "Disable curl tests")
+# set(ENABLE_MANUAL OFF CACHE BOOL "Disable curl manual")
+# set(CURL_DISABLE_MANUAL ON CACHE BOOL "Disable curl man page")
+# set(BUILD_DOC OFF CACHE BOOL "Disable curl documentation")
 
-add_subdirectory(lib/dependencies/curl)
+# add_subdirectory(lib/dependencies/curl)
 add_subdirectory(lib/dependencies/g3dlite)
 add_subdirectory(lib/dependencies/jwsmtp/jwsmtp/jwsmtp)
 add_subdirectory(lib/dependencies/sigar/linux)
