@@ -28,9 +28,9 @@ echo =========================================
 echo.
 
 
-@REM if %~1==help (
-@REM     goto showHelp
-@REM )
+if %~1==help (
+    exit /b 0
+)
 
 if not "%~1"=="" (
     if "%~1" == "Debug" (
