@@ -135,7 +135,9 @@
     <ClCompile Include="turn_controller.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-
+    <ClCompile Include="..\..\lib\dependencies\vsopenssl\include\openssl\applink.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="space_viewer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

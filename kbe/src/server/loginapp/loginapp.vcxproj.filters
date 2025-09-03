@@ -33,6 +33,9 @@
     <ClCompile Include="profile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\lib\dependencies\vsopenssl\include\openssl\applink.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="clientsdk_downloader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

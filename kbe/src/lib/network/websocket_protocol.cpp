@@ -8,15 +8,15 @@
 #include "common/base64.h"
 #include "common/sha1.h"
 
-//#if KBE_PLATFORM == PLATFORM_WIN32
-//#ifdef _DEBUG
-//#pragma comment(lib, "libeay32_d.lib")
-//#pragma comment(lib, "ssleay32_d.lib")
-//#else
-//#pragma comment(lib, "libeay32.lib")
-//#pragma comment(lib, "ssleay32.lib")
-//#endif
-//#endif
+#if KBE_PLATFORM == PLATFORM_WIN32
+#ifdef _DEBUG
+#pragma comment(lib, "libeay32_d.lib")
+#pragma comment(lib, "ssleay32_d.lib")
+#else
+#pragma comment(lib, "libeay32.lib")
+#pragma comment(lib, "ssleay32.lib")
+#endif
+#endif
 
 namespace KBEngine{
 namespace Network{
