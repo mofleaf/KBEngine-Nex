@@ -32,6 +32,7 @@ logs/
 /kbe/src/lib/pythonBuild/pythonBuild
 /kbe/src/lib/pythonBuild/x64
 /kbe/src/server/init/x64
+/kbe/src/server/init/KBEMain
 
 # -------------[ OS generated ]------------------------ #
 .DS_Store

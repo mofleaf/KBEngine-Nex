@@ -178,24 +178,53 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PreBuildEvent>
-      <Command>call "..\python\PCbuild\build.bat" -c Release</Command>
+      <Command>
+      </Command>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>copy /Y "..\python\PCbuild\amd64\python313.lib" "..\..\libs"
-copy /Y "..\python\PCbuild\amd64\python313.exp" "..\..\libs"
+      <Command>if exist "..\..\lib\python\PCbuild\amd64\pyconfig.h" (
 
-copy /Y "..\python\PCbuild\amd64\python313.dll" "..\..\..\bin\server"
-copy /Y "..\python\PCbuild\amd64\python313.ilk" "..\..\..\bin\server"
-copy /Y "..\python\PCbuild\amd64\python313.pdb" "..\..\..\bin\server"
+    if exist "..\..\lib\python\Include\pyconfig.h" (
+        echo [INFO] 已找到 Include\pyconfig.h，无需复制，跳过。
+    ) else (
+        echo [INFO] 找到 PCbuild\amd64\pyconfig.h，正在复制文件...
 
-copy /Y "..\python\PCbuild\amd64\vcruntime140.dll" "..\..\..\bin\server"
-copy /Y "..\python\PCbuild\amd64\vcruntime140_1.dll" "..\..\..\bin\server"
+        copy /Y "..\..\lib\python\PCbuild\amd64\python313.lib" "..\..\libs"
+        copy /Y "..\..\lib\python\PCbuild\amd64\python313.exp" "..\..\libs"
 
-xcopy "..\python\Lib" "..\..\..\res\scripts\common\Lib" /Y /i /e
-xcopy "..\python\PCbuild\amd64" "..\..\..\res\scripts\common\DLLs" /Y /i /e
+        copy /Y "..\..\lib\python\PCbuild\amd64\python313.dll" "..\..\..\bin\server"
+        copy /Y "..\..\lib\python\PCbuild\amd64\python313.ilk" "..\..\..\bin\server"
+        copy /Y "..\..\lib\python\PCbuild\amd64\python313.pdb" "..\..\..\bin\server"
 
-copy /Y "..\python\PCbuild\amd64\pyconfig.h" "..\python\Include"</Command>
+        copy /Y "..\..\lib\python\PCbuild\amd64\vcruntime140.dll" "..\..\..\bin\server"
+        copy /Y "..\..\lib\python\PCbuild\amd64\vcruntime140_1.dll" "..\..\..\bin\server"
+
+        xcopy "..\..\lib\python\Lib" "..\..\..\res\scripts\common\Lib" /Y /i /e
+        xcopy "..\..\lib\python\PCbuild\amd64" "..\..\..\res\scripts\common\DLLs" /Y /i /e
+
+        copy /Y "..\..\lib\python\PCbuild\amd64\pyconfig.h" "..\..\lib\python\Include"
+
+        echo [INFO] Python 文件复制完成。
+    )
+) else (
+    echo [ERROR] Python 构建失败，未找到 pyconfig.h！
+    exit /b 1
+)
+</Command>
     </PostBuildEvent>
+    <PreLinkEvent>
+      <Command>if not exist "..\..\lib\python\Include\pyconfig.h" (
+    echo [INFO] 未找到 pyconfig.h，正在构建 Python...
+    call "..\..\lib\python\PCbuild\build.bat" -c Release
+    if errorlevel 1 (
+        echo [ERROR] Python 构建失败！
+        exit /b 1
+    )
+) else (
+    echo [INFO] 已找到 pyconfig.h，跳过 Python 构建。
+)
+</Command>
+    </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
   </ItemGroup>
