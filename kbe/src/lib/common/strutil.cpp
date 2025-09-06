@@ -99,7 +99,6 @@ namespace strutil {
 		return kbe_ltrim(kbe_rtrim(s));
 	}
 
-	// 字符串替换
 	int kbe_replace(std::string& str,  const std::string& pattern,  const std::string& newpat) 
 	{ 
 		int count = 0; 
@@ -191,24 +190,60 @@ namespace strutil {
 		}
 	};
 
+	// wchar_t* char2wchar(const char* cs, size_t* outlen)
+	// {
+	// 	int len = (int)((strlen(cs) + 1) * sizeof(wchar_t));
+	// 	wchar_t* ccattr =(wchar_t *)malloc(len);
+	// 	memset(ccattr, 0, len);
+
+	// 	size_t slen = mbstowcs(ccattr, cs, len);
+
+	// 	if (outlen)
+	// 	{
+	// 		if ((size_t)-1 != slen)
+	// 			*outlen = slen;
+	// 		else
+	// 			*outlen = 0;
+	// 	}
+		
+	// 	return ccattr;
+	// };
+
+
+
+	// 修复g++ 13 下，溢出的问题
+	// 目前测试下来Ubuntu 24会报 *** buffer overflow detected ***: terminated
 	wchar_t* char2wchar(const char* cs, size_t* outlen)
 	{
-		int len = (int)((strlen(cs) + 1) * sizeof(wchar_t));
-		wchar_t* ccattr =(wchar_t *)malloc(len);
-		memset(ccattr, 0, len);
+		if (!cs) return nullptr;
 
-		size_t slen = mbstowcs(ccattr, cs, len);
+		// 字符串长度（字节）
+		size_t csl = strlen(cs);
 
-		if (outlen)
-		{
-			if ((size_t)-1 != slen)
+		// wchar_t 个数 = 字符数 + 1（\0）
+		size_t wlen = csl + 1;
+
+		// 分配空间：按 wchar_t 数组大小
+		wchar_t* ccattr = (wchar_t*)malloc(wlen * sizeof(wchar_t));
+		if (!ccattr) {
+			if (outlen) *outlen = 0;
+			return nullptr;
+		}
+		memset(ccattr, 0, wlen * sizeof(wchar_t));
+
+		// mbstowcs 的第三个参数是 wchar_t 个数（不是字节数）
+		size_t slen = mbstowcs(ccattr, cs, wlen);
+
+		if (outlen) {
+			if (slen != (size_t)-1)
 				*outlen = slen;
 			else
 				*outlen = 0;
 		}
-		
+
 		return ccattr;
-	};
+	}
+
 
 	/*
 	int wchar2utf8(const wchar_t* in, int in_len, char* out, int out_max)   
