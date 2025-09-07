@@ -90,6 +90,22 @@ if ! command -v cmake >/dev/null 2>&1; then
     sudo apt-get install -y cmake
 fi
 
+
+
+if ! command -v pkg-config >/dev/null 2>&1; then
+    echo ">>> 安装 pkg-config"
+    sudo apt-get update
+    sudo apt-get install -y pkg-config
+fi
+
+
+
+if ! command -v build-essential >/dev/null 2>&1; then
+    echo ">>> 安装 build-essential"
+    sudo apt-get update
+    sudo apt-get install -y build-essential
+fi
+
 # ------------------------------
 # 9. vcpkg
 # ------------------------------
