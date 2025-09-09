@@ -56,43 +56,56 @@ if "%~1"=="help" exit /b 0
 
 
 
+
 REM =========================================
-REM 1. 检测 vcpkg
+REM 1. 检测 vcpkg (修改版)
 REM =========================================
 echo.
 echo [检测] 正在查找 vcpkg...
 
 set "VCPKG_EXE="
+
+REM 1) 优先使用传入参数
 if defined VCPKG_PATH (
     set "VCPKG_EXE=%VCPKG_PATH%\vcpkg.exe"
-) else (
-    where vcpkg >nul 2>nul
-    if %errorlevel%==0 (
-        for /f "delims=" %%i in ('where vcpkg') do set "VCPKG_EXE=%%i"
+    if not exist "%VCPKG_EXE%" (
+        echo [错误] vcpkgPath 指定的路径无效: %VCPKG_PATH%
+        exit /b 1
     )
-)
+) else (
+    REM 2) 在常用安装目录中查找 kbe-vcpkg
+    if exist "%USERPROFILE%\AppData\Local\kbe-vcpkg\vcpkg.exe" (
+        set "VCPKG_EXE=%USERPROFILE%\AppData\Local\kbe-vcpkg\vcpkg.exe"
+        set "VCPKG_PATH=%USERPROFILE%\AppData\Local\kbe-vcpkg"
+        goto :found_vcpkg
+    )
 
-if not defined VCPKG_EXE (
-    echo [提示] 未检测到 vcpkg
-    set /p "choice=是否自动下载安装 vcpkg? (y/n): "
+    REM 3) 如果没有，提示并安装到默认目录
+    echo.
+    echo [提示] 未检测到 kbe-vcpkg
+    set /p "choice=是否自动下载安装 vcpkg 到 %USERPROFILE%\AppData\Local\kbe-vcpkg? (y/n): "
     if /i "!choice!"=="y" (
         echo [下载] 开始下载安装 vcpkg...
-        git clone https://github.com/microsoft/vcpkg "%PROJECT_ROOT%\vcpkg"
+        set "VCPKG_PATH=%USERPROFILE%\AppData\Local\kbe-vcpkg"
+        echo VCPKG_PATH=!VCPKG_PATH!
+        git clone https://github.com/microsoft/vcpkg "!VCPKG_PATH!"
         if errorlevel 1 (
             echo [错误] vcpkg 下载失败
             exit /b 1
         )
-        set "VCPKG_EXE=%PROJECT_ROOT%\vcpkg\vcpkg.exe"
-        call "%PROJECT_ROOT%\vcpkg\bootstrap-vcpkg.bat"
+        set "VCPKG_EXE=!VCPKG_PATH!\vcpkg.exe"
+        call "!VCPKG_PATH!\bootstrap-vcpkg.bat"
     ) else (
         echo [退出] 用户取消安装 vcpkg
         exit /b 1
     )
 )
 
+:found_vcpkg
 echo [找到] vcpkg 路径: %VCPKG_EXE%
 echo [执行] vcpkg integrate install ...
 "%VCPKG_EXE%" integrate install
+
 
 
 
