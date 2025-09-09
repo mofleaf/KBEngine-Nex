@@ -1,6 +1,19 @@
 #!/usr/bin/env bash
 set -e
 
+
+# =========================================
+# 检查 GitHub 网络可访问性
+# =========================================
+echo "[检测] 尝试访问 GitHub 仓库..."
+if ! git ls-remote https://github.com/microsoft/vcpkg.git &>/dev/null; then
+    echo "[错误] 无法访问 GitHub 仓库！"
+    echo "       可能是网络问题或需要代理，请自行解决网络问题后再运行脚本。"
+    exit 1
+fi
+echo "[成功] GitHub 仓库可访问"
+
+
 # ==============================
 # 安装 KBEngine-Nex 脚本
 # ==============================

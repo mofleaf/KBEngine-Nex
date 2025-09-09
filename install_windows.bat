@@ -2,6 +2,32 @@
 chcp 65001 >nul
 setlocal enabledelayedexpansion
 
+
+
+REM =========================================
+REM 检查 GitHub 网络可访问性 (Git clone 测试)
+REM =========================================
+echo [检测] 尝试访问 GitHub ...
+set "TMP_TEST_DIR=%TEMP%\gh_test"
+if exist "%TMP_TEST_DIR%" rd /s /q "%TMP_TEST_DIR%"
+mkdir "%TMP_TEST_DIR%"
+
+git ls-remote https://github.com/microsoft/vcpkg.git >nul 2>nul
+if errorlevel 1 (
+    echo [错误] 无法访问 GitHub 仓库！
+    echo        可能是网络问题或需要代理，请自行解决网络问题后再运行脚本。
+    rd /s /q "%TMP_TEST_DIR%" >nul 2>nul
+    pause
+    exit /b 1
+)
+
+rd /s /q "%TMP_TEST_DIR%" >nul 2>nul
+echo [成功] GitHub 仓库可访问
+
+
+
+
+
 REM =========================================
 REM 默认参数
 REM =========================================
