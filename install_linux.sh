@@ -64,11 +64,11 @@ fi
 # ------------------------------
 # 6. libmysqlclient-dev
 # ------------------------------
-# if ! dpkg -s libmysqlclient-dev >/dev/null 2>&1; then
-#     echo ">>> 安装 libmysqlclient-dev"
-#     sudo apt-get update
-#     sudo apt-get install -y libmysqlclient-dev
-# fi
+if ! dpkg -s libmysqlclient-dev >/dev/null 2>&1; then
+    echo ">>> 安装 libmysqlclient-dev"
+    sudo apt-get update
+    sudo apt-get install -y libmysqlclient-dev
+fi
 
 # ------------------------------
 # 7. curl zip unzip tar
@@ -100,7 +100,7 @@ fi
 
 
 
-if ! command -v build-essential >/dev/null 2>&1; then
+if ! dpkg -s  build-essential >/dev/null 2>&1; then
     echo ">>> 安装 build-essential"
     sudo apt-get update
     sudo apt-get install -y build-essential
