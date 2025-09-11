@@ -45,6 +45,7 @@ struct MYSQL_TABLE_FIELD
 {
 	std::string name;
 	int32 length;
+	int32 char_length;
 	uint64 maxlength;
 	unsigned int flags;
 	enum_field_types type;
