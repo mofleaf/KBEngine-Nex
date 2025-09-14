@@ -1055,7 +1055,8 @@ void Entity::onLoseCell(Network::Channel* pChannel, MemoryStream& s)
 		return;
 	
 	SCOPED_PROFILE(SCRIPTCALL_PROFILE);
-
+	
+	Py_INCREF(this);
 	S_RELEASE(cellEntityCall_);
 
 	isArchiveing_ = false;
@@ -1063,6 +1064,7 @@ void Entity::onLoseCell(Network::Channel* pChannel, MemoryStream& s)
 	createdSpace_ = false;
 	
 	CALL_COMPONENTS_AND_ENTITY_METHOD(this, SCRIPT_OBJECT_CALL_ARGS0(pyTempObj, const_cast<char*>("onLoseCell"), GETERR));
+	
 
 	if (!isDestroyed() && hasFlags(ENTITY_FLAGS_DESTROY_AFTER_GETCELL))
 	{
@@ -1071,6 +1073,9 @@ void Entity::onLoseCell(Network::Channel* pChannel, MemoryStream& s)
 
 		destroy();
 	}
+
+
+	Py_DECREF(this);
 }
 
 //-------------------------------------------------------------------------------------

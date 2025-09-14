@@ -840,7 +840,7 @@ PropertyDescription* EntityDef::addComponentProperty(ENTITY_PROPERTY_UID utype,
 		componentName, flags, isPersistent,
 		pEntityComponentType, isIdentifier, indexType,
 		databaseLength, defaultStr,
-		detailLevel);
+		detailLevel,"");
 
 	bool ret = true;
 
@@ -1121,6 +1121,7 @@ bool EntityDef::loadDefPropertys(const std::string& moduleName,
 			std::string					strIdentifierNode;
 			std::string					defaultStr;
 			std::string					name = "";
+			std::string					descriptionStr = "";
 
 			name = xml->getKey(defPropertyNode);
 			if(!validDefPropertyName(name))
@@ -1267,6 +1268,16 @@ bool EntityDef::loadDefPropertys(const std::string& moduleName,
 				else
 					detailLevel = DETAIL_LEVEL_FAR;
 			}
+
+
+
+			TiXmlNode* descriptionNode = xml->enterNode(defPropertyNode->FirstChild(), "Description");
+			if (descriptionNode) {
+				//descriptionStr = xml->getValStr(descriptionNode);
+				descriptionStr = strutil::kbe_unicodeTrim(descriptionNode->ToText()->Value());
+				//descriptionStr = descriptionNode->ToText()->Value();
+
+			}
 			
 			TiXmlNode* utypeValNode = 
 				xml->enterNode(defPropertyNode->FirstChild(), "Utype");
@@ -1279,7 +1290,7 @@ bool EntityDef::loadDefPropertys(const std::string& moduleName,
 															name, flags, isPersistent, 
 															dataType, isIdentifier, indexType,
 															databaseLength, defaultStr, 
-															detailLevel);
+															detailLevel, descriptionStr);
 
 			bool ret = true;
 

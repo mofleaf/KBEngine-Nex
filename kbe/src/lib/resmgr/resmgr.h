@@ -109,6 +109,12 @@ public:
 	*/
 	std::string getPyUserAssetsPath();
 
+
+	/**
+		判断是否为Nex项目
+	*/
+	bool isKBEngineNexAssets();
+
 	ResourceObjectPtr openResource(const char* res, const char* model, 
 		uint32 flags = RESOURCE_NORMAL);
 

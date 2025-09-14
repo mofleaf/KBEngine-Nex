@@ -1,0 +1,29 @@
+{
+  "name": "kbengine-nex",
+  "version": "2.6.3",
+  "dependencies": [
+    "fmt",
+    "log4cxx",
+    "zlib",
+    "hiredis",
+    "expat",
+    "apr",
+    "apr-util",
+    "curl",
+    {
+      "name": "jemalloc",
+      "platform": "!windows"
+    }
+  ],
+  "overrides": [
+    {
+      "name": "fmt",
+      "version": "9.1.0"
+    },
+    {
+      "name": "log4cxx",
+      "version": "1.5.0"
+    }
+  ],
+  "builtin-baseline": "6ecbbbdf31cba47aafa7cf6189b1e73e10ac61f8"
+}

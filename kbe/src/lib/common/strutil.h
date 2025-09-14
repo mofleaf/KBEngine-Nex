@@ -58,6 +58,7 @@ namespace strutil {
 	std::string &kbe_ltrim(std::string &s);
 	std::string &kbe_rtrim(std::string &s);
 	std::string kbe_trim(std::string s);
+	std::string kbe_unicodeTrim(const std::string& s);
 
 	int kbe_replace(std::string& str,  const std::string& pattern,  const std::string& newpat);
 	int kbe_replace(std::wstring& str,  const std::wstring& pattern,  const std::wstring& newpat);

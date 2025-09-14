@@ -62,6 +62,131 @@ KBEngine Nex 是在KBEngine 2.5.12 的基础上社区继续维护的版本
 - **快速开发游戏**：只需要使用Python就可以快速的进行设计游戏。 底层安全可靠，保证效率。
 
 
+---
+
+
+## 测试平台
+
+| 平台    | 系统版本          | 环境                      | 引擎版本 |
+| ------- | ----------------- | ------------------------- | -------- |
+| ubuntu  | 24.04.3           | g++ 13 <br> openssl3.x    | Nex 2.6.3    |
+| ubuntu  | 22.04.5           | g++ 9 <br> openssl1.1.x   | Nex 2.6.3    |
+| Windows | 专业版 22621.4317 | msbuild <br> openssl1.0.x | Nex 2.6.3    |
+
+
+---
+
+## 安装
+
+**注意：VCPKG强依赖于Github，需要网络支持，请自行解决网络问题！**
+
+### 1. 安装 Git
+
+**作用**：Git 是分布式版本控制工具，用于从 GitHub 拉取 KBEngine-Nex 的源代码以及vcpkg依赖支持。
+
+**安装步骤**：
+
+##### Windows：
+```
+# 下载 Git 安装程序
+https://git-scm.com/download/win
+
+# 安装完成后验证
+git --version
+```
+
+##### Linux：
+```
+sudo apt install git #Ubuntu
+```
+
+
+### 2. 安装 vcpkg（可选）
+
+**作用**：vcpkg 是 C++ 包管理工具，用于安装 KBEngine-Nex 所需的依赖库（如 OpenSSL 等）。
+
+**提示**：如果本机不安装vcpkg，则脚本会自动安装vcpkg到用户根目录。
+
+**安装步骤**：
+
+```
+# 克隆 vcpkg 仓库
+git clone https://github.com/microsoft/vcpkg.git
+
+# 进入 vcpkg 目录
+cd vcpkg
+
+# 编译 vcpkg
+.\bootstrap-vcpkg.bat #Windows
+.\bootstrap-vcpkg.sh #Linux
+```
+
+
+### 3. 执行编译脚本 `install_*.bat/sh`
+
+**作用**：自动编译 KBEngine-Nex 服务端和工具。
+
+**使用方法**：
+
+``` CMD
+install_windows.bat [CONFIG] [VCPKGPATH]
+```
+
+``` sh
+# Linux 下不支持设置vcpkg路径，脚本会自动安装vcpkg到~/kbe-vcpkg中
+install_linux.sh [CONFIG]
+```
+
+**参数说明**：
+
+| 参数       | 说明                               | 默认值 |
+| ---------- | ---------------------------------- | ------ |
+| CONFIG     | 指定编译配置，`Debug` 或 `Release` | Debug  |
+| VCPKGPATH  | 指定 vcpkg 安装路径                | 可选   |
+| GUICONSOLE | 安装 GUI 控制台工具                | 可选   |
+
+**示例**：
+
+##### Windows：
+```CMD
+# 使用默认 Debug 配置
+install_windows.bat
+
+# 指定 Release 配置并指定 vcpkg 路径
+install_windows.bat Release D:\Tools\vcpkg
+
+# 编译并安装 GUICONSOLE
+install_windows.bat Debug D:\Tools\vcpkg GUICONSOLE
+
+# 所有示例
+install_windows.bat Debug
+install_windows.bat Debug "VCPKGPATH"
+install_windows.bat Debug "" GUICONSOLE
+install_windows.bat Release
+install_windows.bat Release "VCPKGPATH"
+install_windows.bat Release  "" GUICONSOLE
+```
+
+
+##### Linux：
+```sh
+# 使用默认 Release 配置
+install_linux.sh
+
+# 指定Debug
+# Linux下支持 Release、Debug、Hybrid、Evaluation
+install_linux.sh Debug
+
+
+# 所有示例
+install_linux.sh Debug
+install_linux.sh Release
+install_linux.sh Hybrid
+install_linux.sh Evaluation
+```
+
+---
+
 ## 支持的引擎
 
 <span height="20">&nbsp;</span>
@@ -81,14 +206,16 @@ KBEngine Nex 是在KBEngine 2.5.12 的基础上社区继续维护的版本
 	<a href="https://godotengine.org/" target="_blank"><img src="https://raw.githubusercontent.com/KBEngineLab/KBEngineNexMaterials/938f6a964c299176995384985cde18fb88accb5c/images/third_party_logo/godot-logo.svg" alt="Godot" height="30"></a>
 </div>
 
-
 ## Demo
 
-	Unity		: https://github.com/KBEngineLab/demo_kbengine_unity3d_default
-	UE5		: https://github.com/KBEngineLab/demo_kbengine_ue5_default
-	CocosCreator	: https://github.com/KBEngineLab/demo_kbengine_cocos_creator_default
-	Godot		: https://github.com/KBEngineLab/demo_kbengine_godot_default
-	UE4		: https://github.com/kbengine/kbengine_ue4_demo
+| 平台         | 链接                                                               |
+| ------------ | ------------------------------------------------------------------ |
+| Unity        | https://github.com/KBEngineLab/demo_kbengine_unity3d_default       |
+| UE5          | https://github.com/KBEngineLab/demo_kbengine_ue5_default           |
+| CocosCreator | https://github.com/KBEngineLab/demo_kbengine_cocos_creator_default |
+| Godot        | https://github.com/KBEngineLab/demo_kbengine_godot_default         |
+
+
 	
 <!-- Cocos2d_js	: https://github.com/kbengine/kbengine_cocos2d_js_demo -->
 <!-- Godot Engine	: https://github.com/krogank9/kbe_godot_demo -->

@@ -134,7 +134,7 @@ const char ENTITY_LIMITED_PROPERTYS[][34] =
 	"client",
 	"cellData",
 	"className",
-	"component"
+	"component",
 	"databaseID",
 	"isDestroyed",
 	"shouldAutoArchive",
@@ -152,7 +152,7 @@ const char ENTITY_LIMITED_PROPERTYS[][34] =
 	"otherClients",
 	"topSpeed",
 	"topSpeedY",
-	"interface"
+	"interface",
 	"",
 };
 

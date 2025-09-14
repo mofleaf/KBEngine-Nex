@@ -2635,7 +2635,7 @@ static bool registerDefPropertys(ScriptDefModule* pScriptModule, DefContext& def
 			name, flags, isPersistent,
 			dataType, isIdentifier, indexType,
 			databaseLength, defPropContext.propertyDefaultVal,
-			detailLevel);
+			detailLevel,"");
 
 		bool ret = true;
 

@@ -715,6 +715,21 @@ void DBInterfaceMysql::getFields(TABLE_FIELDS& outs, const char* tableName)
 		info.maxlength = fields[i].max_length;
 		info.flags = fields[i].flags;
 		info.type = fields[i].type;
+
+
+		MYSQL_FIELD* field = &fields[i];
+
+		// 拿到 charset 编号
+		unsigned int csid = field->charsetnr;
+
+		// 根据编号查询字符集信息
+		MY_CHARSET_INFO cs;
+		mysql_get_character_set_info(mysql(), &cs);
+
+		// 计算字符数 = 字节长度 / 最大字节数
+		unsigned int char_len = field->length / cs.mbmaxlen;
+
+		info.char_length = char_len;
 	}
 
 	mysql_free_result(result);

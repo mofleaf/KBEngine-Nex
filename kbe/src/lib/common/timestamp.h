@@ -30,15 +30,28 @@ namespace KBEngine {
 
 #if KBE_PLATFORM == PLATFORM_UNIX
 
-	inline uint64 timestamp_rdtsc()
+	// 支持ARM 
+	inline uint64_t timestamp_rdtsc()
 	{
-		uint32 rethi, retlo;
+	#if defined(__x86_64__) || defined(__i386__)
+		// x86/x64 原 rdtsc
+		uint32_t hi, lo;
 		__asm__ __volatile__(
-			"rdtsc":
-		"=d"    (rethi),
-			"=a"    (retlo)
-			);
-		return uint64(rethi) << 32 | retlo;
+			"rdtsc"
+			: "=d"(hi), "=a"(lo)
+		);
+		return (uint64_t(hi) << 32) | lo;
+
+	#elif defined(__aarch64__)
+		// ARM64 使用虚拟计数器
+		uint64_t cnt;
+		asm volatile("mrs %0, cntvct_el0" : "=r"(cnt));
+		return cnt;
+
+	#else
+		// 其他平台 fallback
+		return std::chrono::high_resolution_clock::now().time_since_epoch().count();
+	#endif
 	}
 
 	// 使用 gettimeofday. 测试大概比RDTSC20倍-600倍。

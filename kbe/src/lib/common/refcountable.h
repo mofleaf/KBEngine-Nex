@@ -130,12 +130,28 @@ class SafeRefCountable
 public:
 	inline void incRef(void) const
 	{
+	#if defined(__x86_64__) || defined(__i386__)
 		__asm__ volatile (
 			"lock addl $1, %0"
-			:						// no output
-			: "m"	(this->refCount_) 	// input: this->count_
-			: "memory" 				// clobbers memory
+			:
+			: "m"(this->refCount_)
+			: "memory"
 		);
+	#elif defined(__aarch64__)
+		uint32_t tmp;
+		uint32_t status;
+		asm volatile(
+			"1: ldaxr %w0, [%2]\n"   // 从内存加载到 tmp
+			"   add %w0, %w0, #1\n"   // tmp = tmp + 1
+			"   stlxr %w1, %w0, [%2]\n" // 尝试存储，status 表示成功与否
+			"   cbnz %w1, 1b\n"        // 如果失败，重试
+			: "=&r"(tmp), "=&r"(status)
+			: "r"(&this->refCount_)
+			: "memory"
+		);
+	#else
+		refCount_++;  // fallback, 非线程安全
+	#endif
 	}
 
 	inline void decRef(void) const
@@ -181,15 +197,36 @@ private:
 	 */
 	inline int intDecRef() const
 	{
+	#if defined(__x86_64__) || defined(__i386__)
 		int ret;
 		__asm__ volatile (
-			"mov $-1, %0  \n\t"
+			"mov $-1, %0      \n\t"
 			"lock xadd %0, %1"
-			: "=&a"	(ret)				// output only and early clobber
-			: "m"	(this->refCount_)		// input (memory)
+			: "=&a"(ret)                  // output only and early clobber
+			: "m"(this->refCount_)        // input (memory)
 			: "memory"
 		);
 		return ret;
+
+	#elif defined(__aarch64__)
+		int old, tmp, res;
+		asm volatile(
+			"1: ldaxr %w0, [%3]\n"   // old = *refCount_
+			"   sub %w1, %w0, #1\n"  // tmp = old - 1
+			"   stlxr %w2, %w1, [%3]\n" // res = store success?
+			"   cbnz %w2, 1b\n"      // retry if failed
+			: "=&r"(old), "=&r"(tmp), "=&r"(res)
+			: "r"(&this->refCount_)
+			: "memory"
+		);
+		return old;
+
+	#else
+		// fallback，非线程安全
+		int old = this->refCount_;
+		this->refCount_--;
+		return old;
+	#endif
 	}
 };
 #endif
