@@ -50,20 +50,6 @@ update_pkg_index() {
 update_pkg_index
 
 
-# =========================================
-# GitHub 可访问性检查
-# =========================================
-echo "[检测] 尝试访问 GitHub 仓库..."
-if ! command -v git >/dev/null 2>&1; then
-    echo "[WARN] 未安装 git，稍后会自动安装"
-fi
-
-if ! git ls-remote https://github.com/microsoft/vcpkg.git >/dev/null 2>&1; then
-    echo "[ERROR] 无法访问 GitHub 仓库，请确保网络或代理可用"
-    exit 1
-fi
-echo "[成功] GitHub 仓库可访问"
-
 
 install_dep() {
     NAME="$1"
@@ -104,16 +90,24 @@ install_dep "Autoconf" autoconf
 install_dep "Libtool" libtool-bin libtool
 install_dep "CMake" cmake
 install_dep "pkg-config" pkg-config pkgconf-pkg-config pkgconf
-install_dep "Build Tools" build-essential "@development-tools" base-devel
+install_dep "Build Tools" build-essential "@development-tools" base-devel base-devel "Development Tools"
 install_dep "curl" curl
 install_dep "zip" zip
 install_dep "unzip" unzip
 install_dep "tar" tar
 
+# 检测是否是基于 RedHat 的系统
+if [ -f /etc/redhat-release ] || grep -qiE "centos|fedora|red hat" /etc/os-release; then
+    install_dep "perl-IPC-Cmd" perl-IPC-Cmd
+else
+    echo "[INFO] 非 CentOS/RHEL/Fedora 系统，跳过 perl-IPC-Cmd 安装"
+fi
+
+
 # =========================================
 # 额外依赖
 # =========================================
-install_dep "TIRPC" libtirpc-dev libtirpc-devel libtirpc
+install_dep "TIRPC" libtirpc-dev libtirpc-devel
 install_dep "MySQL/MariaDB" \
     libmysqlclient-dev libmariadb-dev \
     mariadb-devel mysql-devel mariadb-connector-c-devel \
@@ -126,6 +120,25 @@ install_dep "BZip2" libbz2-dev bzip2-devel libbz2-devel bzip2
 install_dep "OpenSSL" libssl-dev openssl-devel openssl-dev
 install_dep "Zlib" zlib1g-dev zlib-devel zlib-dev
 install_dep "CURL Dev" libcurl4-openssl-dev libcurl-devel curl-dev
+
+
+
+
+# =========================================
+# GitHub 可访问性检查
+# =========================================
+echo "[检测] 尝试访问 GitHub 仓库..."
+if ! command -v git >/dev/null 2>&1; then
+    echo "[WARN] 未安装 git，稍后会自动安装"
+fi
+
+if ! git ls-remote https://github.com/microsoft/vcpkg.git >/dev/null 2>&1; then
+    echo "[ERROR] 无法访问 GitHub 仓库，请确保网络或代理可用"
+    exit 1
+fi
+echo "[成功] GitHub 仓库可访问"
+
+
 
 # =========================================
 # vcpkg 安装

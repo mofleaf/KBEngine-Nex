@@ -46,13 +46,24 @@ endif()
 target_include_directories(sigar PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 
-# 找到 libtirpc
-find_path(TIRPC_INCLUDE_DIR NAMES rpc/rpc.h PATHS /usr/include/tirpc)
-find_library(TIRPC_LIB NAMES tirpc PATHS /usr/lib /usr/lib/x86_64-linux-gnu)
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(TIRPC REQUIRED libtirpc)
 
-if(TIRPC_INCLUDE_DIR AND TIRPC_LIB)
-    target_include_directories(sigar PUBLIC ${TIRPC_INCLUDE_DIR})
-    target_link_libraries(sigar PUBLIC ${TIRPC_LIB})
+if(TIRPC_FOUND)
+    target_include_directories(sigar PUBLIC ${TIRPC_INCLUDE_DIRS})
+    target_link_libraries(sigar PUBLIC ${TIRPC_LIBRARIES})
 else()
-    message(FATAL_ERROR "libtirpc not found. Did you install libtirpc-dev?")
+    message(FATAL_ERROR "libtirpc not found. Please install libtirpc-dev (Debian/Ubuntu) or libtirpc-devel (CentOS/Fedora)")
 endif()
+
+
+# # 找到 libtirpc
+# find_path(TIRPC_INCLUDE_DIR NAMES rpc/rpc.h PATHS /usr/include/tirpc)
+# find_library(TIRPC_LIB NAMES tirpc PATHS /usr/lib /usr/lib/x86_64-linux-gnu)
+
+# if(TIRPC_INCLUDE_DIR AND TIRPC_LIB)
+#     target_include_directories(sigar PUBLIC ${TIRPC_INCLUDE_DIR})
+#     target_link_libraries(sigar PUBLIC ${TIRPC_LIB})
+# else()
+#     message(FATAL_ERROR "libtirpc not found. Did you install libtirpc-dev?")
+# endif()
