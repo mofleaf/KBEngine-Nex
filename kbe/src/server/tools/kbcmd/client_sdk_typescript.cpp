@@ -527,7 +527,7 @@ bool ClientSDKTypeScript::writeEntityCall(ScriptDefModule* pScriptDefModule)
 
 	std::string newModuleName;
 
-	// ÏÈĞ´BaseEntityCall
+	// å…ˆå†™BaseEntityCall
 	if (!writeBaseEntityCallBegin(pScriptDefModule))
 		return false;
 
@@ -626,7 +626,7 @@ bool ClientSDKTypeScript::writeEntityCall(ScriptDefModule* pScriptDefModule)
 	headerfileBody_ += fmt::format("\n");
 	sourcefileBody_ += fmt::format("\n");
 
-	// ÔÙĞ´CellEntityCall
+	// å†å†™CellEntityCall
 	if (!writeCellEntityCallBegin(pScriptDefModule))
 		return false;
 
@@ -1320,7 +1320,7 @@ bool ClientSDKTypeScript::writeEntityCallBegin(ScriptDefModule* pScriptDefModule
 	//sourcefileBody_ += "import * as KBEngine from './KBEngine';\n";
 
 
-	// µ¼Èë×é¼şcall
+	// å¯¼å…¥ç»„ä»¶call
 	if (!pScriptDefModule->isComponentModule())
 	{
 		std::set<std::string> uniqueComponentCallStrings;
@@ -1592,8 +1592,8 @@ bool ClientSDKTypeScript::createArrayChildClass(DataType* pRootDataType, DataTyp
 
 		sourcefileBody_ += fmt::format("\tprivate itemType = new DATATYPE_{}();\n\n", pDataType->aliasName());
 
-		// Èç¹ûÊÇ·ÇÄäÃûµÄÊı×é£¬ÔòµÚÒ»²ã½âÎöÓ¦¸ÃÖ±½ÓÉèÖÃÎªÓĞÃû×ÖµÄÀà±ğ
-		// ·ñÔòÉèÖÃÎªÏµÍ³ListÀà±ğ
+		// å¦‚æœæ˜¯éåŒ¿åçš„æ•°ç»„ï¼Œåˆ™ç¬¬ä¸€å±‚è§£æåº”è¯¥ç›´æ¥è®¾ç½®ä¸ºæœ‰åå­—çš„ç±»åˆ«
+		// å¦åˆ™è®¾ç½®ä¸ºç³»ç»ŸListç±»åˆ«
 		if (numLayer == 1)
 		{
 			if (strlen(pRootDataType->aliasName()) == 0 || pRootDataType->aliasName()[0] == '_')
@@ -1661,8 +1661,8 @@ bool ClientSDKTypeScript::createArrayChildClass(DataType* pRootDataType, DataTyp
 
 		std::string classNameStr = typeName;
 
-		// Èç¹ûÊÇ·ÇÄäÃûµÄÊı×é£¬ÔòµÚÒ»²ã½âÎöÓ¦¸ÃÖ±½ÓÉèÖÃÎªÓĞÃû×ÖµÄÀà±ğ
-		// ·ñÔòÉèÖÃÎªÏµÍ³ListÀà±ğ
+		// å¦‚æœæ˜¯éåŒ¿åçš„æ•°ç»„ï¼Œåˆ™ç¬¬ä¸€å±‚è§£æåº”è¯¥ç›´æ¥è®¾ç½®ä¸ºæœ‰åå­—çš„ç±»åˆ«
+		// å¦åˆ™è®¾ç½®ä¸ºç³»ç»ŸListç±»åˆ«
 		if (numLayer == 1)
 		{
 			if (strlen(pRootDataType->aliasName()) == 0 || pRootDataType->aliasName()[0] == '_')
@@ -1820,7 +1820,7 @@ bool ClientSDKTypeScript::writeCustomDataType(const DataType* pDataType)
 
 		FixedDictType* dictdatatype = const_cast<FixedDictType*>(static_cast<const FixedDictType*>(pDataType));
 
-		// ÏÈ´´½¨ÊôĞÔ
+		// å…ˆåˆ›å»ºå±æ€§
 		{
 			FixedDictType::FIXEDDICT_KEYTYPE_MAP& keys = dictdatatype->getKeyTypes();
 			FixedDictType::FIXEDDICT_KEYTYPE_MAP::const_iterator keyiter = keys.begin();
@@ -1863,7 +1863,7 @@ bool ClientSDKTypeScript::writeCustomDataType(const DataType* pDataType)
 			}
 		}
 
-		// ´´½¨createFromStreamEx·½·¨
+		// åˆ›å»ºcreateFromStreamExæ–¹æ³•
 		{
 			sourcefileBody_ += fmt::format("\tpublic createFromStreamEx(stream: MemoryStream) : {} {{\n", typeName);
 
@@ -1904,7 +1904,7 @@ bool ClientSDKTypeScript::writeCustomDataType(const DataType* pDataType)
 			sourcefileBody_ += fmt::format("\t}}\n\n");
 		}
 
-		// ´´½¨addToStreamEx·½·¨
+		// åˆ›å»ºaddToStreamExæ–¹æ³•
 		{
 			sourcefileBody_ += fmt::format("\tpublic addToStreamEx(stream:Bundle,  v:{}){{\n", typeName);
 
@@ -1946,7 +1946,7 @@ bool ClientSDKTypeScript::writeCustomDataType(const DataType* pDataType)
 
 
 
-		// ´´½¨×ÓÀàÊôĞÔ
+		// åˆ›å»ºå­ç±»å±æ€§
 		{
 			FixedDictType::FIXEDDICT_KEYTYPE_MAP& keys = dictdatatype->getKeyTypes();
 			FixedDictType::FIXEDDICT_KEYTYPE_MAP::const_iterator keyiter = keys.begin();
@@ -2159,7 +2159,7 @@ bool ClientSDKTypeScript::writeEntityDefsModuleInitScript_ScriptModule(ScriptDef
 //-------------------------------------------------------------------------------------
 bool ClientSDKTypeScript::writeEntityDefsModuleInitScript_MethodDescr(ScriptDefModule* pScriptDefModule, MethodDescription* pDescr, COMPONENT_TYPE componentType)
 {
-	// Èç¹ûpDescrÎªNone£¬²¢ÇÒÊÇ¿Í»§¶Ë·½·¨£¬ÄÇÃ´ĞèÒªÇ¿ÖÆÉè¶¨useMethodDescrAliasÎªtrue£¬·ñÔòÄ¬ÈÏÎªfalse½«»á³öÏÖÎÊÌâ
+	// å¦‚æœpDescrä¸ºNoneï¼Œå¹¶ä¸”æ˜¯å®¢æˆ·ç«¯æ–¹æ³•ï¼Œé‚£ä¹ˆéœ€è¦å¼ºåˆ¶è®¾å®šuseMethodDescrAliasä¸ºtrueï¼Œå¦åˆ™é»˜è®¤ä¸ºfalseå°†ä¼šå‡ºç°é—®é¢˜
 	if (!pDescr && componentType == CLIENT_TYPE)
 	{
 		sourcefileBody_ += fmt::format("\t\tp{}Module.useMethodDescrAlias = true;\n", pScriptDefModule->getName());
@@ -2195,7 +2195,7 @@ bool ClientSDKTypeScript::writeEntityDefsModuleInitScript_MethodDescr(ScriptDefM
 		if (componentType == CLIENT_TYPE)
 		{
 			sourcefileBody_ += fmt::format("\t\tp{}Module.useMethodDescrAlias = true;\n", pScriptDefModule->getName());
-			sourcefileBody_ += fmt::format("\t\tp{}Module.idmethods[DataTypes.NumberUtil.toUInt16(p{}_{}.aliasID)] = p{}_{}; // ¿ÉÄÜĞèÒª×ª(UInt16)\n\n",
+			sourcefileBody_ += fmt::format("\t\tp{}Module.idmethods[DataTypes.NumberUtil.toUInt16(p{}_{}.aliasID)] = p{}_{}; // å¯èƒ½éœ€è¦è½¬(UInt16)\n\n",
 				pScriptDefModule->getName(), pScriptDefModule->getName(), pDescr->getName(), pScriptDefModule->getName(), pDescr->getName());
 		}
 		else
@@ -2298,7 +2298,7 @@ bool ClientSDKTypeScript::writeEntityDefsModuleInitScript_PropertyDescr(ScriptDe
 	if (pDescr->aliasID() != -1)
 	{
 		sourcefileBody_ += fmt::format("\t\tp{}Module.usePropertyDescrAlias = true;\n", pScriptDefModule->getName());
-		sourcefileBody_ += fmt::format("\t\tp{}Module.idpropertys[DataTypes.NumberUtil.toUInt16(p{}_{}.aliasID)] = p{}_{};  // ¿ÉÄÜĞèÒª×ª(UInt16)\n\n",
+		sourcefileBody_ += fmt::format("\t\tp{}Module.idpropertys[DataTypes.NumberUtil.toUInt16(p{}_{}.aliasID)] = p{}_{};  // å¯èƒ½éœ€è¦è½¬(UInt16)\n\n",
 			pScriptDefModule->getName(), pScriptDefModule->getName(), pDescr->getName(), pScriptDefModule->getName(), pDescr->getName());
 	}
 	else
@@ -2709,7 +2709,7 @@ import { Vector2, Vector3, Vector4 } from './KBEMath';
 			sourcefileBody_ += fmt::format("import {{ {} }} from './{}';\n", *it, *it);
 		}
 
-		// ¸ñÊ½»¯Îª "a", "b", "c"
+		// æ ¼å¼åŒ–ä¸º "a", "b", "c"
 		//std::ostringstream oss;
 		//for (auto it = uniqueEntityComponenStrings.begin(); it != uniqueEntityComponenStrings.end(); ++it) {
 		//	if (it != uniqueEntityComponenStrings.begin()) {
@@ -2734,7 +2734,7 @@ import { Vector2, Vector3, Vector4 } from './KBEMath';
 	{
 		sourcefileBody_ += fmt::format("export abstract class {} extends EntityComponent{{\n", newModuleName);
 
-		// Ğ´entityCallÊôĞÔ
+		// å†™entityCallå±æ€§
 		sourcefileBody_ += fmt::format("\tpublic baseEntityCall:EntityBaseEntityCall_{} | null = null;\n", newModuleName);
 		sourcefileBody_ += fmt::format("\tpublic cellEntityCall:EntityCellEntityCall_{} | null = null;\n\n", newModuleName);
 	}
@@ -2743,7 +2743,7 @@ import { Vector2, Vector3, Vector4 } from './KBEMath';
 		sourcefileBody_ += fmt::format("// Please inherit and implement \"class {} extends {}\"\n", pEntityScriptDefModule->getName(), newModuleName);
 		sourcefileBody_ += fmt::format("export abstract class {} extends Entity{{\n", newModuleName);
 
-		// Ğ´entityCallÊôĞÔ
+		// å†™entityCallå±æ€§
 		sourcefileBody_ += fmt::format("\tpublic baseEntityCall:EntityBaseEntityCall_{} | null = null;\n", newModuleName);
 		sourcefileBody_ += fmt::format("\tpublic cellEntityCall:EntityCellEntityCall_{} | null = null;\n\n", newModuleName);
 	}
@@ -2765,7 +2765,7 @@ bool ClientSDKTypeScript::getArrayType(DataType* pDataType, std::string& outstr)
 	{
 		FixedArrayType* pFixedArrayType = static_cast<FixedArrayType*>(pDataType);
 
-		// Èç¹ûÔªËØÓÖÊÇÊı×é
+		// å¦‚æœå…ƒç´ åˆæ˜¯æ•°ç»„
 		if (pFixedArrayType->getDataType()->type() == DATA_TYPE_FIXEDARRAY)
 		{
 			if (outstr.size() > 0)
@@ -3028,7 +3028,7 @@ bool ClientSDKTypeScript::writeEntityProcessMessagesMethod(ScriptDefModule* pEnt
 		sourcefileBody_ += "\t}\n";
 	}
 
-	// attach/detach×é¼ş
+	// attach/detachç»„ä»¶
 	if (!pEntityScriptDefModule->isComponentModule())
 	{
 		sourcefileBody_ += fmt::format("\n\tpublic override attachComponents(){{\n");
@@ -3068,7 +3068,7 @@ bool ClientSDKTypeScript::writeEntityProcessMessagesMethod(ScriptDefModule* pEnt
 		sourcefileBody_ += "\t}\n";
 	}
 
-	// ´¦Àí·½·¨
+	// å¤„ç†æ–¹æ³•
 	if (!pEntityScriptDefModule->isComponentModule())
 		sourcefileBody_ += fmt::format("\n\tpublic override onRemoteMethodCall(stream:MemoryStream){{\n");
 	else
@@ -3271,7 +3271,7 @@ bool ClientSDKTypeScript::writeEntityProcessMessagesMethod(ScriptDefModule* pEnt
 	sourcefileBody_ += fmt::format("\t\t}};\n");
 	sourcefileBody_ += "\t}\n";
 
-	// ´¦ÀíÊôĞÔ
+	// å¤„ç†å±æ€§
 	ENTITY_PROPERTY_UID posuid = 0;
 	if (posuid == 0)
 	{
@@ -3446,7 +3446,7 @@ bool ClientSDKTypeScript::writeEntityProcessMessagesMethod(ScriptDefModule* pEnt
 				std::string findstr = fmt::format(" {}:", pPropertyDescription->getName());
 				std::string::size_type fpos2 = sourcefileBody_.find(findstr);
 				std::string::size_type fpos1 = sourcefileBody_.find(" ", fpos2 + 1);
-				// ÕâÀï»ñÈ¡ÀàĞÍ£¬Òª´¦Àí
+				// è¿™é‡Œè·å–ç±»å‹ï¼Œè¦å¤„ç†
 				typestr.assign(sourcefileBody_.begin() + fpos2 + findstr.length() , sourcefileBody_.begin() + fpos1);
 			}
 		}
@@ -3515,7 +3515,7 @@ bool ClientSDKTypeScript::writeEntityProcessMessagesMethod(ScriptDefModule* pEnt
 	sourcefileBody_ += fmt::format("\t\t}}\n");
 	sourcefileBody_ += "\t}\n";
 
-	// ´¦ÀíÊôĞÔcallPropertysSetMethods
+	// å¤„ç†å±æ€§callPropertysSetMethods
 	sourcefileBody_ += fmt::format("\n\tpublic override callPropertysSetMethods(){{\n");
 	sourcefileBody_ += fmt::format("\t\tlet sm:ScriptModule = EntityDef.moduledefs[\"{}\"];\n", pEntityScriptDefModule->getName());
 	sourcefileBody_ += fmt::format("\t\tlet pdatas = sm.idpropertys;\n\n");
@@ -3544,7 +3544,7 @@ bool ClientSDKTypeScript::writeEntityProcessMessagesMethod(ScriptDefModule* pEnt
 			std::string findstr = fmt::format(" {}:", pPropertyDescription->getName());
 			std::string::size_type fpos2 = sourcefileBody_.find(findstr);
 			std::string::size_type fpos1 = sourcefileBody_.find(" ", fpos2 + 1);
-			// ÕâÀï»ñÈ¡ÀàĞÍ£¬Òª´¦Àí
+			// è¿™é‡Œè·å–ç±»å‹ï¼Œè¦å¤„ç†
 			typestr.assign(sourcefileBody_.begin() + fpos2 + findstr.length(), sourcefileBody_.begin() + fpos1);
 		}
 
@@ -3811,12 +3811,12 @@ bool ClientSDKTypeScript::writeEntityProperty_ARRAY(ScriptDefModule* pEntityScri
 
 
 		std::string tempFiledName = fieldName;
-		// ÏÈ»ñÈ¡µ½ÀàĞÍÃû³Æ
+		// å…ˆè·å–åˆ°ç±»å‹åç§°
 		strutil::kbe_replace(tempFiledName, "Array<", "");
 		strutil::kbe_replace(tempFiledName, ">", "");
 
 
-		// ÅĞ¶ÏÊÇ²»ÊÇ»ù´¡ÀàĞÍ
+		// åˆ¤æ–­æ˜¯ä¸æ˜¯åŸºç¡€ç±»å‹
 		if (datatype2nativetype(tempFiledName) == "" && tempFiledName != "number" && tempFiledName != "bigint") {
 			strutil::kbe_replace(sourcefileBody_, tempFiledName, "KBETypes." + tempFiledName);
 			strutil::kbe_replace(fieldName, tempFiledName, "KBETypes."+ tempFiledName);
@@ -3952,7 +3952,7 @@ bool ClientSDKTypeScript::writeEntityMethod(ScriptDefModule* pEntityScriptDefMod
 //-------------------------------------------------------------------------------------
 bool ClientSDKTypeScript::writeEntityMethodArgs_ARRAY(FixedArrayType* pFixedArrayType, std::string& stackArgsTypeBody, const std::string& childItemName)
 {
-	// ¶ÔÓÚÄäÃûÊı×éĞèÒª½âÎö£¬·ñÔòÖ±½ÓÌîÀàĞÍÃû³Æ
+	// å¯¹äºåŒ¿åæ•°ç»„éœ€è¦è§£æï¼Œå¦åˆ™ç›´æ¥å¡«ç±»å‹åç§°
 	if (childItemName.size() == 0 || childItemName[0] == '_')
 	{
 		std::string typeStr;

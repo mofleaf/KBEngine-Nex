@@ -185,15 +185,15 @@ bool DBInterfaceMysql::attach(const char* databaseName)
 		}
 
 
-		/*Ä£Ê½	º¬Òå
-		SSL_MODE_DISABLED	½ûÓÃ SSL
-		SSL_MODE_PREFERRED	ÓÅÏÈÊ¹ÓÃ SSL£¬Ê§°ÜÔò¼ÌÐø³¢ÊÔ·Ç SSL
-		SSL_MODE_REQUIRED	Ç¿ÖÆÊ¹ÓÃ SSL£¬Ê§°ÜÔòÁ¬½ÓÊ§°Ü
-		SSL_MODE_VERIFY_CA	ÒªÇó·þÎñÆ÷Ìá¹© CA ÑéÖ¤£¬Ö¤Êé±ØÐëÓÉ CA Ç©·¢
-		SSL_MODE_VERIFY_IDENTITY	Í¬ÉÏ£¬¶îÍâÑéÖ¤·þÎñÆ÷Ö÷»úÃûÆ¥ÅäÖ¤Êé*/
+		/*æ¨¡å¼	å«ä¹‰
+		SSL_MODE_DISABLED	ç¦ç”¨ SSL
+		SSL_MODE_PREFERRED	ä¼˜å…ˆä½¿ç”¨ SSLï¼Œå¤±è´¥åˆ™ç»§ç»­å°è¯•éž SSL
+		SSL_MODE_REQUIRED	å¼ºåˆ¶ä½¿ç”¨ SSLï¼Œå¤±è´¥åˆ™è¿žæŽ¥å¤±è´¥
+		SSL_MODE_VERIFY_CA	è¦æ±‚æœåŠ¡å™¨æä¾› CA éªŒè¯ï¼Œè¯ä¹¦å¿…é¡»ç”± CA ç­¾å‘
+		SSL_MODE_VERIFY_IDENTITY	åŒä¸Šï¼Œé¢å¤–éªŒè¯æœåŠ¡å™¨ä¸»æœºååŒ¹é…è¯ä¹¦*/
 		
 
-		// ÆôÓÃ¡°ÔÊÐíÏò·þÎñÆ÷ÇëÇó RSA ¹«Ô¿¡±
+		// å¯ç”¨â€œå…è®¸å‘æœåŠ¡å™¨è¯·æ±‚ RSA å…¬é’¥â€
 		const bool get_pubkey = 1;
 		mysql_options(mysql(), MYSQL_OPT_GET_SERVER_PUBLIC_KEY, &get_pubkey);
 
@@ -216,7 +216,7 @@ bool DBInterfaceMysql::attach(const char* databaseName)
 			DEBUG_MSG(fmt::format("DBInterfaceMysql::Enable SSL: sslCert: {}; sslKey:{}; sslCa:{} ...\n", db_mysql_clientKeyPath_, db_mysql_clientCertPath_, db_mysql_caPath_));
 		}
 		else {
-			// ½ûÓÃ SSL
+			// ç¦ç”¨ SSL
 			const enum mysql_ssl_mode opt_use_ssl = SSL_MODE_DISABLED;
 			mysql_options(mysql(), MYSQL_OPT_SSL_MODE, &opt_use_ssl);
 		}
@@ -292,7 +292,7 @@ __RECONNECT:
 			return false;
 		}
 
-		// ²»ÐèÒª¹Ø±Õ×Ô¶¯Ìá½»£¬µ×²ã»áSTART TRANSACTIONÖ®ºóÔÙCOMMIT
+		// ä¸éœ€è¦å…³é—­è‡ªåŠ¨æäº¤ï¼Œåº•å±‚ä¼šSTART TRANSACTIONä¹‹åŽå†COMMIT
 		// mysql_autocommit(mysql(), 0);
 
 		char characterset_sql[MAX_BUF];
@@ -719,14 +719,14 @@ void DBInterfaceMysql::getFields(TABLE_FIELDS& outs, const char* tableName)
 
 		MYSQL_FIELD* field = &fields[i];
 
-		// ÄÃµ½ charset ±àºÅ
+		// æ‹¿åˆ° charset ç¼–å·
 		unsigned int csid = field->charsetnr;
 
-		// ¸ù¾Ý±àºÅ²éÑ¯×Ö·û¼¯ÐÅÏ¢
+		// æ ¹æ®ç¼–å·æŸ¥è¯¢å­—ç¬¦é›†ä¿¡æ¯
 		MY_CHARSET_INFO cs;
 		mysql_get_character_set_info(mysql(), &cs);
 
-		// ¼ÆËã×Ö·ûÊý = ×Ö½Ú³¤¶È / ×î´ó×Ö½ÚÊý
+		// è®¡ç®—å­—ç¬¦æ•° = å­—èŠ‚é•¿åº¦ / æœ€å¤§å­—èŠ‚æ•°
 		unsigned int char_len = field->length / cs.mbmaxlen;
 
 		info.char_length = char_len;

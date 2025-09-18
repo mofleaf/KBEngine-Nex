@@ -7,9 +7,9 @@
 
 namespace KBEngine {
 
-// ָʾ�Ƿ����ͨ������RDTSC��ʱ�����������
-// ����ʱ�����ʹ�ô˵ĺô��ǣ����ܿ��ٺ;�ȷ�ķ���ʵ�ʵ�ʱ�ӵδ�
-// ������֮���ǣ��Ⲣ��ʹ��SpeedStep�������ı����ǵ�ʱ���ٶȵ�CPU��
+// 指示是否可以通过调用RDTSC（时间戳计数器）
+// 计算时间戳。使用此的好处是，它能快速和精确的返回实际的时钟滴答
+// 。不足之处是，这并不使用SpeedStep技术来改变他们的时钟速度的CPU。
 #if KBE_PLATFORM == PLATFORM_UNIX
 	//#define KBE_USE_RDTSC
 #else // unix
@@ -18,7 +18,7 @@ namespace KBEngine {
 
 	enum KBETimingMethod
 	{
-		RDTSC_TIMING_METHOD, // ��CPU�ϵ�������������ʱ��������,�ﵽ���뼶�ļ�ʱ����
+		RDTSC_TIMING_METHOD, // 自CPU上电以来所经过的时钟周期数,达到纳秒级的计时精度
 		GET_TIME_OF_DAY_TIMING_METHOD,
 		GET_TIME_TIMING_METHOD,
 		NO_TIMING_METHOD,
@@ -30,11 +30,11 @@ namespace KBEngine {
 
 #if KBE_PLATFORM == PLATFORM_UNIX
 
-	// ֧��ARM 
+	// 支持ARM 
 	inline uint64_t timestamp_rdtsc()
 	{
 	#if defined(__x86_64__) || defined(__i386__)
-		// x86/x64 ԭ rdtsc
+		// x86/x64 原 rdtsc
 		uint32_t hi, lo;
 		__asm__ __volatile__(
 			"rdtsc"
@@ -43,21 +43,21 @@ namespace KBEngine {
 		return (uint64_t(hi) << 32) | lo;
 
 	#elif defined(__aarch64__)
-		// ARM64 ʹ�����������
+		// ARM64 使用虚拟计数器
 		uint64_t cnt;
 		asm volatile("mrs %0, cntvct_el0" : "=r"(cnt));
 		return cnt;
 
 	#else
-		// ����ƽ̨ fallback
+		// 其他平台 fallback
 		return std::chrono::high_resolution_clock::now().time_since_epoch().count();
 	#endif
 	}
 
-	// ʹ�� gettimeofday. ���Դ�ű�RDTSC20��-600����
-	// ���⣬��һ������
-	// 2.4�ں��£��������ε���gettimeofday�Ŀ���
-	// ����һ������ǵ����ߡ�
+	// 使用 gettimeofday. 测试大概比RDTSC20倍-600倍。
+	// 此外，有一个问题
+	// 2.4内核下，连续两次调用gettimeofday的可能
+	// 返回一个结果是倒着走。
 #include <sys/time.h>
 
 	inline uint64 timestamp_gettimeofday()

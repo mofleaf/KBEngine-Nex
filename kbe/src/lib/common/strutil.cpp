@@ -99,14 +99,14 @@ namespace strutil {
 		return kbe_ltrim(kbe_rtrim(s));
 	}
 
-	// ÅĞ¶ÏÊÇ·ñÊÇ¿Õ°××Ö·û£¨Ö§³ÖÖĞÓ¢ÎÄ¿Õ¸ñ£©
+	// åˆ¤æ–­æ˜¯å¦æ˜¯ç©ºç™½å­—ç¬¦ï¼ˆæ”¯æŒä¸­è‹±æ–‡ç©ºæ ¼ï¼‰
 	inline bool is_space(char32_t ch)
 	{
-		return ch == U'\u0020'   // °ë½Ç¿Õ¸ñ
-			|| ch == U'\u3000'   // ÖĞÎÄÈ«½Ç¿Õ¸ñ
+		return ch == U'\u0020'   // åŠè§’ç©ºæ ¼
+			|| ch == U'\u3000'   // ä¸­æ–‡å…¨è§’ç©ºæ ¼
 			|| ch == U'\t'       // Tab
-			|| ch == U'\n'       // »»ĞĞ
-			|| ch == U'\r';      // »Ø³µ
+			|| ch == U'\n'       // æ¢è¡Œ
+			|| ch == U'\r';      // å›è½¦
 	}
 
 	// UTF-8 -> UTF-32
@@ -170,7 +170,7 @@ namespace strutil {
 		return out;
 	}
 
-	// trim ÖĞÎÄÖ§³Ö
+	// trim ä¸­æ–‡æ”¯æŒ
 	std::string kbe_unicodeTrim(const std::string& s)
 	{
 		std::u32string u32 = utf8_to_u32(s);
@@ -303,19 +303,19 @@ namespace strutil {
 
 
 
-	// ĞŞ¸´g++ 13 ÏÂ£¬Òç³öµÄÎÊÌâ
-	// Ä¿Ç°²âÊÔÏÂÀ´Ubuntu 24»á±¨ *** buffer overflow detected ***: terminated
+	// ä¿®å¤g++ 13 ä¸‹ï¼Œæº¢å‡ºçš„é—®é¢˜
+	// ç›®å‰æµ‹è¯•ä¸‹æ¥Ubuntu 24ä¼šæŠ¥ *** buffer overflow detected ***: terminated
 	wchar_t* char2wchar(const char* cs, size_t* outlen)
 	{
 		if (!cs) return nullptr;
 
-		// ×Ö·û´®³¤¶È£¨×Ö½Ú£©
+		// å­—ç¬¦ä¸²é•¿åº¦ï¼ˆå­—èŠ‚ï¼‰
 		size_t csl = strlen(cs);
 
-		// wchar_t ¸öÊı = ×Ö·ûÊı + 1£¨\0£©
+		// wchar_t ä¸ªæ•° = å­—ç¬¦æ•° + 1ï¼ˆ\0ï¼‰
 		size_t wlen = csl + 1;
 
-		// ·ÖÅä¿Õ¼ä£º°´ wchar_t Êı×é´óĞ¡
+		// åˆ†é…ç©ºé—´ï¼šæŒ‰ wchar_t æ•°ç»„å¤§å°
 		wchar_t* ccattr = (wchar_t*)malloc(wlen * sizeof(wchar_t));
 		if (!ccattr) {
 			if (outlen) *outlen = 0;
@@ -323,7 +323,7 @@ namespace strutil {
 		}
 		memset(ccattr, 0, wlen * sizeof(wchar_t));
 
-		// mbstowcs µÄµÚÈı¸ö²ÎÊıÊÇ wchar_t ¸öÊı£¨²»ÊÇ×Ö½ÚÊı£©
+		// mbstowcs çš„ç¬¬ä¸‰ä¸ªå‚æ•°æ˜¯ wchar_t ä¸ªæ•°ï¼ˆä¸æ˜¯å­—èŠ‚æ•°ï¼‰
 		size_t slen = mbstowcs(ccattr, cs, wlen);
 
 		if (outlen) {

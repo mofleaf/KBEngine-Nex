@@ -2,14 +2,14 @@
 
 
 /*
-	ÒıÓÃ¼ÆÊıÊµÏÖÀà
+	å¼•ç”¨è®¡æ•°å®ç°ç±»
 
-	Ê¹ÓÃ·½·¨:
+	ä½¿ç”¨æ–¹æ³•:
 		class AA:public RefCountable
 		{
 		public:
 			AA(){}
-			~AA(){ printf("Îö¹¹"); }
+			~AA(){ printf("ææ„"); }
 		};
 		
 		--------------------------------------------
@@ -22,8 +22,8 @@
 		delete s;
 		delete s1;
 		
-		Ö´ĞĞ½á¹û:
-			Îö¹¹
+		æ‰§è¡Œç»“æœ:
+			ææ„
 */
 #ifndef KBE_REFCOUNTABLE_H
 #define KBE_REFCOUNTABLE_H
@@ -46,7 +46,7 @@ public:
 		int currRef = --refCount_;
 		assert(currRef >= 0 && "RefCountable:currRef maybe a error!");
 		if (0 >= currRef)
-			onRefOver();											// ÒıÓÃ½áÊøÁË
+			onRefOver();											// å¼•ç”¨ç»“æŸäº†
 	}
 
 	virtual void onRefOver(void) const
@@ -93,7 +93,7 @@ public:
 		long currRef =::InterlockedDecrement(&refCount_);
 		assert(currRef >= 0 && "RefCountable:currRef maybe a error!");
 		if (0 >= currRef)
-			onRefOver();											// ÒıÓÃ½áÊøÁË
+			onRefOver();											// å¼•ç”¨ç»“æŸäº†
 	}
 
 	virtual void onRefOver(void) const
@@ -141,16 +141,16 @@ public:
 		uint32_t tmp;
 		uint32_t status;
 		asm volatile(
-			"1: ldaxr %w0, [%2]\n"   // ´ÓÄÚ´æ¼ÓÔØµ½ tmp
+			"1: ldaxr %w0, [%2]\n"   // ä»å†…å­˜åŠ è½½åˆ° tmp
 			"   add %w0, %w0, #1\n"   // tmp = tmp + 1
-			"   stlxr %w1, %w0, [%2]\n" // ³¢ÊÔ´æ´¢£¬status ±íÊ¾³É¹¦Óë·ñ
-			"   cbnz %w1, 1b\n"        // Èç¹ûÊ§°Ü£¬ÖØÊÔ
+			"   stlxr %w1, %w0, [%2]\n" // å°è¯•å­˜å‚¨ï¼Œstatus è¡¨ç¤ºæˆåŠŸä¸å¦
+			"   cbnz %w1, 1b\n"        // å¦‚æœå¤±è´¥ï¼Œé‡è¯•
 			: "=&r"(tmp), "=&r"(status)
 			: "r"(&this->refCount_)
 			: "memory"
 		);
 	#else
-		refCount_++;  // fallback, ·ÇÏß³Ì°²È«
+		refCount_++;  // fallback, éçº¿ç¨‹å®‰å…¨
 	#endif
 	}
 
@@ -160,7 +160,7 @@ public:
 		long currRef = intDecRef();
 		assert(currRef >= 0 && "RefCountable:currRef maybe a error!");
 		if (0 >= currRef)
-			onRefOver();											// ÒıÓÃ½áÊøÁË
+			onRefOver();											// å¼•ç”¨ç»“æŸäº†
 	}
 
 	virtual void onRefOver(void) const
@@ -222,7 +222,7 @@ private:
 		return old;
 
 	#else
-		// fallback£¬·ÇÏß³Ì°²È«
+		// fallbackï¼Œéçº¿ç¨‹å®‰å…¨
 		int old = this->refCount_;
 		this->refCount_--;
 		return old;
