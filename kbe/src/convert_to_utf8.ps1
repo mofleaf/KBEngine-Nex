@@ -2,7 +2,7 @@
 $TargetDir = $PSScriptRoot
 
 # 获取所有 .cpp / .h 文件（递归子目录）
-$files = Get-ChildItem -Path $TargetDir -Recurse -Include *.cpp,*.h
+$files = Get-ChildItem -Path $TargetDir -Recurse -Include *.cpp,*.h,*.inl
 
 function IsUtf8([string]$filePath) {
     $bytes = [System.IO.File]::ReadAllBytes($filePath)
