@@ -169,6 +169,7 @@ fi
 
 if ! git ls-remote https://github.com/microsoft/vcpkg.git >/dev/null 2>&1; then
     echo "[ERROR] 无法访问 GitHub 仓库，请确保网络或代理可用"
+    echo "[INFO] 同时也通过国内 Gitee 镜像，请尝试运行 gitee\install_linux.sh。"
     exit 1
 fi
 echo "[成功] GitHub 仓库可访问"

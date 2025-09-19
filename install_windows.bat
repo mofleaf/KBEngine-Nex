@@ -16,6 +16,8 @@ git ls-remote https://github.com/microsoft/vcpkg.git >nul 2>nul
 if errorlevel 1 (
     echo [错误] 无法访问 GitHub 仓库！
     echo        可能是网络问题或需要代理，请自行解决网络问题后再运行脚本。
+    echo.
+    echo        同时也通过国内 Gitee 镜像，请尝试运行 gitee\install_windows.bat。
     rd /s /q "%TMP_TEST_DIR%" >nul 2>nul
     pause
     exit /b 1
