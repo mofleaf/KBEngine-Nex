@@ -167,21 +167,21 @@ if ! command -v git >/dev/null 2>&1; then
     echo "[WARN] 未安装 git，稍后会自动安装"
 fi
 
-if ! git ls-remote https://github.com/microsoft/vcpkg.git >/dev/null 2>&1; then
-    echo "[ERROR] 无法访问 GitHub 仓库，请确保网络或代理可用"
+if ! git ls-remote https://gitee.com/KBEngineLab/kbe-vcpkg-gitee.git >/dev/null 2>&1; then
+    echo "[ERROR] 无法访问 Gitee 仓库，请确保网络可用"
     exit 1
 fi
-echo "[成功] GitHub 仓库可访问"
+echo "[成功] Gitee 仓库可访问"
 
 
 
 # =========================================
 # vcpkg 安装
 # =========================================
-VCPKG_DIR="$HOME/kbe-vcpkg"
+VCPKG_DIR="$HOME/kbe-vcpkg-gitee"
 if [ ! -d "$VCPKG_DIR" ] || [ ! -f "$VCPKG_DIR/bootstrap-vcpkg.sh" ]; then
     echo "[INFO] 克隆 vcpkg"
-    git clone https://github.com/microsoft/vcpkg.git "$VCPKG_DIR"
+    git clone https://gitee.com/KBEngineLab/kbe-vcpkg-gitee.git "$VCPKG_DIR"
 else
     echo "[INFO] vcpkg 已存在: $VCPKG_DIR"
 fi
