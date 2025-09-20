@@ -290,7 +290,6 @@ if errorlevel 1 (
 
 echo.
 echo [Success] All builds completed!
-pause
 exit /b 0
 
 :GUICONSOLE
@@ -307,5 +306,4 @@ if errorlevel 1 (
 
 echo.
 echo [Success] All builds completed!
-pause
 exit /b 0
