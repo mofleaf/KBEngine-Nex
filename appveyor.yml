@@ -7,6 +7,7 @@ branches:
 
 os:
   - Visual Studio 2022
+  - Ubuntu2204
 
 environment:
   matrix:
@@ -14,4 +15,13 @@ environment:
 
 # 自定义构建步骤
 build_script:
-  - cmd: call install_windows.bat
+  # Windows 下执行
+  - cmd: |
+      if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2022" (
+          call install_windows.bat
+      )
+  # Linux 下执行
+  - sh: |
+      if [ "$APPVEYOR_BUILD_WORKER_IMAGE" = "Ubuntu2204" ]; then
+          bash install_linux.sh
+      fi
