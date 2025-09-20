@@ -278,24 +278,59 @@ if %MSVC_COUNT%==0 (
         call echo   %%i:!MSVC_VER_%%i!
     )
 
-    echo.
-    echo [31m注意：请选择与vcpkg匹配的版本，否则可能导致编译失败，一般是最新版[0m
-    echo.
-    echo [31m如无法确定版本，请注意后续KBEMain方案编译时日志输出：例如： Compiler found: E:/ProgramFiles/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/cl.exe[0m
-    echo.
-    echo [31m其中14.44.35207就是vcpkg所使用的版本[0m
-    echo.
-    echo [31m或删除多余的程序集，保留一个即可[0m
-    echo.
+    @REM echo.
+    @REM echo [31m注意：请选择与vcpkg匹配的版本，否则可能导致编译失败，一般是最新版[0m
+    @REM echo.
+    @REM echo [31m如无法确定版本，请注意后续KBEMain方案编译时日志输出：例如： Compiler found: E:/ProgramFiles/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/cl.exe[0m
+    @REM echo.
+    @REM echo [31m其中14.44.35207就是vcpkg所使用的版本[0m
+    @REM echo.
+    @REM echo [31m或删除多余的程序集，保留一个即可[0m
+    @REM echo.
     
-    set /p "CHOICE=请选择要使用的 MSVC 工具集编号 (1-%MSVC_COUNT%): "
-    if "!CHOICE!"=="" set "CHOICE=1"
-    if !CHOICE! GTR !MSVC_COUNT! (
-        echo [错误] 输入无效！
-        exit /b 1
+    @REM set /p "CHOICE=请选择要使用的 MSVC 工具集编号 (1-%MSVC_COUNT%): "
+    @REM if "!CHOICE!"=="" set "CHOICE=1"
+    @REM if !CHOICE! GTR !MSVC_COUNT! (
+    @REM     echo [错误] 输入无效！
+    @REM     exit /b 1
+    @REM )
+
+    @REM call set "MSVC_VER=%%MSVC_VER_!CHOICE!%%"
+
+
+    set "LATEST_VER=0.0.0"
+    for /l %%i in (1,1,%MSVC_COUNT%) do (
+        set "CUR=!MSVC_VER_%%i!"
+
+        for /f "tokens=1-3 delims=." %%a in ("!CUR!") do (
+            set /a CUR_MAJOR=%%a
+            set /a CUR_MINOR=%%b
+            set /a CUR_PATCH=%%c
+        )
+        for /f "tokens=1-3 delims=." %%a in ("!LATEST_VER!") do (
+            set /a L_MAJOR=%%a
+            set /a L_MINOR=%%b
+            set /a L_PATCH=%%c
+        )
+
+        if !CUR_MAJOR! gtr !L_MAJOR! (
+            set "LATEST_VER=!CUR!"
+        ) else if !CUR_MAJOR! equ !L_MAJOR! (
+            if !CUR_MINOR! gtr !L_MINOR! (
+                set "LATEST_VER=!CUR!"
+            ) else if !CUR_MINOR! equ !L_MINOR! (
+                if !CUR_PATCH! gtr !L_PATCH! (
+                    set "LATEST_VER=!CUR!"
+                )
+            )
+        )
     )
 
-    call set "MSVC_VER=%%MSVC_VER_!CHOICE!%%"
+
+    echo.
+    echo  MSVC 最新版本号为： !LATEST_VER!
+
+    set "MSVC_VER=!LATEST_VER!"
     echo [选择] 使用 MSVC 工具集版本: !MSVC_VER!
 
 
@@ -310,10 +345,10 @@ echo %VCVARS_VAR%
 echo %MSVC_VER_VAR%
 
 
-:: 提取前两段版本号，例如 14.44
-for /f "tokens=1,2 delims=." %%a in ("%MSVC_VER%") do (
-    set "VC_VER=%%a.%%b"
-)
+@REM :: 提取前两段版本号，例如 14.44
+@REM for /f "tokens=1,2 delims=." %%a in ("%MSVC_VER%") do (
+@REM     set "VC_VER=%%a.%%b"
+@REM )
 
 echo VC_VER: %VC_VER%
 

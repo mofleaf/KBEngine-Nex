@@ -127,9 +127,9 @@
       <Command>if exist "..\..\lib\python\PCbuild\amd64\pyconfig.h" (
 
     if exist "..\..\libs\python313_d.lib" (
-        echo [INFO] 已找到 python313_d.lib，无需复制，跳过。
+        echo [INFO] python313_d.lib found, no need to copy, skipping.
     ) else (
-        echo [INFO] 正在复制文件...
+        echo [INFO] Copying files...
 
         copy /Y "..\..\lib\python\PCbuild\amd64\python313_d.lib" "..\..\libs"
         copy /Y "..\..\lib\python\PCbuild\amd64\python313_d.exp" "..\..\libs"
@@ -146,10 +146,10 @@
 
         copy /Y "..\..\lib\python\PCbuild\amd64\pyconfig.h" "..\..\lib\python\Include"
 
-        echo [INFO] Python 文件复制完成。
+        echo [INFO] Python files copied successfully.
     )
 ) else (
-    echo [ERROR] Python 构建失败，未找到 pyconfig.h！
+    echo [ERROR] Python build failed, pyconfig.h not found!
     exit /b 1
 )
 </Command>
@@ -189,9 +189,9 @@
       <Command>if exist "..\..\lib\python\PCbuild\amd64\pyconfig.h" (
 
     if exist "..\..\libs\python313.lib" (
-        echo [INFO] 已找到 python313.lib，无需复制，跳过。
+        echo [INFO] python313.lib found, no need to copy, skipping.
     ) else (
-        echo [INFO] 正在复制文件...
+        echo [INFO] Copying files...
 
         copy /Y "..\..\lib\python\PCbuild\amd64\python313.lib" "..\..\libs"
         copy /Y "..\..\lib\python\PCbuild\amd64\python313.exp" "..\..\libs"
@@ -208,10 +208,10 @@
 
         copy /Y "..\..\lib\python\PCbuild\amd64\pyconfig.h" "..\..\lib\python\Include"
 
-        echo [INFO] Python 文件复制完成。
+        echo [INFO] Python files copied successfully.
     )
 ) else (
-    echo [ERROR] Python 构建失败，未找到 pyconfig.h！
+    echo [ERROR] Python build failed, pyconfig.h not found!
     exit /b 1
 )
 </Command>
