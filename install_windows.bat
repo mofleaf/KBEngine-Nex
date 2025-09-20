@@ -17,7 +17,9 @@ if errorlevel 1 (
     echo.
     echo         There is also a domestic Gitee mirror. You can try running gitee\install_windows.bat.
     rd /s /q "%TMP_TEST_DIR%" >nul 2>nul
-    pause
+    if not defined CI (
+        pause
+    )
     exit /b 1
 )
 
@@ -126,7 +128,9 @@ echo [Checking] Searching for Visual Studio installation path...
 set "VSWHERE_PATH=%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe"
 if not exist "%VSWHERE_PATH%" (
     echo [Error] vswhere.exe not found. Please ensure Visual Studio or Build Tools is installed.
-    pause
+    if not defined CI (
+        pause
+    )
     exit /b 1
 )
 
@@ -137,7 +141,9 @@ for /f "usebackq tokens=*" %%i in (`"%VSWHERE_PATH%" -latest -requires Microsoft
 
 if not defined VS_INSTALL_PATH (
     echo [Error] No Visual Studio with C++ toolset found
-    pause
+    if not defined CI (
+        pause
+    )
     exit /b 1
 )
 
@@ -245,7 +251,9 @@ set "VCVARSALL_BAT=%VS_INSTALL_PATH%\VC\Auxiliary\Build\vcvarsall.bat"
 call "%VCVARSALL_BAT%" x64 -vcvars_ver=%MSVC_VER%
 if errorlevel 1 (
     echo [Error] Cannot load Visual Studio build environment
-    pause
+    if not defined CI (
+        pause
+    )
     exit /b 1
 )
 
@@ -268,7 +276,9 @@ msbuild "%INIT_BUILD_PROJ%" /p:Configuration=%CONFIG% %MSVC_VER_VAR% /p:Platform
     /consoleloggerparameters:DisableConsoleColor 
 if errorlevel 1 (
     echo [Error] KBEMain.vcxproj build failed. Check %LOG_FILE%
-    pause
+    if not defined CI (
+        pause
+    )
     exit /b 1
 )
 
@@ -284,12 +294,17 @@ msbuild "%SOLUTION_FILE%" /p:Configuration=%CONFIG% %MSVC_VER_VAR% /p:Platform=W
     /consoleloggerparameters:DisableConsoleColor
 if errorlevel 1 (
     echo [Error] kbengine nex.sln build failed. Check %LOG_FILE%
-    pause
+    if not defined CI (
+        pause
+    )
     exit /b 1
 )
 
 echo.
 echo [Success] All builds completed!
+if not defined CI (
+    pause
+)
 exit /b 0
 
 :GUICONSOLE
@@ -300,10 +315,15 @@ msbuild "%GUICONSOLE_SOLUTION_FILE%" /p:Configuration=%CONFIG% %MSVC_VER_VAR% /p
     /consoleloggerparameters:DisableConsoleColor
 if errorlevel 1 (
     echo [Error] guiconsole.sln build failed. Check %LOG_FILE%
-    pause
+    if not defined CI (
+        pause
+    )
     exit /b 1
 )
 
 echo.
 echo [Success] All builds completed!
+if not defined CI (
+    pause
+)
 exit /b 0
