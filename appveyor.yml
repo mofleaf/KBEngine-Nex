@@ -10,7 +10,7 @@ branches:
 
 # 指定构建环境
 os:
-  - Visual Studio 2022
+  # - Visual Studio 2022
   - Ubuntu2204
 
 environment:
