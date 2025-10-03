@@ -28,7 +28,7 @@ build_script:
   - sh: if [ "$APPVEYOR_BUILD_WORKER_IMAGE" = "Ubuntu2204" ]; then bash ./CI/install_linux_step1_deps.sh; fi
 
   # Linux Step 2: vcpkg + CMake configure
-  - sh: if [ "$APPVEYOR_BUILD_WORKER_IMAGE" = "Ubuntu2204" ]; then bash ./CI/install_linux_step2_configure.sh Release; fi
+  - sh: if [ "$APPVEYOR_BUILD_WORKER_IMAGE" = "Ubuntu2204" ]; then bash ./CI/install_linux_step2_configure.sh Debug; fi
 
   # Linux Step 3: 编译
   - sh: if [ "$APPVEYOR_BUILD_WORKER_IMAGE" = "Ubuntu2204" ]; then bash ./CI/install_linux_step3_build.sh; fi
