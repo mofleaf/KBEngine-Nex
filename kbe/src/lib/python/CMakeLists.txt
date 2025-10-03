@@ -53,7 +53,7 @@ add_custom_command(
 # Debug 版本
 add_custom_command(
     OUTPUT ${PYTHON_LIB_DEBUG}
-    COMMAND test -f ${PYTHON_LIB_DEBUG} || (chmod +x configure && ./configure --disable-optimizations && make -j)
+    COMMAND test -f ${PYTHON_LIB_DEBUG} || (chmod +x configure && ./configure --enable-optimizations && make -j)
     WORKING_DIRECTORY ${PYTHON_SRC_DIR}
     COMMENT "Building embedded Python (Debug)..."
 )
