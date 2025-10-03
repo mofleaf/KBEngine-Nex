@@ -1,3 +1,6 @@
+# ===============================
+# AppVeyor CI 配置
+# ===============================
 shallow_clone: true
 
 branches:
@@ -5,16 +8,32 @@ branches:
     - master
     - appveyor
 
-os:
-  - Visual Studio 2022
-  # - Ubuntu2204 #Build execution time has reached the maximum allowed time for your plan (60 minutes).
+# ===============================
+# Job 定义
+# ===============================
+jobs:
+  # -------------------------------
+  # Windows 构建 (Visual Studio 2022)
+  # -------------------------------
+  - job_name: windows_vs2022
+    image: Visual Studio 2022
+    environment:
+      TOOLSET: vs2022
+    build_script:
+      - cmd: call install_windows.bat
 
-environment:
-  matrix:
-    - TOOLSET: vs2022
+  # -------------------------------
+  # Linux 构建 (Ubuntu 22.04)
+  # 拆分为 3 个 step 串行执行
+  # -------------------------------
+  - job_name: linux_build
+    image: Ubuntu2204
+    build_script:
+      # Step 1: 安装系统工具和依赖
+      - sh: bash install_linux_step1_deps.sh
 
-# 自定义构建步骤
-build_script:
-  - cmd: if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2022" call install_windows.bat
-  - sh: if [ "$APPVEYOR_BUILD_WORKER_IMAGE" = "Ubuntu2204" ]; then bash install_linux.sh; fi
+      # Step 2: 下载 vcpkg 并执行 cmake configure
+      - sh: bash install_linux_step2_configure.sh Release
 
+      # Step 3: 编译
+      - sh: bash install_linux_step3_build.sh
