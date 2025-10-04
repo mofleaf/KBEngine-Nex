@@ -16,9 +16,45 @@
 
 [![][qq1-shield]][qq1-link]
 
-[![][build-status-shield]][build-status-link] [![][release-shield]][release-link] [![][dockerhub-shield]][dockerhub-link] [![][last-commit-shield]][last-commit-shield-link] [![][github-issues-shield]][github-issues-shield-link] [![][github-stars-shield]][github-stars-link]
+[![][build-status-shield]][build-status-link] [![][release-shield]][release-link] [![][dockerhub-shield]][dockerhub-link] [![][last-commit-shield]][last-commit-shield-link] [![][github-issues-shield]][github-issues-shield-link] [![][github-stars-shield]][github-stars-link] [![JetBrains Plugins](https://img.shields.io/jetbrains/plugin/v/27963-kbenginex.svg)](https://plugins.jetbrains.com/plugin/27963-kbenginex)
 
 </div>
+
+
+## Pycharm 插件
+
+**Pycharm插件已发布，支持 2024.2 - 2025.\***
+
+[![JetBrains Plugins](https://img.shields.io/jetbrains/plugin/v/27963-kbenginex.svg)](https://plugins.jetbrains.com/plugin/27963-kbenginex)
+
+[点击查看插件使用文档](https://www.kbelab.com/kbex/)
+
+- [x] [**新建项目**](https://www.kbelab.com/kbex/create_project.html) 通过 Pycharm IDE 新建项目
+
+- [x] [**插件设置**](https://www.kbelab.com/kbex/settings.html) 配置项目相关信息
+
+- [x] [**服务端管理**](https://www.kbelab.com/kbex/server.html) 在Pycharm中启动、停止、调试服务端
+
+- [x] [**SDK生成**](https://www.kbelab.com/kbex/gensdk.html) 一键生成SDK
+
+- [x] [**远程服务**](https://www.kbelab.com/kbex/settings.html#二、ssh-配置功能) 支持远程服务端，自动上传项目
+
+- [x] [**项目支持**](https://www.kbelab.com/kbex/create_project.html#_3-创建成功后-插件会创建venv虚拟环境-并设置隔离app工作区) 支持KBE项目结构，隔离BASE/CELL/BOTS 工作区
+
+- [x] [**内置 KBEngine 模块**](https://www.kbelab.com/kbex/builtin_modules.html) 插件内置 KBEngine 模块，支持tips自动区分BASE、CELL等模块，自动提示、补全
+
+- [x] [**内置 Math 模块**](https://www.kbelab.com/kbex/builtin_modules.html) 件内置 Math 模块，支持内置方法自动提示、补全
+
+- [x] [**自动补全**](https://www.kbelab.com/kbex/completion_contributor.html) 支持base/cell class 映射、代码自动补全 ，支持client方法自动补全，支持def文件自动补全及代码生成
+
+- [x] [**代码跳转**](https://www.kbelab.com/kbex/completion_contributor.html#符号跳转) 支持base/cell/client 跳转符号定义处
+
+- [x] [**文件映射**](https://www.kbelab.com/kbex/completion_contributor.html#文件映射) 支持PY文件与DEF文件间的项目跳转
+
+- [x] [**类型映射**](https://www.kbelab.com/kbex/completion_contributor.html#类型映射) 为KBE基础类型提供类型映射
+
+
+---
 
 
 ## 什么是 KBEngine
@@ -53,11 +89,124 @@ KBEngine Nex 是在KBEngine 2.5.12 的基础上社区继续维护的版本
 - **快速开发游戏**：只需要使用Python就可以快速的进行设计游戏。 底层安全可靠，保证效率。
 
 
+---
+
+
+## 测试平台
+
+| 平台    | 系统版本          | 环境                      | 引擎版本  |
+| ------- | ----------------- | ------------------------- | --------- |
+| Ubuntu  | 24.04.3 AMD64     | g++ 13 <br> openssl3.x    | Nex 2.6.3 |
+| Ubuntu  | 24.04.4 LTS ARM64 | g++ 13 <br> openssl3.x    | Nex 2.6.3 |
+| Ubuntu  | 22.04.5 AMD64     | g++ 9 <br> openssl1.1.x   | Nex 2.6.3 |
+| Deepin  | 25.0.1 AMD64     | g++ 12.3.0 <br> OpenSSL 3.2.4   | Nex 2.6.3 |
+| CentOS  | Stream-10-20250908.0-x86_64  | g++ 14.3.1 <br> OpenSSL 3.5.2   | Nex 2.6.3 |
+| CentOS  | 8.5.2111-x86_64   | g++ 8.5.0 <br> OpenSSL 1.1.1k   | Nex 2.6.3 |
+| Debian  | 13.1.0-amd64   | g++ 14.2.0 <br> OpenSSL 3.5.1   | Nex 2.6.3 |
+| Windows | 专业版 22621.4317 | msbuild <br> openssl1.0.x | Nex 2.6.3 |
+
+---
+
+## 安装
+
+**注意：VCPKG强依赖于Github，需要网络支持，请自行解决网络问题！**
+
+**Gitee目录提供了国内镜像安装脚本**
+
+
+### 执行编译脚本 `install_*.bat/sh`
+
+**作用**：自动编译 KBEngine-Nex 服务端和工具。
+
+**使用方法**：
+
+``` CMD
+install_windows.bat [CONFIG] [VCPKGPATH]
+```
+
+``` sh
+install_linux.sh [CONFIG]
+```
+
+**参数说明**：
+
+| 参数       | 说明                               | 默认值 |
+| ---------- | ---------------------------------- | ------ |
+| CONFIG     | 指定编译配置，`Debug` 或 `Release` | Debug  |
+| VCPKGPATH  | 指定 vcpkg 安装路径                | 可选   |
+| GUICONSOLE | 安装 GUI 控制台工具                | 可选   |
+
+**示例**：
+
+##### Windows：
+```CMD
+# 使用默认 Debug 配置
+install_windows.bat
+
+# 指定 Release 配置并指定 vcpkg 路径
+install_windows.bat Release D:\Tools\vcpkg
+
+# 编译并安装 GUICONSOLE
+install_windows.bat Debug D:\Tools\vcpkg GUICONSOLE
+
+# 所有示例
+install_windows.bat Debug
+install_windows.bat Debug "VCPKGPATH"
+install_windows.bat Debug "" GUICONSOLE
+install_windows.bat Release
+install_windows.bat Release "VCPKGPATH"
+install_windows.bat Release  "" GUICONSOLE
+```
+
+
+##### Linux：
+```sh
+# 使用默认 Release 配置
+install_linux.sh
+
+# 指定Debug
+# Linux下支持 Release、Debug、Hybrid、Evaluation
+install_linux.sh Debug
+
+
+# 所有示例
+install_linux.sh Debug
+install_linux.sh Release
+install_linux.sh Hybrid
+install_linux.sh Evaluation
+```
+
+---
+
+## 支持的引擎
+
+<span height="20">&nbsp;</span>
+<div align="center">
+	<a href="https://unity.com/" target="_blank"><img src="https://raw.githubusercontent.com/KBEngineLab/KBEngineNexMaterials/938f6a964c299176995384985cde18fb88accb5c/images/third_party_logo/unity.svg" alt="Unity" height="30"></a>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	<a href="https://www.unrealengine.com/zh-CN" target="_blank"><img src="https://raw.githubusercontent.com/KBEngineLab/KBEngineNexMaterials/938f6a964c299176995384985cde18fb88accb5c/images/third_party_logo/unreal-engine.svg" alt="UE5" height="30"></a>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	<a href="https://www.cocos.com/" target="_blank"><img src="https://github.com/KBEngineLab/KBEngineNexMaterials/blob/main/images/third_party_logo/cocos_dark.png?raw=true" alt="Cocos" height="30"></a>
+</div>
+
+<span height="20">&nbsp;</span>
+
+<div align="center">
+	<a href="https://layaair.com" target="_blank"><img src="https://github.com/KBEngineLab/KBEngineNexMaterials/blob/main/images/third_party_logo/layaair-logo_dark.png?raw=true" alt="LayaAir" height="30"></a>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	<a href="https://godotengine.org/" target="_blank"><img src="https://raw.githubusercontent.com/KBEngineLab/KBEngineNexMaterials/938f6a964c299176995384985cde18fb88accb5c/images/third_party_logo/godot-logo.svg" alt="Godot" height="30"></a>
+</div>
+
 ## Demo
 
-	Unity		: https://github.com/KBEngineLab/demo_kbengine_unity3d_default
-	UE5		: https://github.com/KBEngineLab/demo_kbengine_ue5_default
-	UE4		: https://github.com/kbengine/kbengine_ue4_demo
+| 平台         | 链接                                                               |
+| ------------ | ------------------------------------------------------------------ |
+| Unity        | https://github.com/KBEngineLab/demo_kbengine_unity3d_default       |
+| UE5          | https://github.com/KBEngineLab/demo_kbengine_ue5_default           |
+| CocosCreator | https://github.com/KBEngineLab/demo_kbengine_cocos_creator_default |
+| Godot        | https://github.com/KBEngineLab/demo_kbengine_godot_default         |
+
+
 	
 <!-- Cocos2d_js	: https://github.com/kbengine/kbengine_cocos2d_js_demo -->
 <!-- Godot Engine	: https://github.com/krogank9/kbe_godot_demo -->

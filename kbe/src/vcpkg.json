@@ -1,0 +1,18 @@
+{
+  "name": "kbengine-nex",
+  "version": "2.6.3",
+  "dependencies": [
+    "fmt",
+    "log4cxx",
+    "zlib",
+    "hiredis",
+    "expat",
+    "apr",
+    "apr-util",
+    "curl",
+    {
+      "name": "jemalloc",
+      "platform": "!windows"
+    }
+  ]
+}
