@@ -35,6 +35,10 @@ def server_shutdown(request):
     components = Machines.Machines(system_user_uid, system_username)
 
     for ctid in COMPS_FOR_SHUTDOWN:
+        hosts = "<broadcast>"
+        if isinstance(settings.MACHINES_ADDRESS, (tuple, list)) and settings.MACHINES_ADDRESS:
+            hosts = settings.MACHINES_ADDRESS
+
         components.stopServer(ctid, trycount=0)
     context = {
         "shutType": "all_ct"
