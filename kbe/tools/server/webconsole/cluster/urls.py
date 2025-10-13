@@ -16,8 +16,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-
+from . import views
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('cluster/', include('cluster.urls' )),
+    path("server_shutdown/", admin.site.admin_view(views.server_shutdown), name="server_shutdown"),
+    path("server_kill/", admin.site.admin_view(views.server_kill), name="server_kill"),
+    path("server_run/", admin.site.admin_view(views.server_run), name="server_run"),
+    path("server_stop/", admin.site.admin_view(views.server_stop), name="server_stop"),
+    path("server_query/", admin.site.admin_view(views.server_query), name="server_query"),
 ]
