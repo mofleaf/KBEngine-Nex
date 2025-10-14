@@ -201,3 +201,5 @@ balls_server_assets
 kbengine_demos_assets
 *server_assets*
 *demo*_assets*
+
+/kbe/tools/server/webconsole/pycommon

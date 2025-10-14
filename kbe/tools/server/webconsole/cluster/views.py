@@ -7,6 +7,8 @@ from django.views.decorators.clickjacking import xframe_options_exempt
 
 from KBESettings import settings
 from pycommon import Define, Machines
+
+from utils import kbe_util
 from webconsole.machines_mgr import machinesmgr
 from webconsole.models import KBEUserExtension
 
@@ -35,11 +37,8 @@ def server_shutdown(request):
     components = Machines.Machines(system_user_uid, system_username)
 
     for ctid in COMPS_FOR_SHUTDOWN:
-        hosts = "<broadcast>"
-        if isinstance(settings.MACHINES_ADDRESS, (tuple, list)) and settings.MACHINES_ADDRESS:
-            hosts = settings.MACHINES_ADDRESS
-
-        components.stopServer(ctid, trycount=0)
+        hosts = kbe_util.get_machines_address()
+        components.stopServer(ctid, trycount=0, targetIP=hosts)
     context = {
         "shutType": "all_ct"
     }
@@ -53,15 +52,19 @@ def server_kill(request, ct, cid):
     ct = int(ct)
     cid = int(cid)
 
-    components = Machines.Machines(request.session["sys_uid"], request.session["sys_user"])
+    ext = KBEUserExtension.objects.get(user=request.user)
+    system_user_uid = 0 if ext.system_user_uid is None else int(ext.system_user_uid)
+    system_username = "" if ext.system_user_uid is None else ext.system_username
 
-    components.killServer(ct, componentID=cid, trycount=0)
+    components = Machines.Machines(system_user_uid, system_username)
+    hosts = kbe_util.get_machines_address()
+    components.killServer(ct, componentID=cid, trycount=0, targetIP=hosts)
     context = {
         "shutType": "kill_cid",
         "ct": ct,
         "cid": cid
     }
-    return render(request, "WebConsole/components_kill.html", context)
+    return render(request, "cluster/server_kill.html", context)
 
 
 def server_run(request):
@@ -106,15 +109,21 @@ def server_stop(request, ct, cid):
     ct = int(ct)
     cid = int(cid)
 
-    components = Machines.Machines(request.session["sys_uid"], request.session["sys_user"])
+    ext = KBEUserExtension.objects.get(user=request.user)
+    system_user_uid = 0 if ext.system_user_uid is None else int(ext.system_user_uid)
+    system_username = "" if ext.system_user_uid is None else ext.system_username
 
-    components.stopServer(ct, componentID=cid, trycount=0)
+    components = Machines.Machines(system_user_uid, system_username)
+
+    hosts = kbe_util.get_machines_address()
+
+    components.stopServer(ct, componentID=cid, trycount=0, targetIP=hosts)
     context = {
         "shutType": "stop_cid",
         "ct": ct,
         "cid": cid
     }
-    return render(request, "WebConsole/components_shutdown.html", context)
+    return render(request, "cluster/server_shutdown.html", context)
 
 
 def server_query(request):
@@ -154,5 +163,111 @@ def server_query(request):
                 "consolePort": comp.consolePort,
             }
             dl.append(d)
+
+    return JsonResponse(kbeComps, safe=False)
+
+
+def server_one_query(request, ct, cid):
+    """
+    请求获取一个组件数据
+    """
+
+    ext = KBEUserExtension.objects.get(user=request.user)
+    system_user_uid = 0 if ext.system_user_uid is None else int(ext.system_user_uid)
+    system_username = "" if ext.system_user_uid is None else ext.system_username
+
+    ct = int(ct)
+    cid = int(cid)
+    interfaces_groups = machinesmgr.queryAllInterfaces(system_user_uid, system_username)
+    # [ [machine, other-components, ...], ...]
+    kbeComps = []
+    for mID, comps in interfaces_groups.items():
+        if len(comps) <= 1:
+            continue
+
+        dl = []
+        kbeComps.append(dl)
+        for comp in comps:
+            if comp.componentType == 8:
+                d = {
+                    "ip": comp.intaddr,
+                    "componentType": comp.componentType,
+                    "componentName": comp.componentName,
+                    "fullname": comp.fullname,
+                    "uid": comp.uid,
+                    "pid": comp.pid,
+                    "componentID": comp.componentID,
+                    "globalOrderID": comp.globalOrderID,
+                    "cpu": comp.cpu,
+                    "mem": comp.mem,
+                    "usedmem": comp.usedmem,
+                    "entities": comp.entities,
+                    "proxies": comp.proxies,
+                    "clients": comp.clients,
+                    "consolePort": comp.consolePort,
+                }
+                dl.append(d)
+
+            if comp.componentID == cid:
+                d = {
+                    "ip": comp.intaddr,
+                    "componentType": comp.componentType,
+                    "componentName": comp.componentName,
+                    "fullname": comp.fullname,
+                    "uid": comp.uid,
+                    "pid": comp.pid,
+                    "componentID": comp.componentID,
+                    "globalOrderID": comp.globalOrderID,
+                    "cpu": comp.cpu,
+                    "mem": comp.mem,
+                    "usedmem": comp.usedmem,
+                    "entities": comp.entities,
+                    "proxies": comp.proxies,
+                    "clients": comp.clients,
+                    "consolePort": comp.consolePort,
+                }
+                dl.append(d)
+
+            if ct == 3:
+                if comp.componentType == 6 or comp.componentType == 3:
+                    d = {
+                        "ip": comp.intaddr,
+                        "componentType": comp.componentType,
+                        "componentName": comp.componentName,
+                        "fullname": comp.fullname,
+                        "uid": comp.uid,
+                        "pid": comp.pid,
+                        "componentID": comp.componentID,
+                        "globalOrderID": comp.globalOrderID,
+                        "cpu": comp.cpu,
+                        "mem": comp.mem,
+                        "usedmem": comp.usedmem,
+                        "entities": comp.entities,
+                        "proxies": comp.proxies,
+                        "clients": comp.clients,
+                        "consolePort": comp.consolePort,
+                    }
+                    dl.append(d)
+
+            if ct == 4:
+                if comp.componentType == 5 or comp.componentType == 4:
+                    d = {
+                        "ip": comp.intaddr,
+                        "componentType": comp.componentType,
+                        "componentName": comp.componentName,
+                        "fullname": comp.fullname,
+                        "uid": comp.uid,
+                        "pid": comp.pid,
+                        "componentID": comp.componentID,
+                        "globalOrderID": comp.globalOrderID,
+                        "cpu": comp.cpu,
+                        "mem": comp.mem,
+                        "usedmem": comp.usedmem,
+                        "entities": comp.entities,
+                        "proxies": comp.proxies,
+                        "clients": comp.clients,
+                        "consolePort": comp.consolePort,
+                    }
+                    dl.append(d)
 
     return JsonResponse(kbeComps, safe=False)

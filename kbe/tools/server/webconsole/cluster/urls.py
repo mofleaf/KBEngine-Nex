@@ -15,12 +15,26 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
-from . import views
+from django.urls import path, re_path
+from cluster import views
+
 urlpatterns = [
     path("server_shutdown/", admin.site.admin_view(views.server_shutdown), name="server_shutdown"),
-    path("server_kill/", admin.site.admin_view(views.server_kill), name="server_kill"),
     path("server_run/", admin.site.admin_view(views.server_run), name="server_run"),
-    path("server_stop/", admin.site.admin_view(views.server_stop), name="server_stop"),
     path("server_query/", admin.site.admin_view(views.server_query), name="server_query"),
+    re_path(
+        r'^(?P<ct>[0-9]+)/(?P<cid>[0-9]+)/query/$',
+        admin.site.admin_view(views.server_one_query),
+        name="server_one_query"
+    ),
+    re_path(
+        r'^(?P<ct>[0-9]+)/(?P<cid>[0-9]+)/stop/$',
+        admin.site.admin_view(views.server_stop),
+        name="server_stop"
+    ),
+    re_path(
+        r'^(?P<ct>[0-9]+)/(?P<cid>[0-9]+)/kill/$',
+        admin.site.admin_view(views.server_kill),
+        name="server_kill"
+    ),
 ]
