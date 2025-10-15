@@ -1,11 +1,14 @@
+import json
 import time
 
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.views.decorators.clickjacking import xframe_options_exempt
 
 from KBESettings import settings
+from cluster.models import ServerConfig
 from pycommon import Define, Machines
 
 from utils import kbe_util
@@ -38,6 +41,7 @@ def server_shutdown(request):
 
     for ctid in COMPS_FOR_SHUTDOWN:
         hosts = kbe_util.get_machines_address()
+        print(hosts)
         components.stopServer(ctid, trycount=0, targetIP=hosts)
     context = {
         "shutType": "all_ct"
@@ -286,3 +290,58 @@ def server_one_query(request, ct, cid):
                     dl.append(d)
 
     return JsonResponse(kbeComps, safe=False)
+
+
+def server_save_config(request):
+    """
+    保存当前服务器运行状态
+    """
+    layoutName = request.GET.get("name")
+    if not layoutName:
+        result = {"state": "fault", "message": "invalid layout name!!!"}
+        return JsonResponse(result, safe=False)
+
+    VALID_CT = {
+        Define.DBMGR_TYPE,
+        Define.LOGINAPP_TYPE,
+        Define.BASEAPPMGR_TYPE,
+        Define.CELLAPPMGR_TYPE,
+        Define.CELLAPP_TYPE,
+        Define.BASEAPP_TYPE,
+        Define.INTERFACES_TYPE,
+        Define.LOGGER_TYPE
+    }
+    ext = KBEUserExtension.objects.get(user=request.user)
+    system_user_uid = 0 if ext.system_user_uid is None else int(ext.system_user_uid)
+    system_username = "" if ext.system_username is None else ext.system_username
+    interfaces_groups = machinesmgr.queryAllInterfaces(system_user_uid, system_username)
+
+    conf = {}
+
+    for machineID, infos in interfaces_groups.items():
+        for info in infos:
+            if info.componentType not in VALID_CT:
+                continue
+
+            compnentName = Define.COMPONENT_NAME[info.componentType]
+            if compnentName not in conf:
+                conf[compnentName] = []
+            d = {"ip": info.intaddr, "cid": info.componentID, "gus": info.genuuid_sections}
+            conf[compnentName].append(d)
+
+    if len(conf) == 0:
+        result = {"state": "fault", "message": "当前没有服务器在运行!!!"}
+        return JsonResponse(result, safe=False)
+
+    try:
+        m = ServerConfig.objects.get(name=layoutName)
+    except ObjectDoesNotExist:
+        m = ServerConfig()
+
+    m.name = layoutName
+    m.sys_user = system_username
+    m.config = json.dumps(conf)
+    m.save()
+
+    result = {"state": "success", "message": ""}
+    return JsonResponse(result, safe=False)

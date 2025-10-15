@@ -22,6 +22,7 @@ urlpatterns = [
     path("server_shutdown/", admin.site.admin_view(views.server_shutdown), name="server_shutdown"),
     path("server_run/", admin.site.admin_view(views.server_run), name="server_run"),
     path("server_query/", admin.site.admin_view(views.server_query), name="server_query"),
+    path("server_save_config/", admin.site.admin_view(views.server_save_config), name="server_save_config"),
     re_path(
         r'^(?P<ct>[0-9]+)/(?P<cid>[0-9]+)/query/$',
         admin.site.admin_view(views.server_one_query),

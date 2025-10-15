@@ -21,7 +21,7 @@
             </li>
 
             <li>
-                <div class="layui-btn layui-btn-sm  layui-btn-normal"  onClick="flush()">保存当前服务器运行配置</div>
+                <div class="layui-btn layui-btn-sm  layui-btn-normal"  onClick="saveServerConfig()">保存当前服务器运行配置</div>
             </li>
 
         </ul>
@@ -83,29 +83,33 @@
 
 
 {% block extrabody %}
-
+<script src="/static/js/pytools.js"></script>
+<script src="/static/js/jquery-3.7.1.min.js"></script>
 <script>
 
-    function saveLayouts()
+    function saveServerConfig()
     {
         layer.prompt({
             title: '请为这个配置起个名',
             formType: 0 //prompt风格，支持0-2
           },
-          function(data){
+          function(data, index, elem){
             $.ajax({
-                    url : "/wc/components/save_layout",
+                    url : "/cluster/server_save_config/",
                     dataType : "json",
                     data : { timestap : (new Date()).valueOf(), name : data }
                 }).done(function(data, textStatus, jqXHR){
-                        if (data.state == "success")
+                        if (data.state == "success"){
+                            layer.close(index);
                             layer.alert( "保存完成", {
                                     title : "保存完成",
-                                } );
-                        else
+                            });
+                        }else{
                             layer.alert( data.message, {
-                                    title : "保存失败",
-                                } );
+                                title : "保存失败",
+                            } );
+                        }
+
                     });
             });
     }
