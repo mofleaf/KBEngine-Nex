@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.http import HttpResponse
 from django.template.response import TemplateResponse
 
+from KBESettings.custom_admin_site import custom_admin_site
 from cluster.models import ServerManage, ServerLog
 from pycommon import Define
 from pycommon.LoggerWatcher import logName2type
@@ -9,7 +10,7 @@ from webconsole.machines_mgr import machinesmgr
 from webconsole.models import KBEUserExtension
 
 
-@admin.register(ServerLog)
+@admin.register(ServerLog, site=custom_admin_site)
 class ServerManageAdmin(admin.ModelAdmin):
     change_list_template = "cluster/server_log.html"
     list_display = []

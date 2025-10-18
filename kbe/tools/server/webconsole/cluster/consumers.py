@@ -1,4 +1,5 @@
 import asyncio
+import threading
 from urllib.parse import parse_qs
 
 from asgiref.sync import async_to_sync
@@ -29,6 +30,8 @@ class LogWatch(object):
         self.logger = LoggerWatcher()
         self.previous_log = []
 
+        self._stop_event = threading.Event()  # 停止标记
+
     def do(self):
         """
         """
@@ -38,6 +41,9 @@ class LogWatch(object):
                                            self.groupOrder, self.searchDate, self.keystr)
 
         def onReceivedLog(logs):
+            if self._stop_event.is_set():  # 检查停止
+                return
+
             new_logs = list(set(logs) ^ set(self.previous_log))
             for e in new_logs:
                 e = e.decode("utf-8")
@@ -49,6 +55,7 @@ class LogWatch(object):
     async def close(self):
         """
         """
+        self._stop_event.set()  # 设置停止标记
         self.logger.deregisterFromLogger()
         self.logger.close()
 
@@ -61,7 +68,7 @@ class LogWatch(object):
 
 
 
-class ServerManageConsumer(AsyncWebsocketConsumer):
+class LogConsumer(AsyncWebsocketConsumer):
     def __init__(self, *args, **kwargs):
         super().__init__(args, kwargs)
         self.console_task = None

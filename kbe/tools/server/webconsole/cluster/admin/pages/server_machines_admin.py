@@ -1,12 +1,13 @@
 from django.contrib import admin
 from django.template.response import TemplateResponse
 
+from KBESettings.custom_admin_site import custom_admin_site
 from cluster.models import ServerMachines
 from webconsole.machines_mgr import machinesmgr
 from webconsole.models import KBEUserExtension
 
 
-@admin.register(ServerMachines)
+@admin.register(ServerMachines, site=custom_admin_site)
 class ServerMachinesAdmin(admin.ModelAdmin):
     change_list_template = "cluster/server_machines.html"
     list_display = []

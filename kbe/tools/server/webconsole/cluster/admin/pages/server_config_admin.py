@@ -4,6 +4,7 @@ from django.template.response import TemplateResponse
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 
+from KBESettings.custom_admin_site import custom_admin_site
 from cluster.models import ServerConfig
 from django.contrib import admin, messages
 
@@ -108,7 +109,7 @@ def load_servers(modeladmin, request, queryset):
 load_servers.short_description = "加载服务器配置"
 
 
-@admin.register(ServerConfig)
+@admin.register(ServerConfig, site=custom_admin_site)
 class ServerConfigAdmin(admin.ModelAdmin):
     # 在后台列表页显示哪些字段（列）
     list_display = ("id", "name", "sys_user", "cellapp","baseapp","cellappmgr","baseappmgr","loginapp","dbmgr","interfaces","logger")

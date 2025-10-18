@@ -38,6 +38,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+ASGI_APPLICATION = "KBESettings.asgi.application"
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -51,10 +53,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'webconsole.apps.AdminConfig',
     'cluster.apps.ClusterConfig',
+    "component",
 ]
 
 
-ASGI_APPLICATION = "KBESettings.asgi.application"
 
 
 MIDDLEWARE = [

@@ -32,6 +32,8 @@ class MachinesMgr(object):
 		# 在settings.USE_MACHINES_BUFFER == False时，用于避免外部代码在同一时间多次query all interfaces；
 		# 在settings.USE_MACHINES_BUFFER == True时，用于子线程判断停止query all interfaces的时机。
 		self.lastQueryTime = 0.0
+
+		self.thread = None  # 保证 thread 属性存在
 	
 	def __delete__(self):
 		print("MachinesMgr::__delete__()")
@@ -140,6 +142,24 @@ class MachinesMgr(object):
 		生成相对唯一的cid（非全局唯一）
 		"""
 		return self.machineInst.makeCID(componentType)
+
+	def cleanup(self):
+		"""
+        清理方法，在退出时调用
+        """
+		print("MachinesMgr::cleanup() - 正在清理 machinesmgr ...")
+		# 停止子线程
+		if self.thread and self.thread.is_alive():
+			print("MachinesMgr::cleanup() - 等待子线程结束...")
+			# 标记停止条件
+			self.lastQueryTime = 0
+			self.thread.join(timeout=5)  # 等待线程结束，最多5秒
+
+		# 清空数据
+		self.interfaces_groups.clear()
+		self.machines.clear()
+		self.inited = False
+		print("MachinesMgr::cleanup() - 清理完成")
 
 # 全局变量
 machinesmgr = MachinesMgr()
