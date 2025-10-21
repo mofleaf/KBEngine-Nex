@@ -42,9 +42,26 @@
 
         .list-tree-view{
             border: 1px solid var(--hairline-color);
-            height: 70vh;
+            height: calc(100vh - 51px - 50px );
             overflow: auto;
             padding: 10px 0px;max-width: 400px;
+        }
+
+        .data-view{
+            padding:0 20px;
+        }
+
+        @media (max-width: 767px) {
+            .list-tree-view{
+                height: 300px;
+            }
+
+
+            .data-view{
+                padding:0 0;
+                margin-top:20px;
+            }
+
         }
     </style>
     <div id="watcherConsole" >
@@ -55,7 +72,7 @@
 <!--                    <span onclick="show_result(this)" key="root"><a href="javascript:void(0);">root</a></span>-->
 <!--                    </li>-->
             </div>
-            <div class="layui-col-md8" style="padding:0 20px;">
+            <div class="layui-col-md8 data-view" >
                 <table class="layui-table watcher-info" lay-size="sm">
                     <thead><tr><th>属性</th><th>变量</th></tr></thead><tbody></tbody>
                 </table>
@@ -97,7 +114,6 @@
             id: 'ID-demo-layer-direction-r',
             content: $("#watcherConsole"),
             end: function(){
-                console.log('弹层已被移除');
                 if (window.kbe_socket != null)
                     window.kbe_socket.close();
                     $(".watcher-info tbody").html("");

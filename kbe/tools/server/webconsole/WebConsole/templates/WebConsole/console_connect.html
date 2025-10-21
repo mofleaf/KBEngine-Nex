@@ -3,8 +3,7 @@
   {% block content %}</p>
 <div class="container-win row placeholders">
   <div id="server-title"><h4>{{ request.GET.title }}</h4></div>
-  <div id="output_block_area">
-  </div>
+  <div id="output_block_area"></div>
   <br>
   <div id="input-block">
       <input class="form-control" type="text" name="textfield" id="input_cmd_line">
@@ -15,7 +14,7 @@
       <input name="component_ip" type="hidden" id="component_ip" value="{{ request.GET.ip }}">
     <input name="component_port" type="hidden" id="component_port" value="{{ request.GET.port }}">
     <input name="ws_url" type="hidden" id="ws_url" value="{{ ws_url }}">
-<input class="btn btn-default" type="button" name="exec" value="执行" id="exec" onClick="execute_cmd()">
+    <input class="btn btn-default" type="button" name="exec" value="执行" id="exec" onClick="execute_cmd()">
     <label class="control-label">
     <input name="isMultiline" type="checkbox" class="" id="mutiline" onClick="console_input_toggle();">
     多行输入
