@@ -6,6 +6,12 @@ class CustomAdminSite(AdminSite):
     index_title = "控制面板"
 
 
+    def each_context(self, request):
+        context = super().each_context(request)
+        # 移除 “查看站点” 按钮
+        context["site_url"] = None
+        return context
+
     def get_app_list(self, request, app_label = None):
         """
         返回整个站点的 app 列表（用于 admin index 页面）。

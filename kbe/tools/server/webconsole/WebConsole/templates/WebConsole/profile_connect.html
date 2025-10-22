@@ -4,22 +4,21 @@
 
 <div class="container-win row placeholders">
   <div id="server-title"><h4>{{ request.GET.title }}</h4></div>
-  <form class="form-inline" onkeypress="if(event.keyCode==13||event.which==13){return false;}">
-    <div class="form-group" style="margin-right: 1em">
+  <div class="layui-form">
+    <div class="layui-inline" style="margin-right: 1em">
       <input class="form-control" type="text" name="second" id="second" placeholder="输入查询时长(单位：秒)" style="padding-left: 0.3em;padding-top: 0.2em;padding-bottom: 0.3em;" />
       <div>注：默认查询时长为10秒</div>
     </div>
-    <div class="form-group" style="margin-right: 1em">
+    <div class="layui-inline" style="margin-right: 1em">
         <input class="form-control" type="text" name="password" id="password" placeholder="输入密码" style="padding-left: 0.3em;padding-top: 0.2em;padding-bottom: 0.3em; " />
         <div>注：需要提供telnet密码，默认为pwd123456</div>
     </div>
-    <div class="form-group">
+    <div class="layui-inline">
         <input class="btn btn-default form-control" type="button" name="exec" value="连接组件" id="exec" onClick="onProfile(this)" />
         <div id="output_block_area2" class="form-control" style="border: none;background-color: none;box-shadow:none;"></div>
         <div style="height: 1.5em"></div>
-    </div>   
     </div>
-  </form>
+  </div>
   
   <div id="tottime" class="hide" style="width: 100%;height: 280px;"></div>
   <div class="object-info hide" style="height: 80px"></div>

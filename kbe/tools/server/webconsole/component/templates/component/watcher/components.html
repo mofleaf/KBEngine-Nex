@@ -36,7 +36,7 @@
             display:none !important;
             padding: 20px;
         }
-        .layui-layer-page {#watcherConsole{
+        .layui-layer-page #watcherConsole{
             display:block !important;
         }
 
@@ -116,7 +116,7 @@
             end: function(){
                 if (window.kbe_socket != null)
                     window.kbe_socket.close();
-                    $(".watcher-info tbody").html("");
+                $(".watcher-info tbody").html("");
             }
         });
 

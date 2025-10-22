@@ -141,45 +141,57 @@ class TelnetConsole:
             except Exception:
                 return False
         return True
-# class ProfileConsole(TelnetConsole):
-#     """
-#     用于性能分析的控制台类
-#     """
-#     def __init__( self, wsInst, host, port, command, sec, password):
-#         """
-#         """
-#         self.wsInst = wsInst
-#         self.host = host
-#         self.port = port
-#         self.consoleInst = None
-#         self.cmd = command.encode('utf-8')
-#         self.sec = sec.encode('utf-8')
-#         self.password = password.encode('utf-8')
-#
-#     def onConnectedToConsole( self ):
-#         """
-#         template method.
-#         当成功连接上telnet控制台时回调pytickprofile
-#         """
-#         self.consoleInst.write( b"" + self.password + b"\r\n")
-#         self.consoleInst.write( b":"+self.cmd+b" "+self.sec+b"\r\n")
-#
-#     def onReceivedConsoleData( self, data ):
-#         """
-#         template method.
-#         当从telenet控制台收到了新数据以后回调
-#         """
-#         self.wsInst.send( data )
-#         return True
-#
-#     def onReceivedClientData( self, data ):
-#         """
-#         template method.
-#         当从客户端收到了新数据以后回调
-#         """
-#         if data == ":":
-#             self.wsInst.close()
-#             return False
-#         self.consoleInst.write( _pre_process_cmd( data ) )
-#         return True
-#
+
+
+class ProfileConsole(TelnetConsole):
+    """
+    用于性能分析的控制台类
+    """
+    def __init__(self, wsInst, host, port, command, sec, password):
+        """
+        """
+        super().__init__(wsInst, host, port)
+        self.wsInst = wsInst
+        self.host = host
+        self.port = port
+        self.writer = None
+        self.cmd = command.encode('utf-8')
+        self.sec = sec.encode('utf-8')
+        self.password = password.encode('utf-8')
+
+    async def onConnectedToConsole( self ):
+        """
+        template method.
+        当成功连接上telnet控制台时回调pytickprofile
+        """
+        self.writer.write( b"" + self.password + b"\r\n")
+        await self.writer.drain()
+        self.writer.write( b":"+self.cmd+b" "+self.sec+b"\r\n")
+        await self.writer.drain()
+
+    async def onReceivedConsoleData( self, data ):
+        """
+        template method.
+        当从telenet控制台收到了新数据以后回调
+        """
+        # self.wsInst.send( data )
+        # return True
+
+        try:
+            await self.wsInst.send(data.decode(errors="ignore"))
+        except Exception:
+            return False
+        return True
+
+    async def onReceivedClientData( self, data ):
+        """
+        template method.
+        当从客户端收到了新数据以后回调
+        """
+        if data == ":":
+            self.wsInst.close()
+            return False
+        self.writer.write( _pre_process_cmd( data.encode() ) )
+        await self.writer.drain()
+        return True
+

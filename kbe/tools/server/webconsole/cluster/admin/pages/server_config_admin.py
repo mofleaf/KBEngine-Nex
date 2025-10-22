@@ -69,6 +69,16 @@ def load_servers(modeladmin, request, queryset):
     kbe_res_path = "" if ext.kbe_res_path is None else ext.kbe_res_path
     kbe_bin_path = "" if ext.kbe_bin_path is None else ext.kbe_bin_path
 
+    # if kbe_root == "":
+    #     messages.error(request, "请配置KBE_ROOT。")
+    #     return
+    if kbe_res_path == "":
+        messages.error(request, "请配置KBE_RES_PATH。")
+        return
+    if kbe_bin_path == "":
+        messages.error(request, "请配置KBE_BIN_PATH。")
+        return
+
     components = Machines.Machines(system_user_uid, system_username)
     interfaces_groups = machinesmgr.queryAllInterfaces(system_user_uid, system_username)
 
