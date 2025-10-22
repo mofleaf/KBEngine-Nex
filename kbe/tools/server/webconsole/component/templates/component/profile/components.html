@@ -160,7 +160,7 @@
   let g_host = "";
   let g_port = 0;
   let g_cmd = "";
-  var myChart = null;
+        var myChart = null;
   function initProfile(cmd)
   {
     $.data.profile_started = false;
@@ -206,11 +206,14 @@
               initProfile(cmd);
             },
             end: function(){
+            $.data.profile_started = false;
               $('#network-data tbody').html("");
               $('#event-data tbody').html("");
               $('#object-data tbody').html("");
               $(".onProfileBtn").val("连接组件");
               $('#output_block_area2').html("");
+
+              if(myChart != null) myChart.dispose();
               myChart = null;
             }
         });
@@ -266,12 +269,13 @@ function connect_to_app(ws_url)
     var socket = new WebSocket(ws_url);
     socket.onopen = function(evt) {
         $('#output_block_area2').html("<p> 连接成功！欢迎使用WebConsole。</p>");
-        if (g_cmd == 'pytickprofile')
-          show_echars();
+       //if (g_cmd == 'pytickprofile')
+         // show_echars();
     };
     socket.onclose = function(evt) {
         $('#output_block_area2').html("<p> 连接已关闭，请重新连接！！！ </p>");
         $.data.connect_closed = true;
+        $.data.profile_started = false;
     };
     socket.onmessage = function(evt) {
         //$('#output_block_area2').append('<span>' + evt.data + '</span> <br>');
@@ -280,6 +284,7 @@ function connect_to_app(ws_url)
     socket.onerror = function(evt) {
         //alert("websocket onerror: " + evt);
         $('#output_block_area2').html("<p> 连接失败！！！请刷新重试。 </p>");
+        $.data.profile_started = false;
     };
     window.kbe_socket = socket;
     $.data.connect_closed = false;
@@ -443,6 +448,7 @@ function show_echars(){
 
   //实时更新时间轴
   timeTicket = setInterval(function () {
+    if(myChart == null ) clearInterval(timeTicket);
     data_length = $.data.pyTickProfileDatas.length-1;
 
     if (arr_x.length > 200)
