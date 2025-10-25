@@ -57,13 +57,32 @@ else
     echo "⚠️ 未找到 requirements.txt，跳过依赖安装。"
 fi
 
+echo "⚙️ 运行数据库迁移..."
+python manage.py makemigrations
+python manage.py migrate
+
 # -----------------------------
-# ✅ 5. 完成提示
+# 👤 5. 创建管理员账号（交互式）
 # -----------------------------
 echo ""
-echo "✨ 虚拟环境创建完成！"
+echo "👤 开始创建 Django 管理员账号（交互输入）"
+echo "--------------------------------------------------"
+python manage.py createsuperuser
+echo "--------------------------------------------------"
+
+# -----------------------------
+# ✅ 6. 完成提示
+# -----------------------------
+echo ""
+echo "✨ 环境与 Django 初始化完成！"
 echo "📍 激活命令："
 echo "   source $VENV_DIR/bin/activate"
+echo "📍 启动开发服务器："
+echo "   uvicorn KBESettings.asgi:application --reload --reload-include \"*.html\""
+echo "📍 启动生产服务器："
+echo "   uvicorn KBESettings.asgi:application"
 echo ""
 echo "🔹 当前 Python 版本："
 python --version
+echo "🔹 当前 Django 版本："
+python -m django --version
