@@ -43,7 +43,6 @@ ASGI_APPLICATION = "KBESettings.asgi.application"
 # Application definition
 
 INSTALLED_APPS = [
-    # 'simpleui',
     "channels",
     'django.contrib.admin',
     'django.contrib.auth',
