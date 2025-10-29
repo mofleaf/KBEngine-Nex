@@ -67,7 +67,9 @@ function {{comp.fullname}}_connect_to()
           trigger: 'axis'
       },
       legend: {
-          top:'5%',
+           orient: 'horizontal',
+           top:"5%",
+    type: 'scroll',
         data:[{% for comp3 in KBEComps %}{% if comp.componentType == 3 %}{% if comp3.componentType == 6 %}'{{ comp3.fullname }}[{{ comp3.componentID }}]',{% endif %}{% elif comp.componentType == 4 %}{% if comp3.componentType == 5 %}'{{ comp3.fullname }}[{{ comp3.componentID }}]',{% endif %}{% endif %}{% endfor %}],
     },
       dataZoom: [
