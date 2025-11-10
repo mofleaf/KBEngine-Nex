@@ -229,37 +229,66 @@
     }
 
 
+    function cleanANSI(str) {
+        // 去掉 ANSI 转义码
+        str = str.replace(/\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])/g, '');
+        // 去掉 ASCII 控制字符，保留换行和制表
+        str = str.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g, '');
+        // 去掉 vt100 序列
+        str = str.replace(/\x18*vt100[\x00-\x1F]*/g, '');
+        return str;
+    }
+
+
+
+
     function show_result(data, ignoreBlankLine)
     {
-        var ds = data.replace("\r\n", "\n");
+        console.log(data);
+        var ds = data.replace(/\r\n/g, "\n");
         ds = ds.replace("<", "&lt;");
         //ds = ds.replace(">", "&gt;");
         ds = KBEngine.filterConsoleCmd(ds);
-        ds = ds.split("\n");
-        var em = $.data.lastEM;
 
-        for (var i = 0; i < ds.length; i++)
-        {
-            var d = ds[i];
-            if (ignoreBlankLine && d.length == 0)
-                continue;
-            if ($.data.lastEM)
-            {
-                em.text(KBEngine.filterConsoleCmd(em.text() + d));
-                $.data.lastEM = null;
-            }
-            else
-            {
-                if( KBEngine.filterConsoleCmd(d).indexOf("~] >>>")>0 || KBEngine.filterConsoleCmd(d).indexOf("~]#")>0 )
-                    em = $('<span style="color:red">' + KBEngine.filterConsoleCmd(d) + '</span>');
-                else
-                    em = $('<span>' + KBEngine.filterConsoleCmd(d) + '</span>');
-                $('#output_block_area').append(em);
-                $('#output_block_area').append('<br>');
-            }
-        }
-        if (data[data.length - 1] != "\n")
-            $.data.lastEM = em;
+        ds = ds.replace(/\n/g, "<br>");
+        ds = ds.replace(/ /g, '&nbsp;');
+        $('#output_block_area').append(cleanANSI(ds));
+        // ds = ds.split("\n");
+
+
+        // for (var i = 0; i < ds.length; i++){}
+        // var em = $.data.lastEM;
+
+        // for (var i = 0; i < ds.length; i++)
+        // {
+        //     var d = ds[i];
+        //     if (ignoreBlankLine && d.length == 0)
+        //         continue;
+
+        //     if( KBEngine.filterConsoleCmd(d).indexOf("~] >>>")>0 || KBEngine.filterConsoleCmd(d).indexOf("~]#")>0 ){
+        //         $('#output_block_area').append($('<span>' + KBEngine.filterConsoleCmd(d) + '</span>'));
+        //     }else{
+        //         $('#output_block_area').append('<br>');
+        //     }
+
+
+        //     if ($.data.lastEM)
+        //     {
+        //         em.text(KBEngine.filterConsoleCmd(em.text() + d));
+        //         $.data.lastEM = null;
+        //     }
+        //     else
+        //     {
+        //         if( KBEngine.filterConsoleCmd(d).indexOf("~] >>>")>0 || KBEngine.filterConsoleCmd(d).indexOf("~]#")>0 )
+        //             em = $('<span style="color:red">' + KBEngine.filterConsoleCmd(d) + '</span>');
+        //         else
+        //             em = $('<span>' + KBEngine.filterConsoleCmd(d) + '</span>');
+        //         $('#output_block_area').append(em);
+        //         $('#output_block_area').append('<br>');
+        //     }
+        // }
+        // if (data[data.length - 1] != "\n")
+        //     $.data.lastEM = em;
 
          // $('#output_block_area').scrollTop( $('#output_block_area').height());
          $('#output_block_area').scrollTop( document.getElementById('output_block_area').scrollHeight);

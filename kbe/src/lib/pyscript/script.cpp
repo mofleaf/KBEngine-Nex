@@ -105,7 +105,7 @@ int Script::run_simpleString(const char* command, std::string* retBufferPtr)
 
 		d = PyModule_GetDict(m);
 
-		v = PyRun_String(command, Py_single_input, d, d);
+		v = PyRun_String(command, Py_file_input, d, d);
 		if (v == NULL) 
 		{
 			PyErr_Print();
