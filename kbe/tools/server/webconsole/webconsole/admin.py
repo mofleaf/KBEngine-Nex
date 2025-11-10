@@ -18,7 +18,22 @@ class KBEUserExtensionInline(admin.StackedInline):
 
 class UserAdmin(BaseUserAdmin):
     inlines = (KBEUserExtensionInline,)
-
+    # 创建用户时显示的字段
+    add_fieldsets = (
+        (None, {
+            'classes': ('wide',),
+            'fields': (
+                'username',
+                'password1',
+                'password2',
+                'is_active',  # ✅ 是否有效
+                'is_staff',  # ✅ 是否后台可登录
+                'is_superuser',  # ✅ 是否超级管理员
+                'groups',  # ✅ 用户组
+                'user_permissions'  # ✅ 单独权限
+            ),
+        }),
+    )
 admin.site = custom_admin_site
 
 # admin.site.unregister(User)
