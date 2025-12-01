@@ -2142,11 +2142,6 @@ bool ClientSDKCXX::writeEntityModuleBegin(ScriptDefModule* pEntityScriptDefModul
 
 	fileBody() += fmt::format("#include \"EntityCall{}.h\"\n\n", newModuleName);
 
-	fileBody() += namespaceNameBegin;
-	fileBody() += "class Method;\n";
-	fileBody() += "class Property;\n";
-	fileBody() += "class MemoryStream;\n";
-
 	std::map<std::string, PropertyDescription*> includesHistroy;
 	ScriptDefModule::PROPERTYDESCRIPTION_MAP clientPropertys = pEntityScriptDefModule->getClientPropertyDescriptions();
 	ScriptDefModule::PROPERTYDESCRIPTION_MAP::const_iterator propIter = clientPropertys.begin();
@@ -2157,14 +2152,24 @@ bool ClientSDKCXX::writeEntityModuleBegin(ScriptDefModule* pEntityScriptDefModul
 		if (pPropertyDescription->getDataType()->type() != DATA_TYPE_ENTITY_COMPONENT)
 			continue;
 
-		EntityComponentType * pEntityComponentType = (EntityComponentType*)pPropertyDescription->getDataType();
+		EntityComponentType* pEntityComponentType = (EntityComponentType*)pPropertyDescription->getDataType();
 
 		if (includesHistroy.find(pEntityComponentType->pScriptDefModule()->getName()) != includesHistroy.end())
 			continue;
 
-		fileBody() += fmt::format("class {}{};\n", pEntityComponentType->pScriptDefModule()->getName(), moduleSuffix);
+		//fileBody() += fmt::format("class {}{};\n", pEntityComponentType->pScriptDefModule()->getName(), moduleSuffix);
+		fileBody() += fmt::format("#include \"{}{}.h\"\n", pEntityComponentType->pScriptDefModule()->getName(), moduleSuffix);
 		includesHistroy[pEntityComponentType->pScriptDefModule()->getName()] = pPropertyDescription;
 	}
+
+
+
+	fileBody() += namespaceNameBegin;
+	fileBody() += "class Method;\n";
+	fileBody() += "class Property;\n";
+	fileBody() += "class MemoryStream;\n";
+
+	
 
 	fileBody() += std::string("\n// defined in */scripts/entity_defs/") + pEntityScriptDefModule->getName() + ".def\n";
 
