@@ -76,12 +76,6 @@ public:
 	void onVersionNotMatch(std::shared_ptr<UKBEventData> pEventData);
 	void onScriptVersionNotMatch(std::shared_ptr<UKBEventData> pEventData);
 
-	void onDownloadSDK(std::shared_ptr<UKBEventData> pEventData);
-	void onImportClientSDKSuccessfully(std::shared_ptr<UKBEventData> pEventData);
-
-	void handVersionNotMatch();
-	void showPromptMessageOfCompile();
-
 	UFUNCTION(BlueprintCallable, Category = "KBEngine")
 	static FString getClientVersion();
 

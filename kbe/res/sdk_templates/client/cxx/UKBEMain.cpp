@@ -86,10 +86,6 @@ void UKBEMain::TickComponent( float DeltaTime, ELevelTick TickType, FActorCompon
 void UKBEMain::installEvents()
 {
 	KBENGINE_REGISTER_EVENT(KBEngine::KBEventTypes::onScriptVersionNotMatch, onScriptVersionNotMatch);
-	KBENGINE_REGISTER_EVENT(KBEngine::KBEventTypes::onImportClientSDKSuccessfully, onImportClientSDKSuccessfully);
-	KBENGINE_REGISTER_EVENT(KBEngine::KBEventTypes::onDownloadSDK, onDownloadSDK);
-
-
 	KBENGINE_REGISTER_EVENT(KBEngine::KBEventTypes::onVersionNotMatch, onVersionNotMatch);
 }
 
@@ -97,29 +93,16 @@ void UKBEMain::deregisterEvents()
 {
 	KBENGINE_DEREGISTER_EVENT(KBEngine::KBEventTypes::onScriptVersionNotMatch);
 	KBENGINE_DEREGISTER_EVENT(KBEngine::KBEventTypes::onVersionNotMatch);
-	KBENGINE_DEREGISTER_EVENT(KBEngine::KBEventTypes::onImportClientSDKSuccessfully);
-	KBENGINE_DEREGISTER_EVENT(KBEngine::KBEventTypes::onDownloadSDK);
 }
 
 void UKBEMain::onVersionNotMatch(std::shared_ptr<UKBEventData> pEventData)
 {
-	handVersionNotMatch();
 }
 
 void UKBEMain::onScriptVersionNotMatch(std::shared_ptr<UKBEventData> pEventData)
 {
-	handVersionNotMatch();
 }
 
-
-
-void UKBEMain::onImportClientSDKSuccessfully(std::shared_ptr<UKBEventData> pEventData)
-{
-}
-
-void UKBEMain::onDownloadSDK(std::shared_ptr<UKBEventData> pEventData)
-{
-}
 
 FString UKBEMain::getClientVersion()
 {
@@ -240,12 +223,3 @@ bool UKBEMain::newPassword(FString oldPassword, FString newPassword)
 	return true;
 }
 
-void UKBEMain::handVersionNotMatch()
-{
-
-}
-
-void UKBEMain::showPromptMessageOfCompile()
-{
-
-}
