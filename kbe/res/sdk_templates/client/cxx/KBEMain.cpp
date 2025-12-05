@@ -87,7 +87,7 @@ void KBEMain::onScriptVersionNotMatch(std::shared_ptr<UKBEventData> pEventData)
 
 
 
-FString KBEMain::getClientVersion()
+KBString KBEMain::getClientVersion()
 {
 	if (!KBEngine::KBEngineApp::getSingleton().isInitialized())
 		return TEXT("");
@@ -95,7 +95,7 @@ FString KBEMain::getClientVersion()
 	return KBEngine::KBEngineApp::getSingleton().clientVersion();
 }
 
-FString KBEMain::getClientScriptVersion()
+KBString KBEMain::getClientScriptVersion()
 {
 	if (!KBEngine::KBEngineApp::getSingleton().isInitialized())
 		return TEXT("");
@@ -103,7 +103,7 @@ FString KBEMain::getClientScriptVersion()
 	return KBEngine::KBEngineApp::getSingleton().clientScriptVersion();
 }
 
-FString KBEMain::getServerVersion()
+KBString KBEMain::getServerVersion()
 {
 	if (!KBEngine::KBEngineApp::getSingleton().isInitialized())
 		return TEXT("");
@@ -111,7 +111,7 @@ FString KBEMain::getServerVersion()
 	return KBEngine::KBEngineApp::getSingleton().serverVersion();
 }
 
-FString KBEMain::getServerScriptVersion()
+KBString KBEMain::getServerScriptVersion()
 {
 	if (!KBEngine::KBEngineApp::getSingleton().isInitialized())
 		return TEXT("");
@@ -119,7 +119,7 @@ FString KBEMain::getServerScriptVersion()
 	return KBEngine::KBEngineApp::getSingleton().serverScriptVersion();
 }
 
-FString KBEMain::getComponentName()
+KBString KBEMain::getComponentName()
 {
 	if (!KBEngine::KBEngineApp::getSingleton().isInitialized())
 		return TEXT("");
@@ -137,7 +137,7 @@ bool KBEMain::destroyKBEngine()
 	return true;
 }
 
-bool KBEMain::login(FString username, FString password, TArray<uint8> datas)
+bool KBEMain::login(KBString username, KBString password, KBArray<uint8> datas)
 {
 	if (!KBEngine::KBEngineApp::getSingleton().isInitialized())
 	{
@@ -154,7 +154,7 @@ bool KBEMain::login(FString username, FString password, TArray<uint8> datas)
 	return true;
 }
 
-bool KBEMain::createAccount(FString username, FString password, const TArray<uint8>& datas)
+bool KBEMain::createAccount(KBString username, KBString password, const KBArray<uint8>& datas)
 {
 	if (!KBEngine::KBEngineApp::getSingleton().isInitialized())
 	{
@@ -171,7 +171,7 @@ bool KBEMain::createAccount(FString username, FString password, const TArray<uin
 	return true;
 }
 
-bool KBEMain::resetPassword(FString username)
+bool KBEMain::resetPassword(KBString username)
 {
 	if (!KBEngine::KBEngineApp::getSingleton().isInitialized())
 	{
@@ -182,7 +182,7 @@ bool KBEMain::resetPassword(FString username)
 	KBENGINE_EVENT_FIRE(KBEngine::KBEventTypes::resetPassword, pEventData);
 	return true;
 }
-bool KBEMain::bindAccountEmail(FString email)
+bool KBEMain::bindAccountEmail(KBString email)
 {
 	if (!KBEngine::KBEngineApp::getSingleton().isInitialized())
 	{
@@ -193,7 +193,7 @@ bool KBEMain::bindAccountEmail(FString email)
 	KBENGINE_EVENT_FIRE(KBEngine::KBEventTypes::bindAccountEmail, pEventData);
 	return true;
 }
-bool KBEMain::newPassword(FString oldPassword, FString newPassword)
+bool KBEMain::newPassword(KBString oldPassword, KBString newPassword)
 {
 	if (!KBEngine::KBEngineApp::getSingleton().isInitialized())
 	{

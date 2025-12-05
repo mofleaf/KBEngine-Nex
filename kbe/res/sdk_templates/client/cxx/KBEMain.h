@@ -32,27 +32,27 @@ public:
 	/**
 	 * 客户端版本
 	 */
-	static FString getClientVersion();
+	static KBString getClientVersion();
 
 	/**
 	 * 客户端脚本版本
 	 */
-	static FString getClientScriptVersion();
+	static KBString getClientScriptVersion();
 
 	/**
 	 * 服务器版本
 	 */
-	static FString getServerVersion();
+	static KBString getServerVersion();
 
 	/**
 	 * 服务器脚本版本
 	 */
-	static FString getServerScriptVersion();
+	static KBString getServerScriptVersion();
 
 	/*
 		客户端属于KBE框架中的一个功能组件，这里获取将固定返回client
 	*/
-	static FString getComponentName();
+	static KBString getComponentName();
 
 	/**
 		在程序关闭时需要主动调用, 彻底销毁KBEngine
@@ -62,32 +62,32 @@ public:
 	/**
 	 * 用户登录
 	 */
-	bool login(FString username, FString password, TArray<uint8> datas);
+	bool login(KBString username, KBString password, KBArray<uint8> datas);
 
 	/*
 		创建账号
 	*/
-	bool createAccount(FString username, FString password, const TArray<uint8>& datas);
+	bool createAccount(KBString username, KBString password, const KBArray<uint8>& datas);
 
 	/**
 	 * 重置密码
 	 */
-	bool resetPassword(FString username);
+	bool resetPassword(KBString username);
 
 	/**
 	 * 绑定账号邮箱
 	 */
-	bool bindAccountEmail(FString email);
+	bool bindAccountEmail(KBString email);
 
 	/**
 	 * 修改密码
 	 */
-	bool newPassword(FString oldPassword, FString newPassword);
+	bool newPassword(KBString oldPassword, KBString newPassword);
 
 	/**
 	 * KBEngine服务器IP地址
 	 */
-	FString ip;
+	KBString ip;
 
 	/**
 	 * KBEngine服务器端口
