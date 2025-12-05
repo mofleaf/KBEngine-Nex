@@ -1,6 +1,6 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
-#include "KBEMain.h"
+#include "UKBEMain.h"
 #include "KBEngine.h"
 #include "KBEngineArgs.h"
 #include "MemoryStream.h"
@@ -10,7 +10,7 @@
 
 
 // Sets default values for this component's properties
-KBEMain::KBEMain()
+UKBEMain::UKBEMain()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
@@ -33,7 +33,22 @@ KBEMain::KBEMain()
 	UDP_SEND_BUFFER_MAX = 128;
 	UDP_RECV_BUFFER_MAX = 128;
 
+}
 
+void UKBEMain::InitializeComponent()
+{
+	Super::InitializeComponent();
+}
+
+void UKBEMain::UninitializeComponent()
+{
+	Super::UninitializeComponent();
+}
+
+// Called when the game starts
+void UKBEMain::BeginPlay()
+{
+	Super::BeginPlay();
 	KBEngine::KBEngineArgs* pArgs = new KBEngine::KBEngineArgs();
 	pArgs->ip = ip;
 	pArgs->port = port;
@@ -53,41 +68,59 @@ KBEMain::KBEMain()
 		delete pArgs;
 
 	installEvents();
-
 }
 
-// 析构
-KBEMain::~KBEMain()
+void UKBEMain::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	deregisterEvents();
+	Super::EndPlay(EndPlayReason);
 }
 
+// Called every frame
+void UKBEMain::TickComponent( float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction )
+{
 
+}
 
-
-void KBEMain::installEvents()
+void UKBEMain::installEvents()
 {
 	KBENGINE_REGISTER_EVENT(KBEngine::KBEventTypes::onScriptVersionNotMatch, onScriptVersionNotMatch);
+	KBENGINE_REGISTER_EVENT(KBEngine::KBEventTypes::onImportClientSDKSuccessfully, onImportClientSDKSuccessfully);
+	KBENGINE_REGISTER_EVENT(KBEngine::KBEventTypes::onDownloadSDK, onDownloadSDK);
+
+
 	KBENGINE_REGISTER_EVENT(KBEngine::KBEventTypes::onVersionNotMatch, onVersionNotMatch);
 }
 
-void KBEMain::deregisterEvents()
+void UKBEMain::deregisterEvents()
 {
 	KBENGINE_DEREGISTER_EVENT(KBEngine::KBEventTypes::onScriptVersionNotMatch);
 	KBENGINE_DEREGISTER_EVENT(KBEngine::KBEventTypes::onVersionNotMatch);
+	KBENGINE_DEREGISTER_EVENT(KBEngine::KBEventTypes::onImportClientSDKSuccessfully);
+	KBENGINE_DEREGISTER_EVENT(KBEngine::KBEventTypes::onDownloadSDK);
 }
 
-void KBEMain::onVersionNotMatch(std::shared_ptr<UKBEventData> pEventData)
+void UKBEMain::onVersionNotMatch(std::shared_ptr<UKBEventData> pEventData)
+{
+	handVersionNotMatch();
+}
+
+void UKBEMain::onScriptVersionNotMatch(std::shared_ptr<UKBEventData> pEventData)
+{
+	handVersionNotMatch();
+}
+
+
+
+void UKBEMain::onImportClientSDKSuccessfully(std::shared_ptr<UKBEventData> pEventData)
 {
 }
 
-void KBEMain::onScriptVersionNotMatch(std::shared_ptr<UKBEventData> pEventData)
+void UKBEMain::onDownloadSDK(std::shared_ptr<UKBEventData> pEventData)
 {
 }
 
-
-
-FString KBEMain::getClientVersion()
+FString UKBEMain::getClientVersion()
 {
 	if (!KBEngine::KBEngineApp::getSingleton().isInitialized())
 		return TEXT("");
@@ -95,7 +128,7 @@ FString KBEMain::getClientVersion()
 	return KBEngine::KBEngineApp::getSingleton().clientVersion();
 }
 
-FString KBEMain::getClientScriptVersion()
+FString UKBEMain::getClientScriptVersion()
 {
 	if (!KBEngine::KBEngineApp::getSingleton().isInitialized())
 		return TEXT("");
@@ -103,7 +136,7 @@ FString KBEMain::getClientScriptVersion()
 	return KBEngine::KBEngineApp::getSingleton().clientScriptVersion();
 }
 
-FString KBEMain::getServerVersion()
+FString UKBEMain::getServerVersion()
 {
 	if (!KBEngine::KBEngineApp::getSingleton().isInitialized())
 		return TEXT("");
@@ -111,7 +144,7 @@ FString KBEMain::getServerVersion()
 	return KBEngine::KBEngineApp::getSingleton().serverVersion();
 }
 
-FString KBEMain::getServerScriptVersion()
+FString UKBEMain::getServerScriptVersion()
 {
 	if (!KBEngine::KBEngineApp::getSingleton().isInitialized())
 		return TEXT("");
@@ -119,7 +152,7 @@ FString KBEMain::getServerScriptVersion()
 	return KBEngine::KBEngineApp::getSingleton().serverScriptVersion();
 }
 
-FString KBEMain::getComponentName()
+FString UKBEMain::getComponentName()
 {
 	if (!KBEngine::KBEngineApp::getSingleton().isInitialized())
 		return TEXT("");
@@ -127,7 +160,7 @@ FString KBEMain::getComponentName()
 	return KBEngine::KBEngineApp::getSingleton().component();
 }
 
-bool KBEMain::destroyKBEngine()
+bool UKBEMain::destroyKBEngine()
 {
 	if (!KBEngine::KBEngineApp::getSingleton().isInitialized())
 		return false;
@@ -137,7 +170,7 @@ bool KBEMain::destroyKBEngine()
 	return true;
 }
 
-bool KBEMain::login(FString username, FString password, TArray<uint8> datas)
+bool UKBEMain::login(FString username, FString password, TArray<uint8> datas)
 {
 	if (!KBEngine::KBEngineApp::getSingleton().isInitialized())
 	{
@@ -154,7 +187,7 @@ bool KBEMain::login(FString username, FString password, TArray<uint8> datas)
 	return true;
 }
 
-bool KBEMain::createAccount(FString username, FString password, const TArray<uint8>& datas)
+bool UKBEMain::createAccount(FString username, FString password, const TArray<uint8>& datas)
 {
 	if (!KBEngine::KBEngineApp::getSingleton().isInitialized())
 	{
@@ -171,7 +204,7 @@ bool KBEMain::createAccount(FString username, FString password, const TArray<uin
 	return true;
 }
 
-bool KBEMain::resetPassword(FString username)
+bool UKBEMain::resetPassword(FString username)
 {
 	if (!KBEngine::KBEngineApp::getSingleton().isInitialized())
 	{
@@ -182,7 +215,7 @@ bool KBEMain::resetPassword(FString username)
 	KBENGINE_EVENT_FIRE(KBEngine::KBEventTypes::resetPassword, pEventData);
 	return true;
 }
-bool KBEMain::bindAccountEmail(FString email)
+bool UKBEMain::bindAccountEmail(FString email)
 {
 	if (!KBEngine::KBEngineApp::getSingleton().isInitialized())
 	{
@@ -193,7 +226,7 @@ bool KBEMain::bindAccountEmail(FString email)
 	KBENGINE_EVENT_FIRE(KBEngine::KBEventTypes::bindAccountEmail, pEventData);
 	return true;
 }
-bool KBEMain::newPassword(FString oldPassword, FString newPassword)
+bool UKBEMain::newPassword(FString oldPassword, FString newPassword)
 {
 	if (!KBEngine::KBEngineApp::getSingleton().isInitialized())
 	{
@@ -204,4 +237,14 @@ bool KBEMain::newPassword(FString oldPassword, FString newPassword)
 	pEventData->new_password = newPassword;
 	KBENGINE_EVENT_FIRE(KBEngine::KBEventTypes::newPassword, pEventData);
 	return true;
+}
+
+void UKBEMain::handVersionNotMatch()
+{
+
+}
+
+void UKBEMain::showPromptMessageOfCompile()
+{
+
 }

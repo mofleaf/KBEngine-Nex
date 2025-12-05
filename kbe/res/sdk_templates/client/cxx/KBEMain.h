@@ -4,11 +4,6 @@
 
 #include "KBECommon.h"
 #include "KBEvent.h"
-#include "ClientSDKUpdater.h"
-#include "ClientSDKUpdateUI.h"
-#include "ShowPromptMessageUI.h"
-#include "Components/ActorComponent.h"
-#include "KBEMain.generated.h"
 
 /*
 可以理解为插件的入口模块
@@ -17,144 +12,143 @@
 class KBEngineApp;
 
 
-UCLASS(ClassGroup = "KBEngine", blueprintable, editinlinenew, hidecategories = (Object, LOD, Lighting, TextureStreaming), meta = (DisplayName = "KBEngine Main", BlueprintSpawnableComponent))
-class KBENGINEPLUGINS_API UKBEMain : public UActorComponent
+// UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+class  KBEMain
 {
-	GENERATED_UCLASS_BODY()
 
 public:	
 	// Sets default values for this component's properties
-	UKBEMain();
-
-	/**
-	* Initializes the component.  Occurs at level startup. This is before BeginPlay (Actor or Component).
-	* All Components in the level will be Initialized on load before any Actor/Component gets BeginPlay
-	* Requires component to be registered, and bWantsInitializeComponent to be true.
-	*/
-	virtual void InitializeComponent() override;
-
-	// Called when the game starts
-	virtual void BeginPlay() override;
-
-	/**
-	* Ends gameplay for this component.
-	* Called from AActor::EndPlay only if bHasBegunPlay is true
-	*/
-	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-
-	/**
-	* Handle this component being Uninitialized.
-	* Called from AActor::EndPlay only if bHasBeenInitialized is true
-	*/
-	virtual void UninitializeComponent() override;
-
-	// Called every frame
-	virtual void TickComponent( float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction ) override;
+	KBEMain();
 
 
 	void installEvents();
 	void deregisterEvents();
 
-	void onVersionNotMatch(const UKBEventData* pEventData);
-	void onScriptVersionNotMatch(const UKBEventData* pEventData);
+	void onVersionNotMatch(std::shared_ptr<UKBEventData> pEventData);
+	void onScriptVersionNotMatch(std::shared_ptr<UKBEventData> pEventData);
 
-	bool isUpdateSDK();
-	void downloadSDKFromServer();
-	void onDownloadSDK(const UKBEventData* pEventData);
-	void onImportClientSDKSuccessfully(const UKBEventData* pEventData);
 
-	void handVersionNotMatch();
-	void showPromptMessageOfCompile();
 
-	UFUNCTION(BlueprintCallable, Category = "KBEngine")
+	/**
+	 * 客户端版本
+	 */
 	static FString getClientVersion();
 
-	UFUNCTION(BlueprintCallable, Category = "KBEngine")
+	/**
+	 * 客户端脚本版本
+	 */
 	static FString getClientScriptVersion();
 
-	UFUNCTION(BlueprintCallable, Category = "KBEngine")
+	/**
+	 * 服务器版本
+	 */
 	static FString getServerVersion();
 
-	UFUNCTION(BlueprintCallable, Category = "KBEngine")
+	/**
+	 * 服务器脚本版本
+	 */
 	static FString getServerScriptVersion();
 
 	/*
 		客户端属于KBE框架中的一个功能组件，这里获取将固定返回client
 	*/
-	UFUNCTION(BlueprintCallable, Category = "KBEngine")
 	static FString getComponentName();
 
 	/**
 		在程序关闭时需要主动调用, 彻底销毁KBEngine
 	*/
-	UFUNCTION(BlueprintCallable, Category = "KBEngine")
 	bool destroyKBEngine();
 
-	UFUNCTION(BlueprintCallable, Category = "KBEngine")
+	/**
+	 * 用户登录
+	 */
 	bool login(FString username, FString password, TArray<uint8> datas);
 
 	/*
 		创建账号
 	*/
-	UFUNCTION(BlueprintCallable, Category = "KBEngine")
 	bool createAccount(FString username, FString password, const TArray<uint8>& datas);
-	
-	UFUNCTION(BlueprintCallable, Category = "KBEngine")
+
+	/**
+	 * 重置密码
+	 */
 	bool resetPassword(FString username);
-	
-	UFUNCTION(BlueprintCallable, Category = "KBEngine")
+
+	/**
+	 * 绑定账号邮箱
+	 */
 	bool bindAccountEmail(FString email);
 
-	UFUNCTION(BlueprintCallable, Category = "KBEngine")
+	/**
+	 * 修改密码
+	 */
 	bool newPassword(FString oldPassword, FString newPassword);
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KBEngine)
+	/**
+	 * KBEngine服务器IP地址
+	 */
 	FString ip;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KBEngine)
+	/**
+	 * KBEngine服务器端口
+	 */
 	int port;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KBEngine)
+	/**
+	 * 客户端类型
+	 */
 	EKCLIENT_TYPE clientType;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KBEngine)
+	/**
+	 * 网络加密类型
+	 */
 	NETWORK_ENCRYPT_TYPE networkEncryptType;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KBEngine)
+	/**
+	 * 同步玩家数据的时间间隔，单位：毫秒
+	 */
 	int syncPlayerMS;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KBEngine)
+
+	/**
+	 * 是否使用别名实体ID
+	 */
 	bool useAliasEntityID;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KBEngine)
+	/**
+	 * 是否在初始化时调用属性的set方法
+	 */
 	bool isOnInitCallPropertysSetMethods;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KBEngine)
+	/**
+	 * 是否强制禁用UDP
+	 */
 	bool forceDisableUDP;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KBEngine)
+	/**
+	 * 服务器心跳间隔时间，单位：秒
+	 */
 	int serverHeartbeatTick;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KBEngine)
+	/**
+	 * TCP发送缓冲区大小
+	 */
 	int TCP_SEND_BUFFER_MAX;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KBEngine)
+	/**
+	 * TCP接收缓冲区大小
+	 */
 	int TCP_RECV_BUFFER_MAX;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KBEngine)
+	/**
+	 * UDP发送缓冲区大小
+	 */
 	int UDP_SEND_BUFFER_MAX;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KBEngine)
+	/**
+	 * UDP接收缓冲区大小
+	 */
 	int UDP_RECV_BUFFER_MAX;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KBEngine)
-	bool automaticallyUpdateSDK;
-
-	KBEngine::ClientSDKUpdater* pUpdaterObj;
-
-	static bool hasUpdateSDK;
-	
-	TSharedPtr<class SClientSDKUpdateUI> ClientSDKUpdateUI;
-	TSharedPtr<class SShowPromptMessageUI> ShowPromptMessageUI;
 
 };

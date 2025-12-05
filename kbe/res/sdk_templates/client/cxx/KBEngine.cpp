@@ -218,6 +218,7 @@ void KBEngineApp::destroy()
 
 	KBE_SAFE_RELEASE(pArgs_);
 	// KBE_SAFE_RELEASE(pNetworkInterface_);
+	pNetworkInterface_ = nullptr;
 	KBE_SAFE_RELEASE(pFilter_);
 	uninstallUKBETicker();
 }

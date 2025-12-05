@@ -35,6 +35,9 @@ struct KBString : public KBStringBase
 
     KBString(const std::string& s) : Base(s) {}
 
+
+    
+
     // 支持 wchar_t*（如果用户传进来了）——直接转 UTF-8
     KBString(const wchar_t* wstr)
     {
@@ -196,6 +199,28 @@ struct KBString : public KBStringBase
     {
         return this->c_str();
     }
+
+    
+#if defined(KBE_PLATFORM_UE)
+    // 添加 FString 构造
+    KBString(const FString& fstr)
+    {
+        // FString::Utf8() 返回 UTF-8 const char*
+        this->assign(TCHAR_TO_UTF8(*fstr));
+    }
+
+    // 添加 operator= 支持 FString
+    KBString& operator=(const FString& fstr)
+    {
+        this->assign(TCHAR_TO_UTF8(*fstr));
+        return *this;
+    }
+
+    operator FString() const
+    {
+        return UTF8_TO_TCHAR(this->c_str());
+    }
+#endif
 };
 
 
@@ -478,6 +503,46 @@ public:
 
     KBArray() = default;
     KBArray(std::initializer_list<T> init) : mData(init) {}
+
+
+    // UE TArray 构造与赋值
+#if defined(KBE_PLATFORM_UE)
+    // ===========================
+    // TArray 构造与赋值
+    // ===========================
+    KBArray(const TArray<T>& arr)
+    {
+        mData.reserve(arr.Num());
+        for (auto& elem : arr)
+            mData.push_back(elem);
+    }
+
+    KBArray& operator=(const TArray<T>& arr)
+    {
+        mData.clear();
+        mData.reserve(arr.Num());
+        for (auto& elem : arr)
+            mData.push_back(elem);
+        return *this;
+    }
+
+    // 转换为 TArray
+    TArray<T> ToTArray() const
+    {
+        TArray<T> arr;
+        arr.Reserve(mData.size());
+        for (auto& elem : mData)
+            arr.Add(elem);
+        return arr;
+    }
+
+    // 可选隐式转换
+    operator TArray<T>() const
+    {
+        return ToTArray();
+    }
+#endif
+
 
     void Add(const T& value) { mData.push_back(value); }
     void Add(T&& value) { mData.push_back(std::move(value)); }
