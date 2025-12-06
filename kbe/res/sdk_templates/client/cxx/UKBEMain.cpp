@@ -1,229 +1,223 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
-
-#include "UKBEMain.h"
-
-
-#include "KBEngine.h"
-#include "KBEngineArgs.h"
-#include "MemoryStream.h"
-#include "Bundle.h"
-#include "KBDebug.h"
-#include "Entity.h"
+﻿
+// #include "UKBEMain.h"
+// #include "KBEngine.h"
+// #include "KBEngineArgs.h"
+// #include "MemoryStream.h"
+// #include "Bundle.h"
+// #include "KBDebug.h"
+// #include "Entity.h"
 
 
 
-// Sets default values for this component's properties
-UKBEMain::UKBEMain()
-{
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = true;
-	bWantsInitializeComponent = true;
-
-	// ...
-
-	ip = TEXT("127.0.0.1");
-	port = 20013;
-	syncPlayerMS = 1000 / 10;
-	useAliasEntityID = true;
-	isOnInitCallPropertysSetMethods = true;
-	forceDisableUDP = false;
-	clientType = static_cast<UE_CLIENT_TYPE>(EKCLIENT_TYPE::CLIENT_TYPE_WIN);
-	networkEncryptType = static_cast<UE_NETWORK_ENCRYPT_TYPE>(NETWORK_ENCRYPT_TYPE::ENCRYPT_TYPE_NONE);
-	serverHeartbeatTick = 60;
-	TCP_SEND_BUFFER_MAX = TCP_PACKET_MAX;
-	TCP_RECV_BUFFER_MAX = TCP_PACKET_MAX;
-	UDP_SEND_BUFFER_MAX = 128;
-	UDP_RECV_BUFFER_MAX = 128;
+// UKBEMain::UKBEMain()
+// {
 	
-	disableMainLoop = false;
+// 	PrimaryComponentTick.bCanEverTick = true;
+// 	bWantsInitializeComponent = true;
 
-}
 
-void UKBEMain::InitializeComponent()
-{
-	Super::InitializeComponent();
-}
+// 	ip = TEXT("127.0.0.1");
+// 	port = 20013;
+// 	syncPlayerMS = 1000 / 10;
+// 	useAliasEntityID = true;
+// 	isOnInitCallPropertysSetMethods = true;
+// 	forceDisableUDP = false;
+// 	clientType = static_cast<UE_CLIENT_TYPE>(EKCLIENT_TYPE::CLIENT_TYPE_WIN);
+// 	networkEncryptType = static_cast<UE_NETWORK_ENCRYPT_TYPE>(NETWORK_ENCRYPT_TYPE::ENCRYPT_TYPE_NONE);
+// 	serverHeartbeatTick = 60;
+// 	TCP_SEND_BUFFER_MAX = TCP_PACKET_MAX;
+// 	TCP_RECV_BUFFER_MAX = TCP_PACKET_MAX;
+// 	UDP_SEND_BUFFER_MAX = 128;
+// 	UDP_RECV_BUFFER_MAX = 128;
+	
+// 	disableMainLoop = false;
 
-void UKBEMain::UninitializeComponent()
-{
-	Super::UninitializeComponent();
-}
-
-// Called when the game starts
-void UKBEMain::BeginPlay()
-{
-	Super::BeginPlay();
-	KBEngine::KBEngineArgs* pArgs = new KBEngine::KBEngineArgs();
-	pArgs->ip = ip;
-	pArgs->port = port;
-	pArgs->syncPlayerMS = syncPlayerMS;
-	pArgs->useAliasEntityID = useAliasEntityID;
-	pArgs->isOnInitCallPropertysSetMethods = isOnInitCallPropertysSetMethods;
-	pArgs->forceDisableUDP = forceDisableUDP;
-	pArgs->clientType = static_cast<EKCLIENT_TYPE>(clientType);
-	pArgs->networkEncryptType = static_cast<NETWORK_ENCRYPT_TYPE>(networkEncryptType);
-	pArgs->serverHeartbeatTick = serverHeartbeatTick / 2;
-	pArgs->TCP_SEND_BUFFER_MAX = TCP_SEND_BUFFER_MAX;
-	pArgs->TCP_RECV_BUFFER_MAX = TCP_RECV_BUFFER_MAX;
-	pArgs->UDP_SEND_BUFFER_MAX = UDP_SEND_BUFFER_MAX;
-	pArgs->UDP_RECV_BUFFER_MAX = UDP_RECV_BUFFER_MAX;
-	pArgs->disableMainLoop = disableMainLoop;
-
-	if(!KBEngine::KBEngineApp::getSingleton().initialize(pArgs))
-		delete pArgs;
-
-	// installEvents();
-}
-
-void UKBEMain::EndPlay(const EEndPlayReason::Type EndPlayReason)
-{
-	// deregisterEvents();
-	Super::EndPlay(EndPlayReason);
-}
-
-// Called every frame
-void UKBEMain::TickComponent( float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction )
-{
-
-}
-
-// void UKBEMain::installEvents()
-// {
-// 	KBENGINE_REGISTER_EVENT(KBEngine::KBEventTypes::onScriptVersionNotMatch, onScriptVersionNotMatch);
-// 	KBENGINE_REGISTER_EVENT(KBEngine::KBEventTypes::onVersionNotMatch, onVersionNotMatch);
 // }
 
-// void UKBEMain::deregisterEvents()
+// void UKBEMain::InitializeComponent()
 // {
-// 	KBENGINE_DEREGISTER_EVENT(KBEngine::KBEventTypes::onScriptVersionNotMatch);
-// 	KBENGINE_DEREGISTER_EVENT(KBEngine::KBEventTypes::onVersionNotMatch);
+// 	Super::InitializeComponent();
 // }
 
-// void UKBEMain::onVersionNotMatch(std::shared_ptr<UKBEventData> pEventData)
+// void UKBEMain::UninitializeComponent()
 // {
+// 	Super::UninitializeComponent();
 // }
 
-// void UKBEMain::onScriptVersionNotMatch(std::shared_ptr<UKBEventData> pEventData)
+// // Called when the game starts
+// void UKBEMain::BeginPlay()
 // {
+// 	Super::BeginPlay();
+// 	KBEngine::KBEngineArgs* pArgs = new KBEngine::KBEngineArgs();
+// 	pArgs->ip = ip;
+// 	pArgs->port = port;
+// 	pArgs->syncPlayerMS = syncPlayerMS;
+// 	pArgs->useAliasEntityID = useAliasEntityID;
+// 	pArgs->isOnInitCallPropertysSetMethods = isOnInitCallPropertysSetMethods;
+// 	pArgs->forceDisableUDP = forceDisableUDP;
+// 	pArgs->clientType = static_cast<EKCLIENT_TYPE>(clientType);
+// 	pArgs->networkEncryptType = static_cast<NETWORK_ENCRYPT_TYPE>(networkEncryptType);
+// 	pArgs->serverHeartbeatTick = serverHeartbeatTick / 2;
+// 	pArgs->TCP_SEND_BUFFER_MAX = TCP_SEND_BUFFER_MAX;
+// 	pArgs->TCP_RECV_BUFFER_MAX = TCP_RECV_BUFFER_MAX;
+// 	pArgs->UDP_SEND_BUFFER_MAX = UDP_SEND_BUFFER_MAX;
+// 	pArgs->UDP_RECV_BUFFER_MAX = UDP_RECV_BUFFER_MAX;
+// 	pArgs->disableMainLoop = disableMainLoop;
+
+// 	if(!KBEngine::KBEngineApp::getSingleton().initialize(pArgs))
+// 		delete pArgs;
+
+// 	// installEvents();
 // }
 
+// void UKBEMain::EndPlay(const EEndPlayReason::Type EndPlayReason)
+// {
+// 	// deregisterEvents();
+// 	Super::EndPlay(EndPlayReason);
+// }
 
-FString UKBEMain::getClientVersion()
-{
-	if (!KBEngine::KBEngineApp::getSingleton().isInitialized())
-		return TEXT("");
+// // Called every frame
+// void UKBEMain::TickComponent( float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction )
+// {
 
-	return KBEngine::KBEngineApp::getSingleton().clientVersion();
-}
+// }
 
-FString UKBEMain::getClientScriptVersion()
-{
-	if (!KBEngine::KBEngineApp::getSingleton().isInitialized())
-		return TEXT("");
+// // void UKBEMain::installEvents()
+// // {
+// // 	KBENGINE_REGISTER_EVENT(KBEngine::KBEventTypes::onScriptVersionNotMatch, onScriptVersionNotMatch);
+// // 	KBENGINE_REGISTER_EVENT(KBEngine::KBEventTypes::onVersionNotMatch, onVersionNotMatch);
+// // }
 
-	return KBEngine::KBEngineApp::getSingleton().clientScriptVersion();
-}
+// // void UKBEMain::deregisterEvents()
+// // {
+// // 	KBENGINE_DEREGISTER_EVENT(KBEngine::KBEventTypes::onScriptVersionNotMatch);
+// // 	KBENGINE_DEREGISTER_EVENT(KBEngine::KBEventTypes::onVersionNotMatch);
+// // }
 
-FString UKBEMain::getServerVersion()
-{
-	if (!KBEngine::KBEngineApp::getSingleton().isInitialized())
-		return TEXT("");
+// // void UKBEMain::onVersionNotMatch(std::shared_ptr<UKBEventData> pEventData)
+// // {
+// // }
 
-	return KBEngine::KBEngineApp::getSingleton().serverVersion();
-}
+// // void UKBEMain::onScriptVersionNotMatch(std::shared_ptr<UKBEventData> pEventData)
+// // {
+// // }
 
-FString UKBEMain::getServerScriptVersion()
-{
-	if (!KBEngine::KBEngineApp::getSingleton().isInitialized())
-		return TEXT("");
 
-	return KBEngine::KBEngineApp::getSingleton().serverScriptVersion();
-}
+// FString UKBEMain::getClientVersion()
+// {
+// 	if (!KBEngine::KBEngineApp::getSingleton().isInitialized())
+// 		return TEXT("");
 
-FString UKBEMain::getComponentName()
-{
-	if (!KBEngine::KBEngineApp::getSingleton().isInitialized())
-		return TEXT("");
+// 	return KBEngine::KBEngineApp::getSingleton().clientVersion();
+// }
 
-	return KBEngine::KBEngineApp::getSingleton().component();
-}
+// FString UKBEMain::getClientScriptVersion()
+// {
+// 	if (!KBEngine::KBEngineApp::getSingleton().isInitialized())
+// 		return TEXT("");
 
-bool UKBEMain::destroyKBEngine()
-{
-	if (!KBEngine::KBEngineApp::getSingleton().isInitialized())
-		return false;
+// 	return KBEngine::KBEngineApp::getSingleton().clientScriptVersion();
+// }
 
-	KBEngine::KBEngineApp::getSingleton().destroy();
-	KBENGINE_EVENT_CLEAR();
-	return true;
-}
+// FString UKBEMain::getServerVersion()
+// {
+// 	if (!KBEngine::KBEngineApp::getSingleton().isInitialized())
+// 		return TEXT("");
 
-bool UKBEMain::login(FString username, FString password, TArray<uint8> datas)
-{
-	if (!KBEngine::KBEngineApp::getSingleton().isInitialized())
-	{
-		return false;
-	}
+// 	return KBEngine::KBEngineApp::getSingleton().serverVersion();
+// }
 
-	KBEngine::KBEngineApp::getSingleton().reset();
+// FString UKBEMain::getServerScriptVersion()
+// {
+// 	if (!KBEngine::KBEngineApp::getSingleton().isInitialized())
+// 		return TEXT("");
 
-	auto pEventData = std::make_shared<UKBEventData_login>();
-	pEventData->username = username;
-	pEventData->password = password;
-	pEventData->datas = datas;
-	KBENGINE_EVENT_FIRE(KBEngine::KBEventTypes::login, pEventData);
-	return true;
-}
+// 	return KBEngine::KBEngineApp::getSingleton().serverScriptVersion();
+// }
 
-bool UKBEMain::createAccount(FString username, FString password, const TArray<uint8>& datas)
-{
-	if (!KBEngine::KBEngineApp::getSingleton().isInitialized())
-	{
-		return false;
-	}
+// FString UKBEMain::getComponentName()
+// {
+// 	if (!KBEngine::KBEngineApp::getSingleton().isInitialized())
+// 		return TEXT("");
 
-	KBEngine::KBEngineApp::getSingleton().reset();
+// 	return KBEngine::KBEngineApp::getSingleton().component();
+// }
 
-	auto pEventData = std::make_shared<UKBEventData_createAccount>();
-	pEventData->username = username;
-	pEventData->password = password;
-	pEventData->datas = datas;
-	KBENGINE_EVENT_FIRE(KBEngine::KBEventTypes::createAccount, pEventData);
-	return true;
-}
+// bool UKBEMain::destroyKBEngine()
+// {
+// 	if (!KBEngine::KBEngineApp::getSingleton().isInitialized())
+// 		return false;
 
-bool UKBEMain::resetPassword(FString username)
-{
-	if (!KBEngine::KBEngineApp::getSingleton().isInitialized())
-	{
-		return false;
-	}
-	auto pEventData = std::make_shared<UKBEventData_resetPassword>();
-	pEventData->username = username;
-	KBENGINE_EVENT_FIRE(KBEngine::KBEventTypes::resetPassword, pEventData);
-	return true;
-}
-bool UKBEMain::bindAccountEmail(FString email)
-{
-	if (!KBEngine::KBEngineApp::getSingleton().isInitialized())
-	{
-		return false;
-	}
-	auto pEventData = std::make_shared<UKBEventData_bindAccountEmail>();
-	pEventData->email = email;
-	KBENGINE_EVENT_FIRE(KBEngine::KBEventTypes::bindAccountEmail, pEventData);
-	return true;
-}
-bool UKBEMain::newPassword(FString oldPassword, FString newPassword)
-{
-	if (!KBEngine::KBEngineApp::getSingleton().isInitialized())
-	{
-		return false;
-	}
-	auto pEventData = std::make_shared<UKBEventData_newPassword>();
-	pEventData->old_password = oldPassword;
-	pEventData->new_password = newPassword;
-	KBENGINE_EVENT_FIRE(KBEngine::KBEventTypes::newPassword, pEventData);
-	return true;
-}
+// 	KBEngine::KBEngineApp::getSingleton().destroy();
+// 	KBENGINE_EVENT_CLEAR();
+// 	return true;
+// }
+
+// bool UKBEMain::login(FString username, FString password, TArray<uint8> datas)
+// {
+// 	if (!KBEngine::KBEngineApp::getSingleton().isInitialized())
+// 	{
+// 		return false;
+// 	}
+
+// 	KBEngine::KBEngineApp::getSingleton().reset();
+
+// 	auto pEventData = std::make_shared<UKBEventData_login>();
+// 	pEventData->username = username;
+// 	pEventData->password = password;
+// 	pEventData->datas = datas;
+// 	KBENGINE_EVENT_FIRE(KBEngine::KBEventTypes::login, pEventData);
+// 	return true;
+// }
+
+// bool UKBEMain::createAccount(FString username, FString password, const TArray<uint8>& datas)
+// {
+// 	if (!KBEngine::KBEngineApp::getSingleton().isInitialized())
+// 	{
+// 		return false;
+// 	}
+
+// 	KBEngine::KBEngineApp::getSingleton().reset();
+
+// 	auto pEventData = std::make_shared<UKBEventData_createAccount>();
+// 	pEventData->username = username;
+// 	pEventData->password = password;
+// 	pEventData->datas = datas;
+// 	KBENGINE_EVENT_FIRE(KBEngine::KBEventTypes::createAccount, pEventData);
+// 	return true;
+// }
+
+// bool UKBEMain::resetPassword(FString username)
+// {
+// 	if (!KBEngine::KBEngineApp::getSingleton().isInitialized())
+// 	{
+// 		return false;
+// 	}
+// 	auto pEventData = std::make_shared<UKBEventData_resetPassword>();
+// 	pEventData->username = username;
+// 	KBENGINE_EVENT_FIRE(KBEngine::KBEventTypes::resetPassword, pEventData);
+// 	return true;
+// }
+// bool UKBEMain::bindAccountEmail(FString email)
+// {
+// 	if (!KBEngine::KBEngineApp::getSingleton().isInitialized())
+// 	{
+// 		return false;
+// 	}
+// 	auto pEventData = std::make_shared<UKBEventData_bindAccountEmail>();
+// 	pEventData->email = email;
+// 	KBENGINE_EVENT_FIRE(KBEngine::KBEventTypes::bindAccountEmail, pEventData);
+// 	return true;
+// }
+// bool UKBEMain::newPassword(FString oldPassword, FString newPassword)
+// {
+// 	if (!KBEngine::KBEngineApp::getSingleton().isInitialized())
+// 	{
+// 		return false;
+// 	}
+// 	auto pEventData = std::make_shared<UKBEventData_newPassword>();
+// 	pEventData->old_password = oldPassword;
+// 	pEventData->new_password = newPassword;
+// 	KBENGINE_EVENT_FIRE(KBEngine::KBEventTypes::newPassword, pEventData);
+// 	return true;
+// }

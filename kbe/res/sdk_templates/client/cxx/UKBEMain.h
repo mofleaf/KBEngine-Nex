@@ -1,171 +1,139 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+﻿// #pragma once
 
-#pragma once
-
-#include "KBECommon.h"
+// #include "KBECommon.h"
 
 
-#include "KBEvent.h"
-#include "Components/ActorComponent.h"
-#include "UKBEMain.generated.h"
-
-/*
-可以理解为插件的入口模块
-在这个入口中安装了需要监听的事件(installEvents)，同时初始化KBEngine(initKBEngine)
-*/
-class KBEngineApp;
-
-UENUM(BlueprintType)
-enum class UE_CLIENT_TYPE : uint8
-{
-	CLIENT_TYPE_UNKNOWN		UMETA(DisplayName = "unknown"),
-	CLIENT_TYPE_MOBILE		UMETA(DisplayName = "Mobile"),
-	CLIENT_TYPE_WIN			UMETA(DisplayName = "Windows"),
-	CLIENT_TYPE_LINUX		UMETA(DisplayName = "Linux"),
-	CLIENT_TYPE_MAC			UMETA(DisplayName = "Mac"),
-	CLIENT_TYPE_BROWSER		UMETA(DisplayName = "Browser"),
-	CLIENT_TYPE_BOTS		UMETA(DisplayName = "Bots"),
-	CLIENT_TYPE_MINI		UMETA(DisplayName = "Mini"),
-};
-
-//加密通讯的类别
-UENUM(BlueprintType)
-enum class UE_NETWORK_ENCRYPT_TYPE : uint8
-{
-	ENCRYPT_TYPE_NONE			UMETA(DisplayName = "None"),
-	ENCRYPT_TYPE_BLOWFISH		UMETA(DisplayName = "Blowfish"),
-};
-
-// UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-UCLASS(ClassGroup = "KBEngine", blueprintable, editinlinenew, hidecategories = (Object, LOD, Lighting, TextureStreaming), meta = (DisplayName = "KBEngine Main", BlueprintSpawnableComponent))
-class  UKBEMain : public UActorComponent
-{
-	GENERATED_BODY()
-
-public:	
-	// Sets default values for this component's properties
-	UKBEMain();
-
-	/**
-	* Initializes the component.  Occurs at level startup. This is before BeginPlay (Actor or Component).
-	* All Components in the level will be Initialized on load before any Actor/Component gets BeginPlay
-	* Requires component to be registered, and bWantsInitializeComponent to be true.
-	*/
-	virtual void InitializeComponent() override;
-
-	// Called when the game starts
-	virtual void BeginPlay() override;
-
-	/**
-	* Ends gameplay for this component.
-	* Called from AActor::EndPlay only if bHasBegunPlay is true
-	*/
-	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-
-	/**
-	* Handle this component being Uninitialized.
-	* Called from AActor::EndPlay only if bHasBeenInitialized is true
-	*/
-	virtual void UninitializeComponent() override;
-
-	// Called every frame
-	virtual void TickComponent( float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction ) override;
+// #include "KBEvent.h"
+// #include "Components/ActorComponent.h"
+// #include "UKBEMain.generated.h"
 
 
-	// void installEvents();
-	// void deregisterEvents();
+// class KBEngineApp;
 
-	// void onVersionNotMatch(std::shared_ptr<UKBEventData> pEventData);
-	// void onScriptVersionNotMatch(std::shared_ptr<UKBEventData> pEventData);
+// UENUM(BlueprintType)
+// enum class UE_CLIENT_TYPE : uint8
+// {
+// 	CLIENT_TYPE_UNKNOWN		UMETA(DisplayName = "unknown"),
+// 	CLIENT_TYPE_MOBILE		UMETA(DisplayName = "Mobile"),
+// 	CLIENT_TYPE_WIN			UMETA(DisplayName = "Windows"),
+// 	CLIENT_TYPE_LINUX		UMETA(DisplayName = "Linux"),
+// 	CLIENT_TYPE_MAC			UMETA(DisplayName = "Mac"),
+// 	CLIENT_TYPE_BROWSER		UMETA(DisplayName = "Browser"),
+// 	CLIENT_TYPE_BOTS		UMETA(DisplayName = "Bots"),
+// 	CLIENT_TYPE_MINI		UMETA(DisplayName = "Mini"),
+// };
 
-	UFUNCTION(BlueprintCallable, Category = "KBEngine")
-	static FString getClientVersion();
+// UENUM(BlueprintType)
+// enum class UE_NETWORK_ENCRYPT_TYPE : uint8
+// {
+// 	ENCRYPT_TYPE_NONE			UMETA(DisplayName = "None"),
+// 	ENCRYPT_TYPE_BLOWFISH		UMETA(DisplayName = "Blowfish"),
+// };
 
-	UFUNCTION(BlueprintCallable, Category = "KBEngine")
-	static FString getClientScriptVersion();
+// UCLASS(ClassGroup = "KBEngine", blueprintable, editinlinenew, hidecategories = (Object, LOD, Lighting, TextureStreaming), meta = (DisplayName = "KBEngine Main", BlueprintSpawnableComponent))
+// class  UKBEMain : public UActorComponent
+// {
+// 	GENERATED_BODY()
 
-	UFUNCTION(BlueprintCallable, Category = "KBEngine")
-	static FString getServerVersion();
-
-	UFUNCTION(BlueprintCallable, Category = "KBEngine")
-	static FString getServerScriptVersion();
-
-	/*
-		客户端属于KBE框架中的一个功能组件，这里获取将固定返回client
-	*/
-	UFUNCTION(BlueprintCallable, Category = "KBEngine")
-	static FString getComponentName();
-
-	/**
-		在程序关闭时需要主动调用, 彻底销毁KBEngine
-	*/
-	UFUNCTION(BlueprintCallable, Category = "KBEngine")
-	bool destroyKBEngine();
-
-	UFUNCTION(BlueprintCallable, Category = "KBEngine")
-	bool login(FString username, FString password, TArray<uint8> datas);
-
-	/*
-		创建账号
-	*/
-	UFUNCTION(BlueprintCallable, Category = "KBEngine")
-	bool createAccount(FString username, FString password, const TArray<uint8>& datas);
-
-	UFUNCTION(BlueprintCallable, Category = "KBEngine")
-	bool resetPassword(FString username);
-
-	UFUNCTION(BlueprintCallable, Category = "KBEngine")
-	bool bindAccountEmail(FString email);
-
-	UFUNCTION(BlueprintCallable, Category = "KBEngine")
-	bool newPassword(FString oldPassword, FString newPassword);
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KBEngine)
-	FString ip;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KBEngine)
-	int port;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KBEngine)
-	UE_CLIENT_TYPE clientType;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KBEngine)
-	UE_NETWORK_ENCRYPT_TYPE networkEncryptType;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KBEngine)
-	int syncPlayerMS;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KBEngine)
-	bool useAliasEntityID;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KBEngine)
-	bool isOnInitCallPropertysSetMethods;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KBEngine)
-	bool forceDisableUDP;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KBEngine)
-	int serverHeartbeatTick;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KBEngine)
-	int TCP_SEND_BUFFER_MAX;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KBEngine)
-	int TCP_RECV_BUFFER_MAX;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KBEngine)
-	int UDP_SEND_BUFFER_MAX;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KBEngine)
-	int UDP_RECV_BUFFER_MAX;
+// public:	
+// 	UKBEMain();
 
 
-	/**
-	* 控制主循环是否禁用
-	* true表示禁用主循环，false表示启用主循环
-	* 禁用后需要手动调用 KBEngine::KBEngineApp::getSingleton().process();
-	*/
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KBEngine)
-	bool disableMainLoop;
-};
+// 	virtual void InitializeComponent() override;
+
+// 	virtual void BeginPlay() override;
+
+	
+// 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
+	
+// 	virtual void UninitializeComponent() override;
+
+// 	virtual void TickComponent( float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction ) override;
+
+
+// 	// void installEvents();
+// 	// void deregisterEvents();
+
+// 	// void onVersionNotMatch(std::shared_ptr<UKBEventData> pEventData);
+// 	// void onScriptVersionNotMatch(std::shared_ptr<UKBEventData> pEventData);
+
+// 	UFUNCTION(BlueprintCallable, Category = "KBEngine")
+// 	static FString getClientVersion();
+
+// 	UFUNCTION(BlueprintCallable, Category = "KBEngine")
+// 	static FString getClientScriptVersion();
+
+// 	UFUNCTION(BlueprintCallable, Category = "KBEngine")
+// 	static FString getServerVersion();
+
+// 	UFUNCTION(BlueprintCallable, Category = "KBEngine")
+// 	static FString getServerScriptVersion();
+
+	
+// 	UFUNCTION(BlueprintCallable, Category = "KBEngine")
+// 	static FString getComponentName();
+
+	
+// 	UFUNCTION(BlueprintCallable, Category = "KBEngine")
+// 	bool destroyKBEngine();
+
+// 	UFUNCTION(BlueprintCallable, Category = "KBEngine")
+// 	bool login(FString username, FString password, TArray<uint8> datas);
+
+
+// 	UFUNCTION(BlueprintCallable, Category = "KBEngine")
+// 	bool createAccount(FString username, FString password, const TArray<uint8>& datas);
+
+// 	UFUNCTION(BlueprintCallable, Category = "KBEngine")
+// 	bool resetPassword(FString username);
+
+// 	UFUNCTION(BlueprintCallable, Category = "KBEngine")
+// 	bool bindAccountEmail(FString email);
+
+// 	UFUNCTION(BlueprintCallable, Category = "KBEngine")
+// 	bool newPassword(FString oldPassword, FString newPassword);
+
+// 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KBEngine)
+// 	FString ip;
+
+// 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KBEngine)
+// 	int port;
+
+// 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KBEngine)
+// 	UE_CLIENT_TYPE clientType;
+
+// 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KBEngine)
+// 	UE_NETWORK_ENCRYPT_TYPE networkEncryptType;
+
+// 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KBEngine)
+// 	int syncPlayerMS;
+
+// 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KBEngine)
+// 	bool useAliasEntityID;
+
+// 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KBEngine)
+// 	bool isOnInitCallPropertysSetMethods;
+
+// 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KBEngine)
+// 	bool forceDisableUDP;
+
+// 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KBEngine)
+// 	int serverHeartbeatTick;
+
+// 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KBEngine)
+// 	int TCP_SEND_BUFFER_MAX;
+
+// 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KBEngine)
+// 	int TCP_RECV_BUFFER_MAX;
+
+// 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KBEngine)
+// 	int UDP_SEND_BUFFER_MAX;
+
+// 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KBEngine)
+// 	int UDP_RECV_BUFFER_MAX;
+
+// 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KBEngine)
+// 	bool disableMainLoop;
+// };
 
