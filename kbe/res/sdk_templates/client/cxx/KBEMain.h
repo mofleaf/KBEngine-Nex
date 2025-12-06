@@ -153,5 +153,13 @@ public:
 	 */
 	int UDP_RECV_BUFFER_MAX;
 
+	/**
+	* 控制主循环是否禁用
+	* true表示禁用主循环，false表示启用主循环
+	* 禁用后需要手动调用 KBEngine::KBEngineApp::getSingleton().process();
+	*/
+	bool disableMainLoop;
+
+
 
 };

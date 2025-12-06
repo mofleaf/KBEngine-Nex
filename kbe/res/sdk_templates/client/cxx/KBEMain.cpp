@@ -24,6 +24,7 @@ KBEMain::KBEMain()
 	TCP_RECV_BUFFER_MAX = TCP_PACKET_MAX;
 	UDP_SEND_BUFFER_MAX = 128;
 	UDP_RECV_BUFFER_MAX = 128;
+	disableMainLoop = false;
 
 }
 
@@ -49,6 +50,7 @@ bool KBEMain::init()
 	pArgs->TCP_RECV_BUFFER_MAX = TCP_RECV_BUFFER_MAX;
 	pArgs->UDP_SEND_BUFFER_MAX = UDP_SEND_BUFFER_MAX;
 	pArgs->UDP_RECV_BUFFER_MAX = UDP_RECV_BUFFER_MAX;
+	pArgs->disableMainLoop = disableMainLoop;
 
 	if(!KBEngine::KBEngineApp::getSingleton().initialize(pArgs)){
 		delete pArgs;
