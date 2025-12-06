@@ -171,6 +171,20 @@ void Entity::onPositionChanged(const KBVector3f& oldValue)
 	}
 }
 
+void Entity::onSmoothPositionChanged(const KBVector3f &oldValue)
+{
+	if(isPlayer())
+		KBEngineApp::getSingleton().entityServerPos(position);
+	
+	if(inWorld())
+	{
+		auto pEventData = std::make_shared<UKBEventData_updatePosition>();
+		pEventData->entityID = id();
+		pEventData->moveSpeed = velocity_;
+		pEventData->isOnGround = isOnGround();
+		KBENGINE_EVENT_FIRE(KBEventTypes::updatePosition, pEventData);
+}
+
 void Entity::onDirectionChanged(const KBVector3f& oldValue)
 {
 	//DEBUG_MSG("%s::onDirectionChanged: (%f, %f, %f) => (%f, %f, %f)", *className, 
