@@ -1,6 +1,8 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "UKBEMain.h"
+
+
 #include "KBEngine.h"
 #include "KBEngineArgs.h"
 #include "MemoryStream.h"
@@ -68,12 +70,12 @@ void UKBEMain::BeginPlay()
 	if(!KBEngine::KBEngineApp::getSingleton().initialize(pArgs))
 		delete pArgs;
 
-	installEvents();
+	// installEvents();
 }
 
 void UKBEMain::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	deregisterEvents();
+	// deregisterEvents();
 	Super::EndPlay(EndPlayReason);
 }
 
@@ -83,25 +85,25 @@ void UKBEMain::TickComponent( float DeltaTime, ELevelTick TickType, FActorCompon
 
 }
 
-void UKBEMain::installEvents()
-{
-	KBENGINE_REGISTER_EVENT(KBEngine::KBEventTypes::onScriptVersionNotMatch, onScriptVersionNotMatch);
-	KBENGINE_REGISTER_EVENT(KBEngine::KBEventTypes::onVersionNotMatch, onVersionNotMatch);
-}
+// void UKBEMain::installEvents()
+// {
+// 	KBENGINE_REGISTER_EVENT(KBEngine::KBEventTypes::onScriptVersionNotMatch, onScriptVersionNotMatch);
+// 	KBENGINE_REGISTER_EVENT(KBEngine::KBEventTypes::onVersionNotMatch, onVersionNotMatch);
+// }
 
-void UKBEMain::deregisterEvents()
-{
-	KBENGINE_DEREGISTER_EVENT(KBEngine::KBEventTypes::onScriptVersionNotMatch);
-	KBENGINE_DEREGISTER_EVENT(KBEngine::KBEventTypes::onVersionNotMatch);
-}
+// void UKBEMain::deregisterEvents()
+// {
+// 	KBENGINE_DEREGISTER_EVENT(KBEngine::KBEventTypes::onScriptVersionNotMatch);
+// 	KBENGINE_DEREGISTER_EVENT(KBEngine::KBEventTypes::onVersionNotMatch);
+// }
 
-void UKBEMain::onVersionNotMatch(std::shared_ptr<UKBEventData> pEventData)
-{
-}
+// void UKBEMain::onVersionNotMatch(std::shared_ptr<UKBEventData> pEventData)
+// {
+// }
 
-void UKBEMain::onScriptVersionNotMatch(std::shared_ptr<UKBEventData> pEventData)
-{
-}
+// void UKBEMain::onScriptVersionNotMatch(std::shared_ptr<UKBEventData> pEventData)
+// {
+// }
 
 
 FString UKBEMain::getClientVersion()
@@ -222,4 +224,3 @@ bool UKBEMain::newPassword(FString oldPassword, FString newPassword)
 	KBENGINE_EVENT_FIRE(KBEngine::KBEventTypes::newPassword, pEventData);
 	return true;
 }
-

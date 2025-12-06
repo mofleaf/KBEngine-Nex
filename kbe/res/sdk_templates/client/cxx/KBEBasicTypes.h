@@ -200,6 +200,12 @@ struct KBString : public KBStringBase
         return this->c_str();
     }
 
+    KBString& operator=(const char* str)
+    {
+        this->assign(str ? str : "");
+        return *this;
+    }
+
     
 #if defined(KBE_PLATFORM_UE)
     // 添加 FString 构造

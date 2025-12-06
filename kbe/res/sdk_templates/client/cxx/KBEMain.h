@@ -12,22 +12,23 @@
 class KBEngineApp;
 
 
-// UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class  KBEMain
 {
 
 public:	
 	// Sets default values for this component's properties
 	KBEMain();
+	// 析构
+	~KBEMain();
 
-	void init();
+	bool init();
 
 
-	void installEvents();
-	void deregisterEvents();
+	// void installEvents();
+	// void deregisterEvents();
 
-	void onVersionNotMatch(std::shared_ptr<UKBEventData> pEventData);
-	void onScriptVersionNotMatch(std::shared_ptr<UKBEventData> pEventData);
+	// void onVersionNotMatch(std::shared_ptr<UKBEventData> pEventData);
+	// void onScriptVersionNotMatch(std::shared_ptr<UKBEventData> pEventData);
 
 
 

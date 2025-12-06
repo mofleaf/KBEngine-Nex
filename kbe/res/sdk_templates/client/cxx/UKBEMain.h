@@ -3,6 +3,8 @@
 #pragma once
 
 #include "KBECommon.h"
+
+
 #include "KBEvent.h"
 #include "Components/ActorComponent.h"
 #include "UKBEMain.generated.h"
@@ -70,11 +72,11 @@ public:
 	virtual void TickComponent( float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction ) override;
 
 
-	void installEvents();
-	void deregisterEvents();
+	// void installEvents();
+	// void deregisterEvents();
 
-	void onVersionNotMatch(std::shared_ptr<UKBEventData> pEventData);
-	void onScriptVersionNotMatch(std::shared_ptr<UKBEventData> pEventData);
+	// void onVersionNotMatch(std::shared_ptr<UKBEventData> pEventData);
+	// void onScriptVersionNotMatch(std::shared_ptr<UKBEventData> pEventData);
 
 	UFUNCTION(BlueprintCallable, Category = "KBEngine")
 	static FString getClientVersion();
@@ -159,3 +161,4 @@ public:
 
 
 };
+
