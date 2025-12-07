@@ -1736,6 +1736,8 @@ void KBEngineApp::Client_onEntityLeaveSpace(ENTITY_ID eid)
 
 void KBEngineApp::Client_onUpdateBasePos(float x, float y, float z)
 {
+	
+	KBVector3f oldPos(entityServerPos_.x, entityServerPos_.y, entityServerPos_.z);
 	entityServerPos_.x = x;
 	entityServerPos_.y = y;
 	entityServerPos_.z = z;
@@ -1745,13 +1747,17 @@ void KBEngineApp::Client_onUpdateBasePos(float x, float y, float z)
 	{
 		pEntity->position.Set(entityServerPos_.x, entityServerPos_.y, entityServerPos_.z);
 
-		// UKBEventData_updatePosition* pEventData = NewObject<UKBEventData_updatePosition>();
-		auto pEventData = std::make_shared<UKBEventData_updatePosition>();
-		// KBPos2UE4Pos(pEventData->position, entityServerPos_);
-		// KBDir2UE4Dir(pEventData->direction, pEntity->direction);
-		pEventData->entityID = pEntity->id();
-		pEventData->moveSpeed = pEntity->velocity();
-		KBENGINE_EVENT_FIRE(KBEventTypes::updatePosition, pEventData);
+		// auto pEventData = std::make_shared<UKBEventData_updatePosition>();
+		// // KBPos2UE4Pos(pEventData->position, entityServerPos_);
+		// // KBDir2UE4Dir(pEventData->direction, pEntity->direction);
+		// pEventData->entityID = pEntity->id();
+		// pEventData->moveSpeed = pEntity->velocity();
+		// KBENGINE_EVENT_FIRE(KBEventTypes::updatePosition, pEventData);
+
+
+		pEntity->onSmoothPositionChanged(oldPos);
+		
+		
 
 		pEntity->onUpdateVolatileData();
 	}
@@ -1759,6 +1765,7 @@ void KBEngineApp::Client_onUpdateBasePos(float x, float y, float z)
 
 void KBEngineApp::Client_onUpdateBasePosXZ(float x, float z)
 {
+	KBVector3f oldPos(entityServerPos_.x, entityServerPos_.y, entityServerPos_.z);
 	entityServerPos_.x = x;
 	entityServerPos_.z = z;
 
@@ -1768,13 +1775,14 @@ void KBEngineApp::Client_onUpdateBasePosXZ(float x, float z)
 		pEntity->position.x = entityServerPos_.x;
 		pEntity->position.z = entityServerPos_.z;
 
-		// UKBEventData_updatePosition* pEventData = NewObject<UKBEventData_updatePosition>();
-		auto pEventData = std::make_shared<UKBEventData_updatePosition>();
-		// KBPos2UE4Pos(pEventData->position, entityServerPos_);
-		// KBDir2UE4Dir(pEventData->direction, pEntity->direction);
-		pEventData->entityID = pEntity->id();
-		pEventData->moveSpeed = pEntity->velocity();
-		KBENGINE_EVENT_FIRE(KBEventTypes::updatePosition, pEventData);
+		// auto pEventData = std::make_shared<UKBEventData_updatePosition>();
+		// // KBPos2UE4Pos(pEventData->position, entityServerPos_);
+		// // KBDir2UE4Dir(pEventData->direction, pEntity->direction);
+		// pEventData->entityID = pEntity->id();
+		// pEventData->moveSpeed = pEntity->velocity();
+		// KBENGINE_EVENT_FIRE(KBEventTypes::updatePosition, pEventData);
+
+		pEntity->onSmoothPositionChanged(oldPos);
 
 		pEntity->onUpdateVolatileData();
 	}
@@ -2457,14 +2465,17 @@ void KBEngineApp::_updateVolatileData(ENTITY_ID entityID, float x, float y, floa
 		entity.position = isOptimized ? KBVector3f(x + entityServerPos_.x, y + entityServerPos_.y, z + entityServerPos_.z) : KBVector3f(x, y, z);
 		done = true;
 
-		// UKBEventData_updatePosition* pEventData = NewObject<UKBEventData_updatePosition>();
-		auto pEventData = std::make_shared<UKBEventData_updatePosition>();
-		// KBPos2UE4Pos(pEventData->position, entity.position);
-		// KBDir2UE4Dir(pEventData->direction, entity.direction);
-		pEventData->entityID = entity.id();
-		pEventData->moveSpeed = entity.velocity();
-		pEventData->isOnGround = entity.isOnGround();
-		KBENGINE_EVENT_FIRE(KBEventTypes::updatePosition, pEventData);
+		// auto pEventData = std::make_shared<UKBEventData_updatePosition>();
+		// // KBPos2UE4Pos(pEventData->position, entity.position);
+		// // KBDir2UE4Dir(pEventData->direction, entity.direction);
+		// pEventData->entityID = entity.id();
+		// pEventData->moveSpeed = entity.velocity();
+		// pEventData->isOnGround = entity.isOnGround();
+		// KBENGINE_EVENT_FIRE(KBEventTypes::updatePosition, pEventData);
+
+
+		KBVector3f oldPos(entityServerPos_.x, entityServerPos_.y, entityServerPos_.z);
+		entity->onSmoothPositionChanged(oldPos);
 	}
 
 	if (done)
