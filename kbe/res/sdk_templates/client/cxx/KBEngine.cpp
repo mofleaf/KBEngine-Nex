@@ -20,6 +20,7 @@
 #include "KBDebug.h"
 #include "KBEvent.h"
 #include "EncryptionFilter.h"
+#include "GameThreadDispatcher.h"
 
 namespace KBEngine
 {
@@ -381,6 +382,8 @@ void KBEngineApp::process()
 	// 处理网络
 	// if (pNetworkInterface_)
 	// 	pNetworkInterface_->process();
+
+	GameThreadDispatcher::Instance().Pump();
 
 	KBEvent::processOutEvents();
 	// 处理外层抛入的事件
