@@ -36,20 +36,24 @@ void NetworkInterfaceBase::reset()
 
 void NetworkInterfaceBase::close()
 {
-	INFO_MSG("NetworkInterfaceBase::close(): network closed!");
-	KBENGINE_EVENT_FIRE(KBEventTypes::onDisconnected, std::make_shared<UKBEventData_onDisconnected>());
-
-	KBE_SAFE_RELEASE(pFilter_);
-
-	connectCB_ = nullptr;
-	connectIP_ = KBTEXT("");
-	connectPort_ = 0;
-	connectUserdata_ = 0;
-	startTime_ = 0.0;
+	// INFO_MSG("NetworkInterfaceBase::close(): network closed!");
+	// KBENGINE_EVENT_FIRE(KBEventTypes::onDisconnected, std::make_shared<UKBEventData_onDisconnected>());
+	//
+	// KBE_SAFE_RELEASE(pFilter_);
+	//
+	// connectCB_ = nullptr;
+	// connectIP_ = KBTEXT("");
+	// connectPort_ = 0;
+	// connectUserdata_ = 0;
+	// startTime_ = 0.0;
 }
 
 bool NetworkInterfaceBase::valid() {
 	return true;
+}
+
+void NetworkInterfaceBase::process()
+{
 }
 
 
