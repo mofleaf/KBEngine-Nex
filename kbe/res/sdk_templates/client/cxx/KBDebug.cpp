@@ -186,6 +186,7 @@ namespace KBDebug
 
 
         printf("%s %s\n", prefix, buffer);
+        fflush(stdout);
     }
 
     void log_info(const char* fmt, ...) {
@@ -196,6 +197,7 @@ namespace KBDebug
         va_end(args);
 
         printf("[INFO] %s\n", buffer);
+        fflush(stdout);
     }
     void log_debug(const char* fmt, ...) {
         char buffer[2048];
@@ -205,6 +207,7 @@ namespace KBDebug
         va_end(args);
 
         printf("[DEBUG] %s\n", buffer);
+        fflush(stdout);
     }
     void log_warning(const char* fmt, ...) {
         char buffer[2048];
@@ -214,6 +217,7 @@ namespace KBDebug
         va_end(args);
 
         printf("[WARNING] %s\n", buffer);
+        fflush(stdout);
     }
     void log_error(const char* fmt, ...) {
         char buffer[2048];
@@ -223,6 +227,7 @@ namespace KBDebug
         va_end(args);
 
         printf("[ERROR] %s\n", buffer);
+        fflush(stdout);
     }
     void log_screen_warning(const char* fmt, ...) {
         char buffer[2048];
@@ -232,6 +237,7 @@ namespace KBDebug
         va_end(args);
 
         printf("[WARNING][SCREEN] %s\n", buffer);
+        fflush(stdout);
     }
     void log_screen_error(const char* fmt, ...) {
         char buffer[2048];
@@ -241,6 +247,7 @@ namespace KBDebug
         va_end(args);
 
         printf("[ERROR][SCREEN] %s\n", buffer);
+        fflush(stdout);
     }
     void log_screen_debug(const char* fmt, ...) {
         char buffer[2048];
@@ -250,6 +257,7 @@ namespace KBDebug
         va_end(args);
 
         printf("[SCREEN] %s\n", buffer);
+        fflush(stdout);
     }
 }
 
