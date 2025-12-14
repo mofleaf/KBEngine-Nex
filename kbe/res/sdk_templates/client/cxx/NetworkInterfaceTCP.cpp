@@ -168,8 +168,6 @@ void NetworkInterfaceTCP::reset() {
 		socket_ = nullptr;
 	}
 
-	KBE_SAFE_RELEASE(pMessageReader_);
-	KBE_SAFE_RELEASE(pFilter_);
 	connectCB_ = nullptr;
 	connectIP_ = KBTEXT("");
 	connectPort_ = 0;
@@ -190,8 +188,9 @@ void NetworkInterfaceTCP::close() {
 		KBENGINE_EVENT_FIRE(KBEventTypes::onDisconnected, std::make_shared<UKBEventData_onDisconnected>());
 		socket_ = nullptr;
 	}
-
+	
 	KBE_SAFE_RELEASE(pMessageReader_);
+	KBE_SAFE_RELEASE(pBuffer_);
 	KBE_SAFE_RELEASE(pFilter_);
 	connectCB_ = nullptr;
 	connectIP_ = KBTEXT("");
