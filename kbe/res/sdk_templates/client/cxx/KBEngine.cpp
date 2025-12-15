@@ -218,6 +218,8 @@ void KBEngineApp::destroy()
 	resetMessages();
 
 	KBE_SAFE_RELEASE(pArgs_);
+	
+	if (pNetworkInterface_) pNetworkInterface_->destroy();
 	// KBE_SAFE_RELEASE(pNetworkInterface_);
 	pNetworkInterface_ = nullptr;
 	KBE_SAFE_RELEASE(pFilter_);
