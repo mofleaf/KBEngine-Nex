@@ -1,15 +1,10 @@
-// Copyright 2008-2018 Yolo Technologies, Inc. All Rights Reserved. https://www.comblockengine.com
-
-#ifndef KBE_DB_MONGODB_COMMON_H
-#define KBE_DB_MONGODB_COMMON_H
-
+#pragma once
 #include "db_context.h"
 #include "common/common.h"
 #include "common/memorystream.h"
 #include "helper/debug_helper.h"
 
-namespace KBEngine{ 
+namespace KBEngine {
 
-
+	extern uint32 ALL_MONGODB_SET_FLAGS;
 }
-#endif // KBE_DB_MONGODB_COMMON_H

@@ -1,7 +1,7 @@
-#include "db_transaction.h"
+#include "entity_table_mongodb.h"
 #include "kbe_table_mongodb.h"
+#include "db_exception.h"
 #include "db_interface_mongodb.h"
-#include "mongodb_helper.h"
 #include "db_interface/db_interface.h"
 #include "db_interface/entity_table.h"
 #include "entitydef/entitydef.h"
@@ -10,63 +10,139 @@
 
 namespace KBEngine {
 
-
-	//-------------------------------------------------------------------------------------
 	bool KBEEntityLogTableMongodb::syncToDB(DBInterface* pdbi)
 	{
-		/*
-		有数据时才产生表数据
-		kbe_entitylog:dbid:entityType = hashes(entityID, ip, port, componentID, serverGroupID)
-		*/
-		
-		return true;
+		//创建表
+		DBInterfaceMongodb* pdbiMongodb = static_cast<DBInterfaceMongodb*>(pdbi);
+		if (!pdbiMongodb->createCollection("kbe_entitylog"))
+		{
+			//存在表格，要清除里面的所有数据
+			bson_t options;
+			bson_init(&options);
 
-		// return MongodbHelper::dropTable(static_cast<DBInterfaceMongodb*>(pdbi), fmt::format(KBE_TABLE_PERFIX "_entitylog:*:*"), false);
+			DBInterfaceMongodb* pdbiMongodb = static_cast<DBInterfaceMongodb*>(pdbi);
+			pdbiMongodb->collectionRemove("kbe_entitylog", MONGOC_REMOVE_NONE, &options, NULL);
+
+			bson_destroy(&options);
+		}
+		return true;
 	}
 
-	//-------------------------------------------------------------------------------------
 	bool KBEEntityLogTableMongodb::logEntity(DBInterface* pdbi, const char* ip, uint32 port, DBID dbid,
 		COMPONENT_ID componentID, ENTITY_ID entityID, ENTITY_SCRIPT_UID entityType)
 	{
-		/*
-		kbe_entitylog:dbid:entityType = hashes(entityID, ip, port, componentID, serverGroupID)
-		*/
-		// std::string sqlstr = fmt::format("HSET " KBE_TABLE_PERFIX "_entitylog:{}:{} entityID {} ip {} port {} componentID {} serverGroupID {}",
-		// 	dbid, entityType, entityID, ip, port, componentID, g_componentID);
-		//
-		// pdbi->query(sqlstr.c_str(), sqlstr.size(), false);
+		bson_t options;
+		bson_init(&options);
+		BSON_APPEND_INT64(&options, "entityDBID", dbid);
+		BSON_APPEND_INT32(&options, "entityType", entityType);
+		BSON_APPEND_INT32(&options, "entityID", entityID);
+		BSON_APPEND_UTF8(&options, "ip", ip);
+		BSON_APPEND_INT32(&options, "port", port);
+		BSON_APPEND_INT64(&options, "componentID", componentID);
+		BSON_APPEND_INT64(&options, "serverGroupID", (uint64)getUserUID());
+
+		DBInterfaceMongodb* pdbiMongodb = static_cast<DBInterfaceMongodb*>(pdbi);
+		pdbiMongodb->insertCollection("kbe_entitylog", MONGOC_INSERT_NONE, &options, NULL);
+
+		bson_destroy(&options);
+
 		return true;
 	}
 
-	//-------------------------------------------------------------------------------------
 	bool KBEEntityLogTableMongodb::queryEntity(DBInterface* pdbi, DBID dbid, EntityLog& entitylog, ENTITY_SCRIPT_UID entityType)
 	{
-		
-		return entitylog.componentID > 0;
-	}
+		bson_t query;
+		bson_init(&query);
+		BSON_APPEND_INT64(&query, "entityDBID", dbid);
 
-	//-------------------------------------------------------------------------------------
-	bool KBEEntityLogTableMongodb::eraseEntityLog(DBInterface* pdbi, DBID dbid, ENTITY_SCRIPT_UID entityType)
-	{
-		// std::string sqlstr = fmt::format("HDEL " KBE_TABLE_PERFIX "_entitylog:{}:{}",
-		// 	dbid, entityType);
-		//
-		// pdbi->query(sqlstr.c_str(), sqlstr.size(), false);
+		DBInterfaceMongodb* pdbiMongodb = static_cast<DBInterfaceMongodb*>(pdbi);
+		//const std::list<const bson_t *> value = pdbiMongodb->collectionFind("kbe_entitylog", &query);
+
+		mongoc_cursor_t* cursor = pdbiMongodb->collectionFind("kbe_entitylog", MONGOC_QUERY_NONE, 0, 0, 0, &query, NULL, NULL);
+
+		entitylog.dbid = dbid;
+		entitylog.componentID = 0;
+		entitylog.serverGroupID = 0;
+		entitylog.entityID = 0;
+		entitylog.ip[0] = '\0';
+		entitylog.port = 0;
+
+
+		const bson_t* doc = NULL;
+		bson_error_t  error;
+		while (mongoc_cursor_more(cursor) && mongoc_cursor_next(cursor, &doc)) {
+			break;
+		}
+
+		if (mongoc_cursor_error(cursor, &error)) {
+			ERROR_MSG(fmt::format("An error occurred: {}\n", error.message));
+		}
+
+		if (doc == NULL)
+		{
+			mongoc_cursor_destroy(cursor);
+			return false;
+		}
+
+		bson_iter_t iter;
+		bson_iter_init(&iter, doc);
+
+		if (bson_iter_find(&iter, "entityID"))
+		{
+			entitylog.entityID = bson_iter_int32(&iter);
+		}
+
+		if (bson_iter_find(&iter, "ip"))
+		{
+			uint32_t len = 0;
+			const char* ip = bson_iter_utf8(&iter, &len);
+			kbe_snprintf(entitylog.ip, MAX_IP, "%s", ip);
+		}
+
+		if (bson_iter_find(&iter, "port"))
+		{
+
+			entitylog.port = bson_iter_int32(&iter);
+		}
+
+		if (bson_iter_find(&iter, "componentID"))
+		{
+			entitylog.componentID = bson_iter_int64(&iter);
+		}
+
+		if (bson_iter_find(&iter, "serverGroupID"))
+		{
+			entitylog.serverGroupID = bson_iter_int64(&iter);
+		}
+
+		mongoc_cursor_destroy(cursor);
 		return true;
 	}
 
-	//-------------------------------------------------------------------------------------
-	bool KBEEntityLogTableMongodb::eraseBaseappEntityLog(DBInterface* pdbi, COMPONENT_ID componentID)
+	bool KBEEntityLogTableMongodb::eraseEntityLog(DBInterface* pdbi, DBID dbid, ENTITY_SCRIPT_UID entityType)
 	{
-		return false;
+		bool r = true;
+		bson_t doc;
+		bson_init(&doc);
+		BSON_APPEND_INT64(&doc, "entityDBID", dbid);
+
+
+		DBInterfaceMongodb* pdbiMongodb = static_cast<DBInterfaceMongodb*>(pdbi);
+		if (pdbiMongodb->collectionRemove("kbe_entitylog", MONGOC_REMOVE_SINGLE_REMOVE, &doc, NULL))
+			r = false;
+
+		return r;
 	}
 
-	//-------------------------------------------------------------------------------------
+	bool KBEEntityLogTableMongodb::eraseBaseappEntityLog(DBInterface* pdbi, COMPONENT_ID componentID)
+	{
+		return true;
+	}
+
 	KBEEntityLogTableMongodb::KBEEntityLogTableMongodb(EntityTables* pEntityTables) :
 		KBEEntityLogTable(pEntityTables)
 	{
 	}
-
 
 	//-------------------------------------------------------------------------------------
 	bool KBEServerLogTableMongodb::syncToDB(DBInterface* pdbi)
@@ -87,7 +163,7 @@ namespace KBEngine {
 	}
 
 	//-------------------------------------------------------------------------------------
-	std::vector<COMPONENT_ID> KBEServerLogTableMongodb::queryTimeOutServers(DBInterface* pdbi)
+	std::vector<COMPONENT_ID> KBEServerLogTableMongodb::queryServers(DBInterface* pdbi)
 	{
 		std::vector<COMPONENT_ID> cids;
 
@@ -95,7 +171,7 @@ namespace KBEngine {
 	}
 
 	//-------------------------------------------------------------------------------------
-	std::vector<COMPONENT_ID> KBEServerLogTableMongodb::queryServers(DBInterface* pdbi)
+	std::vector<COMPONENT_ID> KBEServerLogTableMongodb::queryTimeOutServers(DBInterface* pdbi)
 	{
 		std::vector<COMPONENT_ID> cids;
 
@@ -114,158 +190,277 @@ namespace KBEngine {
 	{
 	}
 
-	//-------------------------------------------------------------------------------------
 	bool KBEAccountTableMongodb::syncToDB(DBInterface* pdbi)
 	{
+		//创建表
+		DBInterfaceMongodb* pdbiMongodb = static_cast<DBInterfaceMongodb*>(pdbi);
+		pdbiMongodb->createCollection("kbe_accountinfos");
 		return true;
 	}
 
-	//-------------------------------------------------------------------------------------
 	KBEAccountTableMongodb::KBEAccountTableMongodb(EntityTables* pEntityTables) :
 		KBEAccountTable(pEntityTables)
 	{
 	}
 
-	//-------------------------------------------------------------------------------------
 	bool KBEAccountTableMongodb::setFlagsDeadline(DBInterface* pdbi, const std::string& name, uint32 flags, uint64 deadline)
 	{
-		/*
-		kbe_accountinfos:accountName = hashes(password, bindata, email, entityDBID, flags, deadline, regtime, lasttime, numlogin)
-		*/
+		bson_t doc;
+		bson_init(&doc);
+		BSON_APPEND_INT32(&doc, "flags", flags);
+		BSON_APPEND_INT64(&doc, "deadline", deadline);
 
-		// 如果查询失败则返回存在， 避免可能产生的错误
-		// if (pdbi->query(fmt::format("HSET " KBE_TABLE_PERFIX "_accountinfos:{} flags {} deadline {}",
-		// 	name, flags, deadline), false))
-		// 	return true;
+		bson_t query;
+		bson_init(&query);
+		std::string accountName = "accountName";
+		bson_append_utf8(&query, accountName.c_str(), accountName.size(), name.c_str(), name.size());
+
+		DBInterfaceMongodb* pdbiMongodb = static_cast<DBInterfaceMongodb*>(pdbi);
+		pdbiMongodb->updateCollection("kbe_accountinfos", MONGOC_UPDATE_NONE, &query, &doc, NULL);
+
+		bson_destroy(&query);
+		bson_destroy(&doc);
 
 		return true;
 	}
 
-	//-------------------------------------------------------------------------------------
 	bool KBEAccountTableMongodb::queryAccount(DBInterface* pdbi, const std::string& name, ACCOUNT_INFOS& info)
 	{
-		
+		bson_t query;
+		bson_init(&query);
+		std::string accountName = "accountName";
+		bson_append_utf8(&query, accountName.c_str(), accountName.size(), name.c_str(), name.size());
+
+		DBInterfaceMongodb* pdbiMongodb = static_cast<DBInterfaceMongodb*>(pdbi);
+		mongoc_cursor_t* cursor = pdbiMongodb->collectionFind("kbe_accountinfos", MONGOC_QUERY_NONE, 0, 0, 0, &query, NULL, NULL);
+
+
+		const bson_t* doc = NULL;
+		bson_error_t  error;
+		while (mongoc_cursor_more(cursor) && mongoc_cursor_next(cursor, &doc)) {
+			break;
+		}
+
+		if (mongoc_cursor_error(cursor, &error)) {
+			ERROR_MSG(fmt::format("An error occurred: {}\n", error.message));
+		}
+
+		if (doc == NULL)
+		{
+			mongoc_cursor_destroy(cursor);
+			return false;
+		}
+
+		bson_iter_t iter;
+		bson_iter_init(&iter, doc);
+
+		info.name = name;
+
+		if (bson_iter_find(&iter, "password"))
+		{
+			uint32_t len = 0;
+			const char* password = bson_iter_utf8(&iter, &len);
+			info.password = std::string(password, len);
+		}
+
+		if (bson_iter_find(&iter, "entityDBID"))
+		{
+			info.dbid = bson_iter_int64(&iter);
+		}
+
+		if (bson_iter_find(&iter, "flags"))
+		{
+			info.flags = bson_iter_int32(&iter);
+		}
+
+		if (bson_iter_find(&iter, "deadline"))
+		{
+			info.deadline = bson_iter_int64(&iter);
+		}
+
+		mongoc_cursor_destroy(cursor);
 		return info.dbid > 0;
 	}
 
-	//-------------------------------------------------------------------------------------
 	bool KBEAccountTableMongodb::queryAccountAllInfos(DBInterface* pdbi, const std::string& name, ACCOUNT_INFOS& info)
 	{
-		
+		bson_t query;
+		bson_init(&query);
+		std::string accountName = "accountName";
+		bson_append_utf8(&query, accountName.c_str(), accountName.size(), name.c_str(), name.size());
 
+		DBInterfaceMongodb* pdbiMongodb = static_cast<DBInterfaceMongodb*>(pdbi);
+		mongoc_cursor_t* cursor = pdbiMongodb->collectionFind("kbe_accountinfos", MONGOC_QUERY_NONE, 0, 0, 0, &query, NULL, NULL);
+
+
+		const bson_t* doc = NULL;
+		bson_error_t  error;
+		while (mongoc_cursor_more(cursor) && mongoc_cursor_next(cursor, &doc)) {
+			break;
+		}
+
+		if (mongoc_cursor_error(cursor, &error)) {
+			ERROR_MSG(fmt::format("An error occurred: {}\n", error.message));
+		}
+
+		if (doc == NULL)
+		{
+			mongoc_cursor_destroy(cursor);
+			return false;
+		}
+
+		bson_iter_t iter;
+		bson_iter_init(&iter, doc);
+
+		info.name = name;
+
+		if (bson_iter_find(&iter, "password"))
+		{
+			uint32_t len = 0;
+			const char* password = bson_iter_utf8(&iter, &len);
+			info.password = std::string(password, len);
+		}
+
+		if (bson_iter_find(&iter, "email"))
+		{
+			uint32_t len = 0;
+			const char* email = bson_iter_utf8(&iter, &len);
+			info.email = std::string(email, len);
+		}
+
+		if (bson_iter_find(&iter, "entityDBID"))
+		{
+			info.dbid = bson_iter_int64(&iter);
+		}
+
+		if (bson_iter_find(&iter, "flags"))
+		{
+			info.flags = bson_iter_int32(&iter);
+		}
+
+		if (bson_iter_find(&iter, "deadline"))
+		{
+			info.deadline = bson_iter_int64(&iter);
+		}
+
+		mongoc_cursor_destroy(cursor);
 		return info.dbid > 0;
 	}
 
-	//-------------------------------------------------------------------------------------
 	bool KBEAccountTableMongodb::updateCount(DBInterface* pdbi, const std::string& name, DBID dbid)
 	{
+		bson_t* doc = bson_new();
+		bson_t child;
+		bson_append_document_begin(doc, "$inc", -1, &child);
+		BSON_APPEND_INT32(&child, "numlogin", 1);
+		bson_append_document_end(doc, &child);
+
+		bson_t query;
+		bson_init(&query);
+		BSON_APPEND_INT64(&query, "entityDBID", dbid);
+
+		DBInterfaceMongodb* pdbiMongodb = static_cast<DBInterfaceMongodb*>(pdbi);
+		pdbiMongodb->updateCollection("kbe_accountinfos", MONGOC_UPDATE_NONE, &query, doc, NULL);
+
+		bson_destroy(&query);
+		bson_destroy(doc);
+
 		return true;
 	}
 
-	//-------------------------------------------------------------------------------------
 	bool KBEAccountTableMongodb::updatePassword(DBInterface* pdbi, const std::string& name, const std::string& password)
 	{
-		// 如果查询失败则返回存在， 避免可能产生的错误
-		if (!pdbi->query(fmt::format("HSET " KBE_TABLE_PERFIX "_accountinfos:{} password {}", name, password), false))
-			return false;
+		bson_t doc;
+		bson_init(&doc);
+		bson_t child;
+		bson_append_document_begin(&doc, "$set", -1, &child);
+		bson_append_utf8(&child, "password", (int)strlen("password"), password.c_str(), password.size());
+		bson_append_document_end(&doc, &child);
+
+		bson_t query;
+		bson_init(&query);
+		bson_append_utf8(&query, "entityDBID", (int)strlen("entityDBID"), name.c_str(), name.size());
+
+		DBInterfaceMongodb* pdbiMongodb = static_cast<DBInterfaceMongodb*>(pdbi);
+		pdbiMongodb->updateCollection("kbe_accountinfos", MONGOC_UPDATE_NONE, &query, &doc, NULL);
+
+		bson_destroy(&query);
+		bson_destroy(&doc);
 
 		return true;
 	}
 
-	//-------------------------------------------------------------------------------------
+
 	bool KBEAccountTableMongodb::logAccount(DBInterface* pdbi, ACCOUNT_INFOS& info)
 	{
-		// std::string sqlstr = fmt::format("HSET " KBE_TABLE_PERFIX "_accountinfos:{} accountName {} password {} bindata {} ",
-		// 	"email {} entityDBID {} flags {} deadline {} regtime {} lasttime {}",
-		// 	info.name, KBE_MD5::getDigest(info.password.data(), info.password.length()).c_str(),
-		// 	info.datas, info.email, info.dbid, info.flags, info.deadline, time(NULL), time(NULL));
-		//
-		// // 如果查询失败则返回存在， 避免可能产生的错误
-		// if (!pdbi->query(sqlstr.c_str(), sqlstr.size(), false))
-		// {
-		// 	ERROR_MSG(fmt::format("KBEAccountTableMongodb::logAccount({}): cmd({}) is failed({})!\n",
-		// 		info.name, sqlstr, pdbi->getstrerror()));
-		//
-		// 	return false;
-		// }
+		bson_t options;
+		bson_init(&options);
+		bson_append_utf8(&options, "accountName", (int)strlen("accountName"), info.name.c_str(), info.name.size());
+		std::string password = KBE_MD5::getDigest(info.password.data(), info.password.length());
+		bson_append_utf8(&options, "password", (int)strlen("password"), password.c_str(), password.size());
+		bson_append_utf8(&options, "bindata", (int)strlen("bindata"), info.datas.data(), info.datas.size());
+		bson_append_utf8(&options, "email", (int)strlen("email"), info.email.c_str(), info.email.size());
+		BSON_APPEND_INT64(&options, "entityDBID", info.dbid);
+		BSON_APPEND_INT32(&options, "flags", info.flags);
+		BSON_APPEND_INT64(&options, "deadline", info.deadline);
+		BSON_APPEND_INT64(&options, "regtime", time(NULL));
+		BSON_APPEND_INT64(&options, "lasttime", time(NULL));
+		BSON_APPEND_INT32(&options, "numlogin", 0);
+
+		DBInterfaceMongodb* pdbiMongodb = static_cast<DBInterfaceMongodb*>(pdbi);
+		pdbiMongodb->insertCollection("kbe_accountinfos", MONGOC_INSERT_NONE, &options, NULL);
+
+		bson_destroy(&options);
 
 		return true;
 	}
 
-	//-------------------------------------------------------------------------------------
 	KBEEmailVerificationTableMongodb::KBEEmailVerificationTableMongodb(EntityTables* pEntityTables) :
 		KBEEmailVerificationTable(pEntityTables)
 	{
+
 	}
 
-	//-------------------------------------------------------------------------------------
 	KBEEmailVerificationTableMongodb::~KBEEmailVerificationTableMongodb()
 	{
+
 	}
 
-	//-------------------------------------------------------------------------------------
-	bool KBEEmailVerificationTableMongodb::queryAccount(DBInterface* pdbi, int8 type, const std::string& name, ACCOUNT_INFOS& info)
-	{
-		
-
-		return info.datas.size() > 0;
-	}
-
-	//-------------------------------------------------------------------------------------
-	int KBEEmailVerificationTableMongodb::getDeadline(int8 type)
-	{
-		int deadline = 3600;
-		if (type == (int8)KBEEmailVerificationTable::V_TYPE_CREATEACCOUNT)
-			deadline = g_kbeSrvConfig.emailAtivationInfo_.deadline;
-		else if (type == (int8)KBEEmailVerificationTable::V_TYPE_RESETPASSWORD)
-			deadline = g_kbeSrvConfig.emailResetPasswordInfo_.deadline;
-		else if (type == (int8)KBEEmailVerificationTable::V_TYPE_BIND_MAIL)
-			deadline = g_kbeSrvConfig.emailBindInfo_.deadline;
-
-		return deadline;
-	}
-
-	//-------------------------------------------------------------------------------------
-	bool KBEEmailVerificationTableMongodb::logAccount(DBInterface* pdbi, int8 type, const std::string& name,
-		const std::string& datas, const std::string& code)
-	{
-		return true;
-	}
-
-	//-------------------------------------------------------------------------------------
-	bool KBEEmailVerificationTableMongodb::activateAccount(DBInterface* pdbi, const std::string& code, ACCOUNT_INFOS& info)
-	{
-		
-		return true;
-	}
-
-	//-------------------------------------------------------------------------------------
-	bool KBEEmailVerificationTableMongodb::bindEMail(DBInterface* pdbi, const std::string& name, const std::string& code)
-	{
-		
-		return true;
-	}
-
-	//-------------------------------------------------------------------------------------
-	bool KBEEmailVerificationTableMongodb::resetpassword(DBInterface* pdbi, const std::string& name,
-		const std::string& password, const std::string& code)
-	{
-		
-		return true;
-	}
-
-	//-------------------------------------------------------------------------------------
-	bool KBEEmailVerificationTableMongodb::delAccount(DBInterface* pdbi, int8 type, const std::string& name)
-	{
-		
-		return true;
-	}
-
-	//-------------------------------------------------------------------------------------
 	bool KBEEmailVerificationTableMongodb::syncToDB(DBInterface* pdbi)
 	{
+		//创建表
+		DBInterfaceMongodb* pdbiMongodb = static_cast<DBInterfaceMongodb*>(pdbi);
+		pdbiMongodb->createCollection("kbe_email_verification");
 		return true;
 	}
 
-	//-------------------------------------------------------------------------------------
+	bool KBEEmailVerificationTableMongodb::queryAccount(DBInterface* pdbi, int8 type, const std::string& name, ACCOUNT_INFOS& info)
+	{
+		return true;
+	}
+
+	bool KBEEmailVerificationTableMongodb::logAccount(DBInterface* pdbi, int8 type, const std::string& name, const std::string& datas, const std::string& code)
+	{
+		return true;
+	}
+
+	bool KBEEmailVerificationTableMongodb::delAccount(DBInterface* pdbi, int8 type, const std::string& name)
+	{
+		return true;
+	}
+
+	bool KBEEmailVerificationTableMongodb::activateAccount(DBInterface* pdbi, const std::string& code, ACCOUNT_INFOS& info)
+	{
+		return true;
+	}
+
+	bool KBEEmailVerificationTableMongodb::bindEMail(DBInterface* pdbi, const std::string& name, const std::string& code)
+	{
+		return true;
+	}
+
+	bool KBEEmailVerificationTableMongodb::resetpassword(DBInterface* pdbi, const std::string& name, const std::string& password, const std::string& code)
+	{
+		return true;
+	}
 }

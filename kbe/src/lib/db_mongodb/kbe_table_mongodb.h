@@ -1,8 +1,4 @@
-// Copyright 2008-2018 Yolo Technologies, Inc. All Rights Reserved. https://www.comblockengine.com
-
-#ifndef KBE_KBE_TABLE_MONGODB_H
-#define KBE_KBE_TABLE_MONGODB_H
-
+#pragma once
 #include "common.h"
 #include "common/common.h"
 #include "common/singleton.h"
@@ -11,29 +7,28 @@
 #include "db_interface/kbe_tables.h"
 
 namespace KBEngine {
-
 	/*
-		kbe系统表
+	kbe系统表
 	*/
 	class KBEEntityLogTableMongodb : public KBEEntityLogTable
 	{
 	public:
 		KBEEntityLogTableMongodb(EntityTables* pEntityTables);
-		virtual ~KBEEntityLogTableMongodb() {}
+		~KBEEntityLogTableMongodb() override = default;
 
 		/**
-			同步表到数据库中
+		同步表到数据库中
 		*/
-		virtual bool syncToDB(DBInterface* pdbi);
-		virtual bool syncIndexToDB(DBInterface* pdbi) { return true; }
+		bool syncToDB(DBInterface* pdbi) override;
+		bool syncIndexToDB(DBInterface* pdbi) override { return true; }
 
-		virtual bool logEntity(DBInterface* pdbi, const char* ip, uint32 port, DBID dbid,
-			COMPONENT_ID componentID, ENTITY_ID entityID, ENTITY_SCRIPT_UID entityType);
+		bool logEntity(DBInterface* pdbi, const char* ip, uint32 port, DBID dbid,
+		               COMPONENT_ID componentID, ENTITY_ID entityID, ENTITY_SCRIPT_UID entityType) override;
 
-		virtual bool queryEntity(DBInterface* pdbi, DBID dbid, EntityLog& entitylog, ENTITY_SCRIPT_UID entityType);
+		bool queryEntity(DBInterface* pdbi, DBID dbid, EntityLog& entitylog, ENTITY_SCRIPT_UID entityType) override;
 
-		virtual bool eraseEntityLog(DBInterface* pdbi, DBID dbid, ENTITY_SCRIPT_UID entityType);
-		virtual bool eraseBaseappEntityLog(DBInterface* pdbi, COMPONENT_ID componentID);
+		bool eraseEntityLog(DBInterface* pdbi, DBID dbid, ENTITY_SCRIPT_UID entityType) override;
+		bool eraseBaseappEntityLog(DBInterface* pdbi, COMPONENT_ID componentID) override;
 
 	protected:
 
@@ -43,22 +38,22 @@ namespace KBEngine {
 	{
 	public:
 		KBEServerLogTableMongodb(EntityTables* pEntityTables);
-		virtual ~KBEServerLogTableMongodb() {}
+		~KBEServerLogTableMongodb() override = default;
 
 		/**
-			同步表到数据库中
+		同步表到数据库中
 		*/
-		virtual bool syncToDB(DBInterface* pdbi);
-		virtual bool syncIndexToDB(DBInterface* pdbi) { return true; }
+		bool syncToDB(DBInterface* pdbi) override;
+		bool syncIndexToDB(DBInterface* pdbi) override { return true; }
 
-		virtual bool updateServer(DBInterface* pdbi);
+		bool updateServer(DBInterface* pdbi) override;
 
-		virtual bool queryServer(DBInterface* pdbi, ServerLog& serverlog);
-		virtual std::vector<COMPONENT_ID> queryServers(DBInterface* pdbi);
+		bool queryServer(DBInterface* pdbi, ServerLog& serverlog) override;
+		std::vector<COMPONENT_ID> queryServers(DBInterface* pdbi) override;
 
-		virtual std::vector<COMPONENT_ID> queryTimeOutServers(DBInterface* pdbi);
+		std::vector<COMPONENT_ID> queryTimeOutServers(DBInterface* pdbi) override;
 
-		virtual bool clearServers(DBInterface* pdbi, const std::vector<COMPONENT_ID>& cids);
+		bool clearServers(DBInterface* pdbi, const std::vector<COMPONENT_ID>& cids) override;
 
 	protected:
 
@@ -68,20 +63,20 @@ namespace KBEngine {
 	{
 	public:
 		KBEAccountTableMongodb(EntityTables* pEntityTables);
-		virtual ~KBEAccountTableMongodb() {}
+		~KBEAccountTableMongodb() override = default;
 
 		/**
-			同步表到数据库中
+		同步表到数据库中
 		*/
-		virtual bool syncToDB(DBInterface* pdbi);
-		virtual bool syncIndexToDB(DBInterface* pdbi) { return true; }
+		bool syncToDB(DBInterface* pdbi) override;
+		bool syncIndexToDB(DBInterface* pdbi) override { return true; }
 
-		bool queryAccount(DBInterface* pdbi, const std::string& name, ACCOUNT_INFOS& info);
-		bool queryAccountAllInfos(DBInterface* pdbi, const std::string& name, ACCOUNT_INFOS& info);
-		bool logAccount(DBInterface* pdbi, ACCOUNT_INFOS& info);
-		bool setFlagsDeadline(DBInterface* pdbi, const std::string& name, uint32 flags, uint64 deadline);
-		virtual bool updateCount(DBInterface* pdbi, const std::string& name, DBID dbid);
-		virtual bool updatePassword(DBInterface* pdbi, const std::string& name, const std::string& password);
+		bool queryAccount(DBInterface* pdbi, const std::string& name, ACCOUNT_INFOS& info) override;
+		bool queryAccountAllInfos(DBInterface* pdbi, const std::string& name, ACCOUNT_INFOS& info) override;
+		bool logAccount(DBInterface* pdbi, ACCOUNT_INFOS& info) override;
+		bool setFlagsDeadline(DBInterface* pdbi, const std::string& name, uint32 flags, uint64 deadline) override;
+		bool updateCount(DBInterface* pdbi, const std::string& name, DBID dbid) override;
+		bool updatePassword(DBInterface* pdbi, const std::string& name, const std::string& password) override;
 	protected:
 	};
 
@@ -90,27 +85,23 @@ namespace KBEngine {
 	public:
 
 		KBEEmailVerificationTableMongodb(EntityTables* pEntityTables);
-		virtual ~KBEEmailVerificationTableMongodb();
+		~KBEEmailVerificationTableMongodb() override;
 
 		/**
-			同步表到数据库中
+		同步表到数据库中
 		*/
-		virtual bool syncToDB(DBInterface* pdbi);
-		virtual bool syncIndexToDB(DBInterface* pdbi) { return true; }
+		bool syncToDB(DBInterface* pdbi) override;
+		bool syncIndexToDB(DBInterface* pdbi) override { return true; }
 
-		virtual bool queryAccount(DBInterface* pdbi, int8 type, const std::string& name, ACCOUNT_INFOS& info);
-		virtual bool logAccount(DBInterface* pdbi, int8 type, const std::string& name, const std::string& datas, const std::string& code);
-		virtual bool delAccount(DBInterface* pdbi, int8 type, const std::string& name);
-		virtual bool activateAccount(DBInterface* pdbi, const std::string& code, ACCOUNT_INFOS& info);
-		virtual bool bindEMail(DBInterface* pdbi, const std::string& name, const std::string& code);
-		virtual bool resetpassword(DBInterface* pdbi, const std::string& name,
-			const std::string& password, const std::string& code);
-
-		int getDeadline(int8 type);
+		bool queryAccount(DBInterface* pdbi, int8 type, const std::string& name, ACCOUNT_INFOS& info) override;
+		bool logAccount(DBInterface* pdbi, int8 type, const std::string& name, const std::string& datas, const std::string& code) override;
+		bool delAccount(DBInterface* pdbi, int8 type, const std::string& name) override;
+		bool activateAccount(DBInterface* pdbi, const std::string& code, ACCOUNT_INFOS& info) override;
+		bool bindEMail(DBInterface* pdbi, const std::string& name, const std::string& code) override;
+		bool resetpassword(DBInterface* pdbi, const std::string& name,
+		                   const std::string& password, const std::string& code) override;
 
 	protected:
 	};
 
 }
-
-#endif // KBE_KBE_TABLE_MONGODB_H

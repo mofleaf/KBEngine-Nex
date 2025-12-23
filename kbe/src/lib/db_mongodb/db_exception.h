@@ -1,37 +1,28 @@
-// Copyright 2008-2018 Yolo Technologies, Inc. All Rights Reserved. https://www.comblockengine.com
-
-#ifndef KBE_MONGODB_EXCEPTION_H
-#define KBE_MONGODB_EXCEPTION_H
+#pragma once
 
 #include <string>
 
-namespace KBEngine { 
+namespace KBEngine {
 
-class DBInterface;
-class DBException : public std::exception
-{
-public:
-	DBException(DBInterface* pdbi);
-	~DBException() throw();
+	class DBInterface;
 
-	virtual const char * what() const throw() { return errStr_.c_str(); }
+	namespace mongodb {
 
-	bool shouldRetry() const;
-	bool isLostConnection() const;
+		class DBException : public std::exception
+		{
+		public:
+			DBException(DBInterface* pdbi);
+			~DBException() throw();
 
-	void setError(const std::string& errStr, unsigned int errNum)
-	{
-		errStr_ = errStr;
-		errNum_ = errNum;
+			virtual const char* what() const throw() { return errStr_.c_str(); }
+
+			bool shouldRetry() const;
+			bool isLostConnection() const;
+
+		private:
+			std::string errStr_;
+			unsigned int errNum_;
+		};
 	}
 
-private:
-	std::string errStr_;
-	unsigned int errNum_;
-};
-
 }
-
-#endif // KBE_MONGODB_EXCEPTION_H
-
-

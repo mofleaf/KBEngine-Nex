@@ -1,36 +1,28 @@
-// Copyright 2008-2018 Yolo Technologies, Inc. All Rights Reserved. https://www.comblockengine.com
+#pragma once
 
-#ifndef KBE_MONGODB_TRANSACTION_HELPER_H
-#define KBE_MONGODB_TRANSACTION_HELPER_H
+namespace KBEngine {
+	class DBInterface;
+	namespace mongodb {
 
-namespace KBEngine { 
-class DBInterface;
-namespace mongodb {
+		class DBTransaction
+		{
+		public:
+			DBTransaction(DBInterface* pdbi, bool autostart = true);
+			~DBTransaction();
 
-/**
- */
-class DBTransaction
-{
-public:
-	DBTransaction(DBInterface* pdbi, bool autostart = true);
-	~DBTransaction();
-	
-	void start();
-	void end();
+			void start();
+			void end();
 
-	void commit();
+			void commit();
 
-	bool shouldRetry() const;
+			bool shouldRetry() const;
 
-	void pdbi(DBInterface* pdbi){ pdbi_ = pdbi; }
-	
-private:
-	DBInterface* pdbi_;
-	bool committed_;
-	bool autostart_;
-};
+			void pdbi(DBInterface* pdbi) { pdbi_ = pdbi; }
 
+		private:
+			DBInterface* pdbi_;
+			bool committed_;
+			bool autostart_;
+		};
+	}
 }
-}
-#endif // KBE_MONGODB_TRANSACTION_HELPER_H
-
