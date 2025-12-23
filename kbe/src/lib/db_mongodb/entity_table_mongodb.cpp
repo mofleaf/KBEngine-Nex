@@ -28,12 +28,14 @@ namespace KBEngine {
 	//-------------------------------------------------------------------------------------
 	bool EntityTableMongodb::initialize(ScriptDefModule* sm, std::string name)
 	{
+		DEBUG_MSG(fmt::format("EntityTableMongodb::initialize(): {}.\n", name));
 		// 获取表名
 		tableName(name);
 
 		// 找到所有存储属性并且创建出所有的字段
 		ScriptDefModule::PROPERTYDESCRIPTION_MAP& pdescrsMap = sm->getPersistentPropertyDescriptions();
 		ScriptDefModule::PROPERTYDESCRIPTION_MAP::const_iterator iter = pdescrsMap.begin();
+
 
 		for (; iter != pdescrsMap.end(); ++iter)
 		{
@@ -55,6 +57,8 @@ namespace KBEngine {
 
 			addItem(pETItem);
 		}
+
+		
 
 		// 特殊处理， 数据库保存方向和位置
 		if (sm->hasCell())
@@ -198,6 +202,7 @@ namespace KBEngine {
 	//-------------------------------------------------------------------------------------
 	EntityTableItem* EntityTableMongodb::createItem(std::string type, std::string defaultVal)
 	{
+		DEBUG_MSG(fmt::format("EntityTableMongodb::createItem(): {}.\n", type));
 		if (type == "INT8")
 		{
 			return new EntityTableItemMongodb_DIGIT(type, "tinyint not null DEFAULT 0", 4, 0);
@@ -304,6 +309,10 @@ namespace KBEngine {
 		else if (type == "ENTITYCALL")
 		{
 			return new EntityTableItemMongodb_ENTITYCALL("blob", 0, 0);
+		}
+		else if (type == "ENTITY_COMPONENT")
+		{
+			return new EntityTableItemMongodb_Component("blob", 0, 0);
 		}
 
 		KBE_ASSERT(false && "not found type.\n");
@@ -462,6 +471,41 @@ namespace KBEngine {
 	//-------------------------------------------------------------------------------------
 	void EntityTableItemMongodb_ENTITYCALL::getReadSqlItem(mongodb::DBContext& context)
 	{
+	}
+
+	bool EntityTableItemMongodb_Component::isSameKey(std::string key)
+	{
+		return EntityTableItemMongodbBase::isSameKey(key);
+	}
+
+	bool EntityTableItemMongodb_Component::initialize(const PropertyDescription* pPropertyDescription,
+		const DataType* pDataType, std::string name)
+	{
+		return EntityTableItemMongodbBase::initialize(pPropertyDescription, pDataType, name);
+	}
+
+	bool EntityTableItemMongodb_Component::syncToDB(DBInterface* pdbi, void* pData)
+	{
+		return true;
+	}
+
+	void EntityTableItemMongodb_Component::addToStream(MemoryStream* s, mongodb::DBContext& context, DBID resultDBID)
+	{
+		EntityTableItemMongodbBase::addToStream(s, context, resultDBID);
+	}
+
+	void EntityTableItemMongodb_Component::getWriteSqlItem(DBInterface* pdbi, MemoryStream* s,
+		mongodb::DBContext& context)
+	{
+	}
+
+	void EntityTableItemMongodb_Component::getReadSqlItem(mongodb::DBContext& context)
+	{
+	}
+
+	void EntityTableItemMongodb_Component::init_db_item_name(const char* exstrFlag)
+	{
+		EntityTableItemMongodbBase::init_db_item_name(exstrFlag);
 	}
 
 	//-------------------------------------------------------------------------------------

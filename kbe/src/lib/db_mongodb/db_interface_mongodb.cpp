@@ -4,6 +4,7 @@
 #include "db_exception.h"
 #include "db_interface_mongodb.h"
 
+#include "entity_table_mongodb.h"
 #include "mongodb_helper.h"
 #include "mongodb_watcher.h"
 #include "thread/threadguard.h"
@@ -501,7 +502,7 @@ namespace KBEngine {
 		mongoc_collection_destroy(collection);
 		bson_destroy(root);
 
-		// ⭐ 和 MySQL 完全一致的行为
+		// 和 MySQL 完全一致的行为
 		return result == NULL || (write_query_result(result), true);
 
 	// _error_collection:
@@ -609,8 +610,7 @@ namespace KBEngine {
 	//-------------------------------------------------------------------------------------
 	EntityTable* DBInterfaceMongodb::createEntityTable(EntityTables* pEntityTables)
 	{
-		// mongodb 不需要创建表，添加数据会自动创建
-		return NULL;
+		return new EntityTableMongodb(pEntityTables);
 	}
 
 	//-------------------------------------------------------------------------------------

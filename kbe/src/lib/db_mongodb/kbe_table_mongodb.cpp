@@ -18,8 +18,10 @@ namespace KBEngine {
 		有数据时才产生表数据
 		kbe_entitylog:dbid:entityType = hashes(entityID, ip, port, componentID, serverGroupID)
 		*/
+		
+		return true;
 
-		return MongodbHelper::dropTable(static_cast<DBInterfaceMongodb*>(pdbi), fmt::format(KBE_TABLE_PERFIX "_entitylog:*:*"), false);
+		// return MongodbHelper::dropTable(static_cast<DBInterfaceMongodb*>(pdbi), fmt::format(KBE_TABLE_PERFIX "_entitylog:*:*"), false);
 	}
 
 	//-------------------------------------------------------------------------------------
@@ -29,10 +31,10 @@ namespace KBEngine {
 		/*
 		kbe_entitylog:dbid:entityType = hashes(entityID, ip, port, componentID, serverGroupID)
 		*/
-		std::string sqlstr = fmt::format("HSET " KBE_TABLE_PERFIX "_entitylog:{}:{} entityID {} ip {} port {} componentID {} serverGroupID {}",
-			dbid, entityType, entityID, ip, port, componentID, g_componentID);
-
-		pdbi->query(sqlstr.c_str(), sqlstr.size(), false);
+		// std::string sqlstr = fmt::format("HSET " KBE_TABLE_PERFIX "_entitylog:{}:{} entityID {} ip {} port {} componentID {} serverGroupID {}",
+		// 	dbid, entityType, entityID, ip, port, componentID, g_componentID);
+		//
+		// pdbi->query(sqlstr.c_str(), sqlstr.size(), false);
 		return true;
 	}
 
@@ -46,10 +48,10 @@ namespace KBEngine {
 	//-------------------------------------------------------------------------------------
 	bool KBEEntityLogTableMongodb::eraseEntityLog(DBInterface* pdbi, DBID dbid, ENTITY_SCRIPT_UID entityType)
 	{
-		std::string sqlstr = fmt::format("HDEL " KBE_TABLE_PERFIX "_entitylog:{}:{}",
-			dbid, entityType);
-
-		pdbi->query(sqlstr.c_str(), sqlstr.size(), false);
+		// std::string sqlstr = fmt::format("HDEL " KBE_TABLE_PERFIX "_entitylog:{}:{}",
+		// 	dbid, entityType);
+		//
+		// pdbi->query(sqlstr.c_str(), sqlstr.size(), false);
 		return true;
 	}
 
@@ -132,11 +134,11 @@ namespace KBEngine {
 		*/
 
 		// 如果查询失败则返回存在， 避免可能产生的错误
-		if (pdbi->query(fmt::format("HSET " KBE_TABLE_PERFIX "_accountinfos:{} flags {} deadline {}",
-			name, flags, deadline), false))
-			return true;
+		// if (pdbi->query(fmt::format("HSET " KBE_TABLE_PERFIX "_accountinfos:{} flags {} deadline {}",
+		// 	name, flags, deadline), false))
+		// 	return true;
 
-		return false;
+		return true;
 	}
 
 	//-------------------------------------------------------------------------------------
@@ -173,19 +175,19 @@ namespace KBEngine {
 	//-------------------------------------------------------------------------------------
 	bool KBEAccountTableMongodb::logAccount(DBInterface* pdbi, ACCOUNT_INFOS& info)
 	{
-		std::string sqlstr = fmt::format("HSET " KBE_TABLE_PERFIX "_accountinfos:{} accountName {} password {} bindata {} ",
-			"email {} entityDBID {} flags {} deadline {} regtime {} lasttime {}",
-			info.name, KBE_MD5::getDigest(info.password.data(), info.password.length()).c_str(),
-			info.datas, info.email, info.dbid, info.flags, info.deadline, time(NULL), time(NULL));
-
-		// 如果查询失败则返回存在， 避免可能产生的错误
-		if (!pdbi->query(sqlstr.c_str(), sqlstr.size(), false))
-		{
-			ERROR_MSG(fmt::format("KBEAccountTableMongodb::logAccount({}): cmd({}) is failed({})!\n",
-				info.name, sqlstr, pdbi->getstrerror()));
-
-			return false;
-		}
+		// std::string sqlstr = fmt::format("HSET " KBE_TABLE_PERFIX "_accountinfos:{} accountName {} password {} bindata {} ",
+		// 	"email {} entityDBID {} flags {} deadline {} regtime {} lasttime {}",
+		// 	info.name, KBE_MD5::getDigest(info.password.data(), info.password.length()).c_str(),
+		// 	info.datas, info.email, info.dbid, info.flags, info.deadline, time(NULL), time(NULL));
+		//
+		// // 如果查询失败则返回存在， 避免可能产生的错误
+		// if (!pdbi->query(sqlstr.c_str(), sqlstr.size(), false))
+		// {
+		// 	ERROR_MSG(fmt::format("KBEAccountTableMongodb::logAccount({}): cmd({}) is failed({})!\n",
+		// 		info.name, sqlstr, pdbi->getstrerror()));
+		//
+		// 	return false;
+		// }
 
 		return true;
 	}

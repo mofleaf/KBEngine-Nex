@@ -97,6 +97,7 @@ kbe/src/libs/common_d.lib
 kbe/src/libs/db_interface_d.lib
 kbe/src/libs/db_mysql_d.lib
 kbe/src/libs/db_redis_d.lib
+kbe/src/libs/db_mongodb_d.lib
 kbe/src/libs/entitydef_d.lib
 kbe/src/libs/expat_d.lib
 kbe/src/libs/fmt_d.lib
@@ -166,6 +167,7 @@ kbe/src/libs/common.lib
 kbe/src/libs/db_interface.lib
 kbe/src/libs/db_mysql.lib
 kbe/src/libs/db_redis.lib
+kbe/src/libs/db_mongodb.lib
 kbe/src/libs/entitydef.lib
 kbe/src/libs/expat.lib
 kbe/src/libs/fmt.lib
