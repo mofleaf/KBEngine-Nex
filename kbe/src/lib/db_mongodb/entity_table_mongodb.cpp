@@ -586,6 +586,7 @@ namespace KBEngine {
 		//size_t len = 0;
 		//char* json = bson_as_json(&doc, &len);
 
+
 		if (context.dbid > 0) //更新
 		{
 			bson_t query;
@@ -597,9 +598,19 @@ namespace KBEngine {
 			kbe_snprintf(name, MAX_BUF, ENTITY_TABLE_PERFIX "_%s", context.tableName.c_str());
 
 			BSON_APPEND_INT64(&doc, "id", context.dbid);
-			BSON_APPEND_INT32(&doc, TABLE_ITEM_PERFIX"_" TABLE_AUTOLOAD_CONST_STR, shouldAutoLoad);
-			pdbiMongodb->updateCollection(name, MONGOC_UPDATE_NONE, &query, &doc, NULL);
+			if (shouldAutoLoad > -1)
+				BSON_APPEND_INT32(&doc, TABLE_ITEM_PERFIX"_" TABLE_AUTOLOAD_CONST_STR, shouldAutoLoad);
 
+
+			// 用 $set 包住 doc
+			bson_t update;
+			bson_init(&update);
+			BSON_APPEND_DOCUMENT(&update, "$set", &doc);
+
+
+			pdbiMongodb->updateCollection(name, MONGOC_UPDATE_NONE, &query, &update, NULL);
+
+			bson_destroy(&update);
 			bson_destroy(&query);
 
 		}
@@ -619,11 +630,10 @@ namespace KBEngine {
 
 		dbid = context.dbid;
 
-		// 设置实体是否自动加载
-		if (shouldAutoLoad > -1)
-			entityShouldAutoLoad(pdbi, dbid, shouldAutoLoad > 0);
+		// // 设置实体是否自动加载
+		// if (shouldAutoLoad > -1)
+		// 	entityShouldAutoLoad(pdbi, dbid, shouldAutoLoad > 0);
 
-		//这里需要修改
 		return dbid;
 	}
 
@@ -676,9 +686,9 @@ namespace KBEngine {
 			return false;
 		}
 
-		char* json = bson_as_canonical_extended_json(doc, NULL);
-		DEBUG_MSG(fmt::format("queryTable bson doc = {}\n", json));
-		bson_free(json);
+		// char* json = bson_as_canonical_extended_json(doc, NULL);
+		// DEBUG_MSG(fmt::format("queryTable bson doc = {}\n", json));
+		// bson_free(json);
 
 		iter = tableFixedOrderItems_.begin();
 		for (; iter != tableFixedOrderItems_.end(); ++iter)
@@ -1495,7 +1505,7 @@ namespace KBEngine {
 	{
 		if (s == NULL)
 			return;
-		DEBUG_MSG(fmt::format("EntityTableItemMongodb_DIGI::getWriteSqlItem: {}\n", db_item_name()));
+		// DEBUG_MSG(fmt::format("EntityTableItemMongodb_DIGI::getWriteSqlItem: {}\n", db_item_name()));
 
 		mongodb::DBContext::DB_ITEM_DATA* pSotvs = new mongodb::DBContext::DB_ITEM_DATA();
 
@@ -1609,7 +1619,7 @@ namespace KBEngine {
 			if (isdefault || !BSON_ITER_HOLDS_INT32(&iter))
 			{
 				(*s) << (int8)defaultValue_;
-				DEBUG_MSG(fmt::format("EntityTableItemMongodb_DIGIT22::addToStream: {} {} {}\n", db_item_name(), (int8)defaultValue_, resultDBID));
+				// DEBUG_MSG(fmt::format("EntityTableItemMongodb_DIGIT22::addToStream: {} {} {}\n", db_item_name(), (int8)defaultValue_, resultDBID));
 				return;
 			}
 
@@ -1617,7 +1627,7 @@ namespace KBEngine {
 			int8 vv = static_cast<int8>(v);
 			(*s) << vv;
 
-			DEBUG_MSG(fmt::format("EntityTableItemMongodb_DIGIT::addToStream: {} {} {} {}\n", db_item_name(), v, vv, resultDBID));
+			// DEBUG_MSG(fmt::format("EntityTableItemMongodb_DIGIT::addToStream: {} {} {} {}\n", db_item_name(), v, vv, resultDBID));
 			// int32 v = isdefault ? (int32)defaultValue_ : bson_iter_int32(&iter);
 			// (*s) << v;
 
