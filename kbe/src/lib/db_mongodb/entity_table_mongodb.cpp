@@ -45,7 +45,7 @@ namespace KBEngine {
 			}
 
 
-			DEBUG_MSG(fmt::format("EntityTableMongodb::initialize: {} {} {}\n", this->tableName(), pdescrs->getName(), pdescrs->getDataType()->getName()));
+			// DEBUG_MSG(fmt::format("EntityTableMongodb::initialize: {} {} {}\n", this->tableName(), pdescrs->getName(), pdescrs->getDataType()->getName()));
 
 			EntityTableItem* pETItem = this->createItem(pdescrs->getDataType()->getName(), pdescrs->getDefaultValStr());
 
