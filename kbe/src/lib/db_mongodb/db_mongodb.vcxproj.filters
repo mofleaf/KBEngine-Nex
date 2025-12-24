@@ -71,5 +71,8 @@
     <ClInclude Include="mongo.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="mongo_cursor_guard.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

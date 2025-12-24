@@ -1,5 +1,6 @@
 #include "entity_table_mongodb.h"
 #include "kbe_table_mongodb.h"
+#include "mongo_cursor_guard.h"
 #include "entitydef/scriptdef_module.h"
 #include "entitydef/property.h"
 #include "db_interface/db_interface.h"
@@ -144,11 +145,12 @@ namespace KBEngine {
 
 		KBEUnordered_map<std::string, std::string> currDBKeys;
 		DBInterfaceMongodb* pdbiMongodb = static_cast<DBInterfaceMongodb*>(pdbi);
-		mongoc_cursor_t* cursor = pdbiMongodb->collectionFindIndexes(name);
+		// mongoc_cursor_t* cursor = pdbiMongodb->collectionFindIndexes(name);
+		std::unique_ptr<MongoCursorGuard> guard = pdbiMongodb->collectionFindIndexes(name);
 
 		const bson_t* indexinfo;
 		bson_iter_t idx_spec_iter;
-		while (mongoc_cursor_next(cursor, &indexinfo))
+		while (mongoc_cursor_next(guard->cursor(), &indexinfo))
 		{
 			if (bson_iter_init_find(&idx_spec_iter, indexinfo, "name") &&
 				BSON_ITER_HOLDS_UTF8(&idx_spec_iter))
@@ -166,7 +168,7 @@ namespace KBEngine {
 			}
 		}
 
-		mongoc_cursor_destroy(cursor);
+		// mongoc_cursor_destroy(cursor);
 
 		//开始删除多余的索引，增加新的索引
 		bson_t keys;
@@ -650,21 +652,22 @@ namespace KBEngine {
 		char name[MAX_BUF];
 		kbe_snprintf(name, MAX_BUF, ENTITY_TABLE_PERFIX "_%s", context.tableName.c_str());
 
-		mongoc_cursor_t* cursor = pdbiMongodb->collectionFind(name, MONGOC_QUERY_NONE, 0, 0, 0, &query, NULL, NULL);
+		// mongoc_cursor_t* cursor = pdbiMongodb->collectionFind(name, MONGOC_QUERY_NONE, 0, 0, 0, &query, NULL, NULL);
+		std::unique_ptr<MongoCursorGuard> guard = pdbiMongodb->collectionFind(name, MONGOC_QUERY_NONE, 0, 0, 0, &query, NULL, NULL);
 
 		const bson_t* doc = NULL;
 		bson_error_t  error;
-		while (mongoc_cursor_more(cursor) && mongoc_cursor_next(cursor, &doc)) {
+		while (mongoc_cursor_more(guard->cursor()) && mongoc_cursor_next(guard->cursor(), &doc)) {
 			break;
 		}
 
-		if (mongoc_cursor_error(cursor, &error)) {
+		if (mongoc_cursor_error(guard->cursor(), &error)) {
 			ERROR_MSG(fmt::format("An error occurred: {}\n", error.message));
 		}
 
 		if (doc == NULL)
 		{
-			mongoc_cursor_destroy(cursor);
+			// mongoc_cursor_destroy(cursor);
 			return false;
 		}
 
@@ -675,7 +678,7 @@ namespace KBEngine {
 			static_cast<EntityTableItemMongodbBase*>((*iter))->addToStream(s, context, dbid, doc);
 		}
 
-		mongoc_cursor_destroy(cursor);
+		// mongoc_cursor_destroy(cursor);
 
 		return true;
 	}

@@ -14,6 +14,8 @@
 #include "mongoc.h"
 #include <bson.h>
 
+class MongoCursorGuard;
+
 namespace KBEngine
 {
 	class DBInterfaceMongodb : public DBInterface
@@ -144,13 +146,13 @@ namespace KBEngine
 
 		bool insertCollection(const char* tableName, mongoc_insert_flags_t flags, const bson_t* document, const mongoc_write_concern_t* write_concern);
 
-		mongoc_cursor_t* collectionFind(const char* tableName, mongoc_query_flags_t flags, uint32_t skip, uint32_t limit, uint32_t  batch_size, const bson_t* query, const bson_t* fields, const mongoc_read_prefs_t* read_prefs);
+		std::unique_ptr<MongoCursorGuard> collectionFind(const char* tableName, mongoc_query_flags_t flags, uint32_t skip, uint32_t limit, uint32_t  batch_size, const bson_t* query, const bson_t* fields, const mongoc_read_prefs_t* read_prefs);
 
 		bool updateCollection(const char* tableName, mongoc_update_flags_t uflags, const bson_t* selector, const bson_t* update, const mongoc_write_concern_t* write_concern);
 
 		bool collectionRemove(const char* tableName, mongoc_remove_flags_t flags, const bson_t* selector, const mongoc_write_concern_t* write_concern);
 
-		mongoc_cursor_t* collectionFindIndexes(const char* tableName);
+		std::unique_ptr<MongoCursorGuard> collectionFindIndexes(const char* tableName);
 
 		bool collectionCreateIndex(const char* tableName, const bson_t* keys, const mongoc_index_opt_t* opt);
 

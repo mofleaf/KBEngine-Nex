@@ -2,6 +2,7 @@
 #include "entity_table_mongodb.h"
 #include "kbe_table_mongodb.h"
 #include "db_exception.h"
+#include "mongo_cursor_guard.h"
 #include "thread/threadguard.h"
 #include "helper/watcher.h"
 #include "server/serverconfig.h"
@@ -200,8 +201,10 @@ namespace KBEngine {
 		{
 			mongoc_database_destroy(database);
 			mongoc_client_destroy(_pMongoClient);
-			mongoc_cleanup();
+			// mongoc_cleanup();
+			// _pMongoClient = NULL;
 			_pMongoClient = NULL;
+			database = NULL;
 		}
 
 		return true;
@@ -231,6 +234,7 @@ namespace KBEngine {
 		DEBUG_MSG(fmt::format("DBInterfaceMongodb::dropEntityTableItemFromDB: {} {}.\n",
 			tableName, tableItemName));
 
+		return true;
 		char sql_str[MAX_BUF];
 		kbe_snprintf(sql_str, MAX_BUF, "alter table %s drop column %s;", tableName, tableItemName);
 		return query(sql_str, strlen(sql_str));
@@ -487,13 +491,17 @@ namespace KBEngine {
 		return r;
 	}
 
-	mongoc_cursor_t* DBInterfaceMongodb::collectionFind(const char* tableName, mongoc_query_flags_t flags, uint32_t skip, uint32_t limit, uint32_t  batch_size, const bson_t* query, const bson_t* fields, const mongoc_read_prefs_t* read_prefs)
+	std::unique_ptr<MongoCursorGuard> DBInterfaceMongodb::collectionFind(const char* tableName, mongoc_query_flags_t flags, uint32_t skip, uint32_t limit, uint32_t  batch_size, const bson_t* query, const bson_t* fields, const mongoc_read_prefs_t* read_prefs)
 	{
 		mongoc_collection_t* collection = mongoc_database_get_collection(database, tableName);
 		mongoc_cursor_t* cursor = mongoc_collection_find(collection, flags, skip, limit, batch_size, query, fields, read_prefs);
 
-		mongoc_collection_destroy(collection);
-		return cursor;
+		// 改用MongoCursorGuard+ 智能指针，外部不需要再释放cursor和collection
+		std::unique_ptr<MongoCursorGuard> guard =
+			std::make_unique<MongoCursorGuard>(collection, cursor);
+		// 不 destroy collection
+		// mongoc_collection_destroy(collection);
+		return guard;
 	}
 
 	bool DBInterfaceMongodb::updateCollection(const char* tableName, mongoc_update_flags_t uflags, const bson_t* selector, const bson_t* update, const mongoc_write_concern_t* write_concern)
@@ -526,14 +534,18 @@ namespace KBEngine {
 		return r;
 	}
 
-	mongoc_cursor_t* DBInterfaceMongodb::collectionFindIndexes(const char* tableName)
+	std::unique_ptr<MongoCursorGuard> DBInterfaceMongodb::collectionFindIndexes(const char* tableName)
 	{
 		bson_error_t error = { 0 };
 		mongoc_collection_t* collection = mongoc_database_get_collection(database, tableName);
 		mongoc_cursor_t* cursor = mongoc_collection_find_indexes(collection, &error);
 
-		mongoc_collection_destroy(collection);
-		return cursor;
+		// 改用MongoCursorGuard+ 智能指针，外部不需要再释放cursor和collection
+		std::unique_ptr<MongoCursorGuard> guard =
+			std::make_unique<MongoCursorGuard>(collection, cursor);
+
+		// mongoc_collection_destroy(collection);
+		return guard;
 	}
 
 	bool DBInterfaceMongodb::collectionCreateIndex(const char* tableName, const bson_t* keys, const mongoc_index_opt_t* opt)
@@ -641,12 +653,15 @@ namespace KBEngine {
 
 		mongoc_query_flags_t queryOptions = (mongoc_query_flags_t)options;
 		const bson_t* doc;
-		mongoc_cursor_t* cursor = collectionFind(tableName, queryOptions, skip, limit, batchSize, q, f, NULL);
+		std::unique_ptr<MongoCursorGuard> guard = collectionFind(tableName, queryOptions, skip, limit, batchSize, q, f, NULL);
+
+		// mongoc_cursor_t* cursor = collectionFind(tableName, queryOptions, skip, limit, batchSize, q, f, NULL);
+
 		uint32 nrows = 0;
 		uint32 nfields = 1;
 
 		std::vector<char*> value;
-		while (mongoc_cursor_next(cursor, &doc))
+		while (mongoc_cursor_next(guard->cursor(), &doc))
 		{
 			nrows++;
 			char* str = bson_as_json(doc, NULL);
@@ -662,7 +677,7 @@ namespace KBEngine {
 			bson_free(*it);
 		}
 
-		if (mongoc_cursor_error(cursor, &error))
+		if (mongoc_cursor_error(guard->cursor(), &error))
 		{
 			strError = error.message;
 			ERROR_MSG(fmt::format("An error occurred: {}\n", error.message));
@@ -674,7 +689,7 @@ namespace KBEngine {
 		{
 			bson_destroy(f);
 		}
-		mongoc_cursor_destroy(cursor);
+		// mongoc_cursor_destroy(cursor);
 		return flag;
 	}
 

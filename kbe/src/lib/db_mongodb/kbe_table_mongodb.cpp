@@ -2,6 +2,7 @@
 #include "kbe_table_mongodb.h"
 #include "db_exception.h"
 #include "db_interface_mongodb.h"
+#include "mongo_cursor_guard.h"
 #include "db_interface/db_interface.h"
 #include "db_interface/entity_table.h"
 #include "entitydef/entitydef.h"
@@ -58,7 +59,8 @@ namespace KBEngine {
 		DBInterfaceMongodb* pdbiMongodb = static_cast<DBInterfaceMongodb*>(pdbi);
 		//const std::list<const bson_t *> value = pdbiMongodb->collectionFind("kbe_entitylog", &query);
 
-		mongoc_cursor_t* cursor = pdbiMongodb->collectionFind("kbe_entitylog", MONGOC_QUERY_NONE, 0, 0, 0, &query, NULL, NULL);
+		// mongoc_cursor_t* cursor = pdbiMongodb->collectionFind("kbe_entitylog", MONGOC_QUERY_NONE, 0, 0, 0, &query, NULL, NULL);
+		std::unique_ptr<MongoCursorGuard> guard = pdbiMongodb->collectionFind("kbe_entitylog", MONGOC_QUERY_NONE, 0, 0, 0, &query, NULL, NULL);
 
 		entitylog.dbid = dbid;
 		entitylog.componentID = 0;
@@ -70,17 +72,17 @@ namespace KBEngine {
 
 		const bson_t* doc = NULL;
 		bson_error_t  error;
-		while (mongoc_cursor_more(cursor) && mongoc_cursor_next(cursor, &doc)) {
+		while (mongoc_cursor_more(guard->cursor()) && mongoc_cursor_next(guard->cursor(), &doc)) {
 			break;
 		}
 
-		if (mongoc_cursor_error(cursor, &error)) {
+		if (mongoc_cursor_error(guard->cursor(), &error)) {
 			ERROR_MSG(fmt::format("An error occurred: {}\n", error.message));
 		}
 
 		if (doc == NULL)
 		{
-			mongoc_cursor_destroy(cursor);
+			// mongoc_cursor_destroy(cursor);
 			return false;
 		}
 
@@ -115,7 +117,7 @@ namespace KBEngine {
 			entitylog.serverGroupID = bson_iter_int64(&iter);
 		}
 
-		mongoc_cursor_destroy(cursor);
+		// mongoc_cursor_destroy(cursor);
 		return true;
 	}
 
@@ -232,22 +234,22 @@ namespace KBEngine {
 		bson_append_utf8(&query, accountName.c_str(), accountName.size(), name.c_str(), name.size());
 
 		DBInterfaceMongodb* pdbiMongodb = static_cast<DBInterfaceMongodb*>(pdbi);
-		mongoc_cursor_t* cursor = pdbiMongodb->collectionFind("kbe_accountinfos", MONGOC_QUERY_NONE, 0, 0, 0, &query, NULL, NULL);
-
+		// mongoc_cursor_t* cursor = pdbiMongodb->collectionFind("kbe_accountinfos", MONGOC_QUERY_NONE, 0, 0, 0, &query, NULL, NULL);
+		std::unique_ptr<MongoCursorGuard> guard = pdbiMongodb->collectionFind("kbe_accountinfos", MONGOC_QUERY_NONE, 0, 0, 0, &query, NULL, NULL);
 
 		const bson_t* doc = NULL;
 		bson_error_t  error;
-		while (mongoc_cursor_more(cursor) && mongoc_cursor_next(cursor, &doc)) {
+		while (mongoc_cursor_more(guard->cursor()) && mongoc_cursor_next(guard->cursor(), &doc)) {
 			break;
 		}
 
-		if (mongoc_cursor_error(cursor, &error)) {
+		if (mongoc_cursor_error(guard->cursor(), &error)) {
 			ERROR_MSG(fmt::format("An error occurred: {}\n", error.message));
 		}
 
 		if (doc == NULL)
 		{
-			mongoc_cursor_destroy(cursor);
+			// mongoc_cursor_destroy(cursor);
 			return false;
 		}
 
@@ -278,7 +280,7 @@ namespace KBEngine {
 			info.deadline = bson_iter_int64(&iter);
 		}
 
-		mongoc_cursor_destroy(cursor);
+		// mongoc_cursor_destroy(cursor);
 		return info.dbid > 0;
 	}
 
@@ -290,22 +292,23 @@ namespace KBEngine {
 		bson_append_utf8(&query, accountName.c_str(), accountName.size(), name.c_str(), name.size());
 
 		DBInterfaceMongodb* pdbiMongodb = static_cast<DBInterfaceMongodb*>(pdbi);
-		mongoc_cursor_t* cursor = pdbiMongodb->collectionFind("kbe_accountinfos", MONGOC_QUERY_NONE, 0, 0, 0, &query, NULL, NULL);
+		// mongoc_cursor_t* cursor = pdbiMongodb->collectionFind("kbe_accountinfos", MONGOC_QUERY_NONE, 0, 0, 0, &query, NULL, NULL);
+		std::unique_ptr<MongoCursorGuard> guard = pdbiMongodb->collectionFind("kbe_accountinfos", MONGOC_QUERY_NONE, 0, 0, 0, &query, NULL, NULL);
 
 
 		const bson_t* doc = NULL;
 		bson_error_t  error;
-		while (mongoc_cursor_more(cursor) && mongoc_cursor_next(cursor, &doc)) {
+		while (mongoc_cursor_more(guard->cursor()) && mongoc_cursor_next(guard->cursor(), &doc)) {
 			break;
 		}
 
-		if (mongoc_cursor_error(cursor, &error)) {
+		if (mongoc_cursor_error(guard->cursor(), &error)) {
 			ERROR_MSG(fmt::format("An error occurred: {}\n", error.message));
 		}
 
 		if (doc == NULL)
 		{
-			mongoc_cursor_destroy(cursor);
+			// mongoc_cursor_destroy(guard->cursor());
 			return false;
 		}
 
@@ -343,7 +346,7 @@ namespace KBEngine {
 			info.deadline = bson_iter_int64(&iter);
 		}
 
-		mongoc_cursor_destroy(cursor);
+		// mongoc_cursor_destroy(cursor);
 		return info.dbid > 0;
 	}
 
