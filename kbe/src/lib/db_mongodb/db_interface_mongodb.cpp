@@ -457,7 +457,7 @@ namespace KBEngine {
 	const char* DBInterfaceMongodb::c_str()
 	{
 		static char strdescr[MAX_BUF];
-		kbe_snprintf(strdescr, MAX_BUF, "interface=%s, dbtype=mysql, ip=%s, port=%u, currdatabase=%s, username=%s, connected=%s.\n",
+		kbe_snprintf(strdescr, MAX_BUF, "interface=%s, dbtype=mongodb, ip=%s, port=%u, currdatabase=%s, username=%s, connected=%s.\n",
 			name_, db_ip_, db_port_, db_name_, db_username_, _pMongoClient == NULL ? "no" : "yes");
 
 		return strdescr;
