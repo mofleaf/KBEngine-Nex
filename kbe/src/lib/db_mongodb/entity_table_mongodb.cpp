@@ -1183,7 +1183,7 @@ namespace KBEngine {
 				if (pChildTable_->tableName() == iter->first)
 				{
 					ArraySize size = 0;
-					std::list<bson_t> bsonlist;
+					std::list<bson_t*> bsonlist;
 
 					//先取数据
 					while (true)
@@ -1199,8 +1199,12 @@ namespace KBEngine {
 						uint32_t len;
 						bson_iter_document(&array_iter, &len, &buf);
 
-						bson_t rec;
-						bson_init_static(&rec, buf, len);
+						// bson_t* rec = bson_new();
+						// bson_init_static(rec, buf, len);
+						// bsonlist.push_back(rec);
+
+						bson_t* rec = bson_new_from_data(buf, len);
+						// bson_init_static(rec, buf, len);
 						bsonlist.push_back(rec);
 
 						size++;
@@ -1209,21 +1213,21 @@ namespace KBEngine {
 					//ArraySize size = (ArraySize)iter->second->dbids[resultDBID].size();
 					(*s) << size;
 
-					// while (!bsonlist.empty())
-					// {
-					// 	static_cast<EntityTableMongodb*>(pChildTable_)->addToStream(s, *iter->second.get(), 0, bsonlist.front());
-					//
-					// 	// bson_destroy(bsonlist.front());
-					// 	// bsonlist.pop_front();
-					// }
+					while (!bsonlist.empty())
+					{
+						static_cast<EntityTableMongodb*>(pChildTable_)->addToStream(s, *iter->second.get(), 0, bsonlist.front());
+					
+						bson_destroy(bsonlist.front());
+						bsonlist.pop_front();
+					}
 
 
 					// 遍历每个 bson_t
-					for (auto& rec : bsonlist)
-					{
-						static_cast<EntityTableMongodb*>(pChildTable_)->addToStream(s, *iter->second.get(), 0, &rec);
-						// 不需要 bson_destroy(rec)，因为使用了 bson_init_static
-					}
+					// for (auto& rec : bsonlist)
+					// {
+					// 	static_cast<EntityTableMongodb*>(pChildTable_)->addToStream(s, *iter->second.get(), 0, &rec);
+					// 	// 不需要 bson_destroy(rec)，因为使用了 bson_init_static
+					// }
 
 					return;
 				}
@@ -1232,39 +1236,6 @@ namespace KBEngine {
 
 		ArraySize size = 0;
 		(*s) << size;
-	}
-
-	//-------------------------------------------------------------------------------------
-
-	bool EntityTableItemMongodb_FIXED_DICT::isSameKey(std::string key)
-	{
-		FIXEDDICT_KEYTYPES::iterator fditer = keyTypes_.begin();
-		bool tmpfound = false;
-
-		for (; fditer != keyTypes_.end(); ++fditer)
-		{
-			if (fditer->second->isSameKey(key))
-			{
-				tmpfound = true;
-				break;
-			}
-		}
-
-		return tmpfound;
-	}
-
-	void EntityTableItemMongodb_FIXED_DICT::init_db_item_name(const char* exstrFlag)
-	{
-		FIXEDDICT_KEYTYPES::iterator fditer = keyTypes_.begin();
-
-		for (; fditer != keyTypes_.end(); ++fditer)
-		{
-			std::string new_exstrFlag = exstrFlag;
-			if (fditer->second->type() == TABLE_ITEM_TYPE_FIXEDDICT)
-				new_exstrFlag += fditer->first + "_";
-
-			static_cast<EntityTableItemMongodbBase*>(fditer->second.get())->init_db_item_name(new_exstrFlag.c_str());
-		}
 	}
 
 
@@ -1439,6 +1410,41 @@ namespace KBEngine {
 		}
 	}
 
+	//-------------------------------------------------------------------------------------
+
+	bool EntityTableItemMongodb_FIXED_DICT::isSameKey(std::string key)
+	{
+		FIXEDDICT_KEYTYPES::iterator fditer = keyTypes_.begin();
+		bool tmpfound = false;
+
+		for (; fditer != keyTypes_.end(); ++fditer)
+		{
+			if (fditer->second->isSameKey(key))
+			{
+				tmpfound = true;
+				break;
+			}
+		}
+
+		return tmpfound;
+	}
+
+	void EntityTableItemMongodb_FIXED_DICT::init_db_item_name(const char* exstrFlag)
+	{
+		FIXEDDICT_KEYTYPES::iterator fditer = keyTypes_.begin();
+
+		for (; fditer != keyTypes_.end(); ++fditer)
+		{
+			std::string new_exstrFlag = exstrFlag;
+			if (fditer->second->type() == TABLE_ITEM_TYPE_FIXEDDICT)
+				new_exstrFlag += fditer->first + "_";
+
+			static_cast<EntityTableItemMongodbBase*>(fditer->second.get())->init_db_item_name(new_exstrFlag.c_str());
+		}
+	}
+
+
+	
 	bool EntityTableItemMongodb_FIXED_DICT::initialize(const PropertyDescription* pPropertyDescription,
 	                                                   const DataType* pDataType, std::string name)
 	{
@@ -1458,6 +1464,7 @@ namespace KBEngine {
 
 			EntityTableItem* tableItem = pParentTable_->createItem(iter->second->dataType->getName(), pPropertyDescription->getDefaultValStr());
 
+		
 			tableItem->pParentTable(this->pParentTable());
 			tableItem->pParentTableItem(this);
 			tableItem->utype(-pPropertyDescription->getUType());
