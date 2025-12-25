@@ -294,6 +294,7 @@ docker rm kbenginex-nex-server
 |--------------|--------------------------------------------------------------------|
 | Unity        | https://github.com/KBEngineLab/demo_kbengine_unity3d_default       |
 | UE5          | https://github.com/KBEngineLab/demo_kbengine_ue5_default           |
+| UE5 C++ SDK  | https://github.com/KBEngineLab/demo_kbengine_ue5_default           |
 | CocosCreator | https://github.com/KBEngineLab/demo_kbengine_cocos_creator_default |
 | Godot        | https://github.com/KBEngineLab/demo_kbengine_godot_default         |
 
