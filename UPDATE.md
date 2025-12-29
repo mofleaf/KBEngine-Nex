@@ -2,6 +2,7 @@
 # 更新日志
 
 ## 2.6.4
+- [feat] navmash 周边工具，一个web端的navmash生成工具 [Issue #58](https://github.com/KBEngineLab/KBEngine-Nex/issues/58)
 - [feat] mongodb接入 [Issue #59](https://github.com/KBEngineLab/KBEngine-Nex/issues/59)
 - [feat] 原生c++ sdk [Issue #60](https://github.com/KBEngineLab/KBEngine-Nex/issues/60)
 - [feat] 原生cxx ue5 demo+原生cxx demo [Issue #67](https://github.com/KBEngineLab/KBEngine-Nex/issues/67)
