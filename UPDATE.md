@@ -2,6 +2,7 @@
 # 更新日志
 
 ## 2.6.4
+- [feat] recastnavigation升级，并改为由vcpkg导入 [Issue #74](https://github.com/KBEngineLab/KBEngine-Nex/issues/74)
 - [feat] navmash 周边工具，一个web端的navmash生成工具（https://navmesh.kbelab.com/） [Issue #58](https://github.com/KBEngineLab/KBEngine-Nex/issues/58)
 - [feat] mongodb接入 [Issue #59](https://github.com/KBEngineLab/KBEngine-Nex/issues/59)
 - [feat] 原生c++ sdk [Issue #60](https://github.com/KBEngineLab/KBEngine-Nex/issues/60)
@@ -17,7 +18,7 @@
 - [bug] webconsole 创建用户时，设置用户扩展数据报错 [Issue #53](https://github.com/KBEngineLab/KBEngine-Nex/issues/53)
 - [bug] webconsole py控制台无法多行输入的bug [Issue #52](https://github.com/KBEngineLab/KBEngine-Nex/issues/52)
 - [bug] kbex 调试模式异常输出的bug [Issue #63](https://github.com/KBEngineLab/KBEngine-Nex/issues/63)
-- [change] 删除底层redis持久化实现 [Issue #71](https://github.com/KBEngineLab/KBEngine-Nex/issues/71)
+- [delete] 删除底层redis持久化实现 [Issue #71](https://github.com/KBEngineLab/KBEngine-Nex/issues/71)
 
 ## v2.6.3
 - [feat] 系统回调支持asyncio [Issue #1](https://github.com/KBEngineLab/KBEngine-Nex/issues/1)

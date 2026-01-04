@@ -1,4 +1,4 @@
-﻿// Copyright 2008-2018 Yolo Technologies, Inc. All Rights Reserved. https://www.comblockengine.com
+// Copyright 2008-2018 Yolo Technologies, Inc. All Rights Reserved. https://www.comblockengine.com
 
 #include "navigation_mesh_handle.h"	
 #include "navigation/navigation.h"
@@ -311,6 +311,8 @@ int NavMeshHandle::findRandomPointAroundCircle(int layer, const Position3D& cent
 
 			float src_len = sqrt(2) * squareSize;
 			float xx = centerPos.x - currpos.x;
+			
+			// 这里应该是zz，待测试，不改影响也不大，可能导致circle 半径校验略微偏差，Y 变化较大的地图中，随机点筛掉略多
 			float yy = centerPos.y - currpos.y;
 			float dist_len = sqrt(xx * xx + yy * yy);
 
@@ -760,6 +762,8 @@ void NavMeshHandle::getOverlapPolyPoly2D(const float* polyVertsA, const int nPol
 
 void NavMeshHandle::clockwiseSortPoints(float* verts, const int nVerts)
 {
+	//clockwiseSortPoints 使用 atan2，算法复杂度 O(n²)，点多时可能慢。如果点少（<=10），没问题。
+
 	float x = 0.0;
 	float z = 0.0;
 	for (int i = 0; i < nVerts; ++i)
