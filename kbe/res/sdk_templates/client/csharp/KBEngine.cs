@@ -2345,7 +2345,7 @@ namespace KBEngine
 			if (positionChanged)
 			{
 				KBVector3 pos = isOptimized ? new KBVector3(x + _entityServerPos.x, y + _entityServerPos.y, z + _entityServerPos.z) : new KBVector3(x, y, z);
-				KBVector3 oldVector3 = new KBVector3(_entityServerPos.x, _entityServerPos.y, _entityServerPos.z);
+				KBVector3 oldVector3 = new KBVector3(entity.position.x, entity.position.y, entity.position.z);
 
 				entity.position = pos;
 				done = true;

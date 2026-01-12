@@ -1353,7 +1353,8 @@ export class KBEngineApp {
 
         if (positionChanged) {
             let oldPos = new Vector3(entity.position.x, entity.position.y, entity.position.z);
-            let pos = isOptimized ? new Vector3(x + this.entityServerPos.x, y + this.entityServerPos.y, z + this.entityServerPos.z) : new Vector3(x, y, z);
+            // let pos = isOptimized ? new Vector3(x + this.entityServerPos.x, y + this.entityServerPos.y, z + this.entityServerPos.z) : new Vector3(x, y, z);
+            let pos = isOptimized ? new Vector3(x + this.entityServerPos.x, y, z + this.entityServerPos.z) : new Vector3(x, y, z);
             entity.position = pos;
             done = true;
             entity.onSmoothPositionChanged(oldPos);

@@ -2474,7 +2474,8 @@ void KBEngineApp::_updateVolatileData(ENTITY_ID entityID, float x, float y, floa
 	            
 	if (positionChanged)
 	{
-		entity.position = isOptimized ? KBVector3f(x + entityServerPos_.x, y + entityServerPos_.y, z + entityServerPos_.z) : KBVector3f(x, y, z);
+		KBVector3f oldPos(entity.position.x, entity.position.y, entity.position.z);
+		entity.position = isOptimized ? KBVector3f(x + entityServerPos_.x, y, z + entityServerPos_.z) : KBVector3f(x, y, z);
 		done = true;
 
 		// auto pEventData = std::make_shared<UKBEventData_updatePosition>();
@@ -2486,7 +2487,6 @@ void KBEngineApp::_updateVolatileData(ENTITY_ID entityID, float x, float y, floa
 		// KBENGINE_EVENT_FIRE(KBEventTypes::updatePosition, pEventData);
 
 
-		KBVector3f oldPos(entityServerPos_.x, entityServerPos_.y, entityServerPos_.z);
 		entity.onSmoothPositionChanged(oldPos);
 	}
 
