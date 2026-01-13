@@ -20,14 +20,14 @@ public:
 		MOVE_TYPE_NAV = 2,			// 移动控制器类型
 	};
 
-	void addToStream(KBEngine::MemoryStream& s);
-	void createFromStream(KBEngine::MemoryStream& s);
+	virtual void addToStream(KBEngine::MemoryStream& s);
+	virtual void createFromStream(KBEngine::MemoryStream& s);
 
 	MoveToPointHandler(KBEShared_ptr<Controller>& pController, int layer, const Position3D& destPos, float velocity, float distance, bool faceMovement, 
 		bool moveVertically, PyObject* userarg);
 
 	MoveToPointHandler();
-	virtual ~MoveToPointHandler();
+	~MoveToPointHandler();
 	
 	virtual bool update();
 
@@ -38,13 +38,13 @@ public:
 
 	virtual MoveType type() const { return MOVE_TYPE_POINT; }
 
-	void destroy() { isDestroyed_ = true; }
+	virtual void destroy() { isDestroyed_ = true; }
 
-	float velocity() const {
+	virtual float velocity() const {
 		return velocity_;
 	}
 
-	void velocity(float v) {
+	virtual void velocity(float v) {
 		velocity_ = v;
 	}
 
