@@ -2669,14 +2669,14 @@ PyObject* Entity::pyNavigatePathPoints(PyObject_ptr pyDestination, float maxSear
 
 //-------------------------------------------------------------------------------------
 uint32 Entity::navigate(const Position3D& destination, float velocity, float distance, float maxMoveDistance, float maxSearchDistance,
-	bool faceMovement, int8 layer, PyObject* userData)
+	bool faceMovement, int8 layer, PyObject* userData, bool useDetour)
 {
-	// VECTOR_POS3D_PTR paths_ptr( new std::vector<Position3D>() );
-	// navigatePathPoints(*paths_ptr, destination, maxSearchDistance, layer);
-	// if (paths_ptr->size() <= 0)
-	// {
-	// 	return 0;
-	// }
+	VECTOR_POS3D_PTR paths_ptr(new std::vector<Position3D>());
+	navigatePathPoints(*paths_ptr, destination, maxSearchDistance, layer);
+	if (paths_ptr->size() <= 0)
+	{
+		return 0;
+	}
 
 	stopMove();
 
@@ -2685,7 +2685,7 @@ uint32 Entity::navigate(const Position3D& destination, float velocity, float dis
 	KBEShared_ptr<Controller> p(new MoveController(this, NULL));
 	
 	new NavigateHandler(p, destination, distance,velocity,layer,
-		maxMoveDistance, faceMovement, userData);
+		maxMoveDistance, faceMovement, userData, useDetour);
 
 	bool ret = pControllers_->add(p);
 	KBE_ASSERT(ret);
@@ -2696,7 +2696,7 @@ uint32 Entity::navigate(const Position3D& destination, float velocity, float dis
 
 //-------------------------------------------------------------------------------------
 PyObject* Entity::pyNavigate(PyObject_ptr pyDestination, float velocity, float distance, float maxMoveDistance, float maxDistance,
-								 int8 faceMovement, int8 layer, PyObject_ptr userData)
+								 int8 faceMovement, int8 layer, PyObject_ptr userData, int8 useDetour)
 {
 	if(!isReal())
 	{
@@ -2734,7 +2734,7 @@ PyObject* Entity::pyNavigate(PyObject_ptr pyDestination, float velocity, float d
 	script::ScriptVector3::convertPyObjectToVector3(destination, pyDestination);
 
 	return PyLong_FromLong(navigate(destination, velocity, distance, maxMoveDistance, 
-		maxDistance, faceMovement > 0, layer, userData));
+		maxDistance, faceMovement > 0, layer, userData , useDetour > 0));
 }
 
 //-------------------------------------------------------------------------------------
