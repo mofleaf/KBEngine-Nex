@@ -50,6 +50,7 @@ namespace KBEngine {
         virtual bool isOnGround() { return false; }
 
         virtual bool requestMoveOver(const Position3D& oldPos);
+        virtual bool requestMoveFailure();
         virtual const Position3D& destPos() { return destPos_; }
 
     private:

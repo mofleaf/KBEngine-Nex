@@ -126,6 +126,19 @@ namespace KBEngine
         return true;
     }
 
+    bool NavigateHandler::requestMoveFailure()
+    {
+        if (pController_)
+        {
+            if (pController_->pEntity())
+                pController_->pEntity()->onMoveFailure(
+                    pController_->id(),  pyuserarg_);
+
+            pController_->destroy();
+        }
+        return true;
+    }
+
     // ------------------------------------------------------------
     // update
     // ------------------------------------------------------------
@@ -151,7 +164,7 @@ namespace KBEngine
         {
             if (!buildPath(currPos))
             {
-                requestMoveOver(oldPos);
+                requestMoveFailure();
                 Py_DECREF(pEntity);
                 delete this;
                 return false;
@@ -160,7 +173,7 @@ namespace KBEngine
 
         if (straightPath_.empty())
         {
-            requestMoveOver(oldPos);
+            requestMoveFailure();
             Py_DECREF(pEntity);
             delete this;
             return false;
