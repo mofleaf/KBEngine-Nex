@@ -55,6 +55,7 @@ SCRIPT_METHOD_DECLARE("cancelController",			pyCancelController,				METH_VARARGS,
 SCRIPT_METHOD_DECLARE("canNavigate",				pycanNavigate,					METH_VARARGS,				0)
 SCRIPT_METHOD_DECLARE("navigatePathPoints",			pyNavigatePathPoints,			METH_VARARGS,				0)
 SCRIPT_METHOD_DECLARE("navigate",					pyNavigate,						METH_VARARGS,				0)
+SCRIPT_METHOD_DECLARE("navigateToDetour", pyNavigateToDetour, METH_VARARGS, 0)
 SCRIPT_METHOD_DECLARE("getRandomPoints",			pyGetRandomPoints,				METH_VARARGS,				0)
 SCRIPT_METHOD_DECLARE("moveToPoint",				pyMoveToPoint,					METH_VARARGS,				0)
 SCRIPT_METHOD_DECLARE("moveToEntity",				pyMoveToEntity,					METH_VARARGS,				0)
@@ -2696,34 +2697,34 @@ uint32 Entity::navigate(const Position3D& destination, float velocity, float dis
 
 //-------------------------------------------------------------------------------------
 PyObject* Entity::pyNavigate(PyObject_ptr pyDestination, float velocity, float distance, float maxMoveDistance, float maxDistance,
-								 int8 faceMovement, int8 layer, PyObject_ptr userData, int8 useDetour)
+	int8 faceMovement, int8 layer, PyObject_ptr userData)
 {
-	if(!isReal())
+	if (!isReal())
 	{
-		PyErr_Format(PyExc_AssertionError, "%s::navigate: not is real entity(%d).", 
+		PyErr_Format(PyExc_AssertionError, "%s::navigate: not is real entity(%d).",
 			scriptName(), id());
 		PyErr_PrintEx(0);
 		return 0;
 	}
 
-	if(this->isDestroyed())
+	if (this->isDestroyed())
 	{
-		PyErr_Format(PyExc_AssertionError, "%s::navigate: %d is destroyed!\n",		
-			scriptName(), id());		
+		PyErr_Format(PyExc_AssertionError, "%s::navigate: %d is destroyed!\n",
+			scriptName(), id());
 		PyErr_PrintEx(0);
 		return 0;
 	}
 
 	Position3D destination;
 
-	if(!PySequence_Check(pyDestination))
+	if (!PySequence_Check(pyDestination))
 	{
 		PyErr_Format(PyExc_TypeError, "%s::navigate: args1(position) not is PySequence!", scriptName());
 		PyErr_PrintEx(0);
 		return 0;
 	}
 
-	if(PySequence_Size(pyDestination) != 3)
+	if (PySequence_Size(pyDestination) != 3)
 	{
 		PyErr_Format(PyExc_TypeError, "%s::navigate: args1(position) invalid!", scriptName());
 		PyErr_PrintEx(0);
@@ -2733,8 +2734,54 @@ PyObject* Entity::pyNavigate(PyObject_ptr pyDestination, float velocity, float d
 	// 将坐标信息提取出来
 	script::ScriptVector3::convertPyObjectToVector3(destination, pyDestination);
 
-	return PyLong_FromLong(navigate(destination, velocity, distance, maxMoveDistance, 
-		maxDistance, faceMovement > 0, layer, userData , useDetour > 0));
+	return PyLong_FromLong(navigate(destination, velocity, distance, maxMoveDistance,
+		maxDistance, faceMovement > 0, layer, userData, false));
+}
+
+
+
+
+//-------------------------------------------------------------------------------------
+PyObject* Entity::pyNavigateToDetour(PyObject_ptr pyDestination, float velocity, float distance, float maxMoveDistance, float maxDistance,
+	int8 faceMovement, int8 layer, PyObject_ptr userData)
+{
+	if (!isReal())
+	{
+		PyErr_Format(PyExc_AssertionError, "%s::navigate: not is real entity(%d).",
+			scriptName(), id());
+		PyErr_PrintEx(0);
+		return 0;
+	}
+
+	if (this->isDestroyed())
+	{
+		PyErr_Format(PyExc_AssertionError, "%s::navigate: %d is destroyed!\n",
+			scriptName(), id());
+		PyErr_PrintEx(0);
+		return 0;
+	}
+
+	Position3D destination;
+
+	if (!PySequence_Check(pyDestination))
+	{
+		PyErr_Format(PyExc_TypeError, "%s::navigate: args1(position) not is PySequence!", scriptName());
+		PyErr_PrintEx(0);
+		return 0;
+	}
+
+	if (PySequence_Size(pyDestination) != 3)
+	{
+		PyErr_Format(PyExc_TypeError, "%s::navigate: args1(position) invalid!", scriptName());
+		PyErr_PrintEx(0);
+		return 0;
+	}
+
+	// 将坐标信息提取出来
+	script::ScriptVector3::convertPyObjectToVector3(destination, pyDestination);
+
+	return PyLong_FromLong(navigate(destination, velocity, distance, maxMoveDistance,
+		maxDistance, faceMovement > 0, layer, userData, true));
 }
 
 //-------------------------------------------------------------------------------------
