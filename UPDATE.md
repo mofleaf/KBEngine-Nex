@@ -5,6 +5,8 @@
 
 由于本次更新中，navmesh属于底层破坏性更新，所以直接调整为一个大版本更新
 
+- [feat] 新增navigateToDetour方法，用于使用Detour导航，原navigate方法不变（points导航） [Issue #96](https://github.com/KBEngineLab/KBEngine-Nex/issues/96)
+  - Detour导航可以在服务端贴合navmesh高度，在多层建筑中非常有用
 - [feat] recastnavigation升级，并改为由vcpkg导入 [Issue #74](https://github.com/KBEngineLab/KBEngine-Nex/issues/74)
   - 重要：navmesh升级后，为了保持多客户端兼容和未来插件升级兼容，由之前的左手坐标系转换为官方支持的-z右手坐标系（Recast Navigation / Three.js），KBE层是+Z的右手坐标
   - 客户端侧所有的坐标同步都要做对应手系的翻转
@@ -14,10 +16,13 @@
     - xyz分别为roll、pitch、yaw
   - Cocos Creator:
     - 位置无需修改，cocos手系和Three.js一致
-    - 因为cocos 模型坐标系是-z朝外，所以需要 +180
+    - 朝向：因为cocos 模型坐标系是-z朝外，所以yaw需要 +180
   - Godot
     - 位置无需修改，Godot手系和Three.js一致
-    - 因为Godot 模型坐标系是-z朝外，所以需要 +180
+    - 朝向：因为Godot 模型坐标系是-z朝外，所以yaw需要 +180
+  - UE
+    - 位置：x = x * 100，y = z * 100 ，z = y * 100
+    - 朝向：roll = -RadiansToDegrees(x)，pitch = -RadiansToDegrees(y)，yaw = -RadiansToDegrees(z) + 90
 - [feat] navmesh 周边工具，一个web端的navmesh生成工具（https://navmesh.kbelab.com/） [Issue #58](https://github.com/KBEngineLab/KBEngine-Nex/issues/58)
 - [feat] mongodb接入 [Issue #59](https://github.com/KBEngineLab/KBEngine-Nex/issues/59)
 - [feat] 原生c++ sdk [Issue #60](https://github.com/KBEngineLab/KBEngine-Nex/issues/60)
@@ -34,6 +39,7 @@
 - [bug] webconsole py控制台无法多行输入的bug [Issue #52](https://github.com/KBEngineLab/KBEngine-Nex/issues/52)
 - [bug] kbex 调试模式异常输出的bug [Issue #63](https://github.com/KBEngineLab/KBEngine-Nex/issues/63)
 - [delete] 删除底层redis持久化实现 [Issue #71](https://github.com/KBEngineLab/KBEngine-Nex/issues/71)
+- [update] 基础demo 全面升级，适配服务端navmesh （unity、cocos、godot、ue5）
 
 ## v2.6.3
 - [feat] 系统回调支持asyncio [Issue #1](https://github.com/KBEngineLab/KBEngine-Nex/issues/1)
