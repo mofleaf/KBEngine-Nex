@@ -40,7 +40,9 @@ Bundle::~Bundle()
 
 Bundle* Bundle::createObject()
 {
-	return _g_bundlePool.createObject();
+	Bundle* b = _g_bundlePool.createObject();
+	b->clear();
+	return b;
 }
 
 void Bundle::reclaimObject(Bundle* obj)
@@ -161,6 +163,18 @@ void Bundle::clear()
 	messageLength_ = 0;
 	pMsgtype_ = NULL;
 	curMsgStreamIndex_ = 0;
+}
+
+void Bundle::clearAllBundles()
+{
+	_g_bundlePool.clear([](Bundle* b)
+	{
+		if (b)
+		{
+			b->clear();
+			delete b;
+		}
+	});
 }
 
 Bundle &Bundle::operator<<(uint8 value)

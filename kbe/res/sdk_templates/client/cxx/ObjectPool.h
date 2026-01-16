@@ -30,6 +30,15 @@ namespace KBEngine
 			objects_.push_back(obj);
 		}
 
+		void clear(std::function<void(T*)> deleter)
+		{
+			for (T* obj : objects_)
+			{
+				deleter(obj);
+			}
+			objects_.clear();
+		}
+
 	private:
 		std::vector<T*> objects_;
 	};

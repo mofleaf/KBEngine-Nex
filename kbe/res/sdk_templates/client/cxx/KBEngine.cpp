@@ -120,7 +120,7 @@ KBEngineApp::KBEngineApp(KBEngineArgs* pArgs):
 
 KBEngineApp::~KBEngineApp()
 {
-	destroy();
+	// destroy();
 	INFO_MSG("KBEngineApp::~KBEngineApp(): destructed!");
 }
 
@@ -213,6 +213,10 @@ void KBEngineApp::installEvents()
 
 void KBEngineApp::destroy()
 {
+	if (currserver_ == KBTEXT("baseapp"))
+	{
+		logout();
+	}
 	reset();
 	KBENGINE_DEREGISTER_ALL_EVENT();
 	resetMessages();
@@ -221,9 +225,12 @@ void KBEngineApp::destroy()
 	
 	if (pNetworkInterface_) pNetworkInterface_->destroy();
 	// KBE_SAFE_RELEASE(pNetworkInterface_);
+	Bundle::clearAllBundles();
 	pNetworkInterface_ = nullptr;
 	KBE_SAFE_RELEASE(pFilter_);
 	uninstallUKBETicker();
+
+	destroyKBEngineApp();
 }
 
 void KBEngineApp::resetMessages()

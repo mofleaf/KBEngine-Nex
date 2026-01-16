@@ -36,6 +36,9 @@ public:
 
 	void clear();
 
+	
+	static void clearAllBundles();
+
 public:
 	Bundle &operator<<(uint8 value);
 	Bundle &operator<<(uint16 value);
