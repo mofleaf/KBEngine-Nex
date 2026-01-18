@@ -205,4 +205,4 @@ cmake -B build -S . \
 echo "[INFO] 开始编译 KBEngine-Nex"
 cmake --build build -j"$(nproc)"
 
-echo "[INFO] 安装完成 🎉"
+echo "[INFO] 安装完成"

@@ -225,6 +225,7 @@
     <ClCompile Include="..\..\..\lib\dependencies\vsopenssl\include\openssl\applink.c" />
     <ClCompile Include="client_sdk.cpp" />
     <ClCompile Include="client_sdk_csharp.cpp" />
+    <ClCompile Include="client_sdk_cxx.cpp" />
     <ClCompile Include="client_sdk_plugin.cpp" />
     <ClCompile Include="client_sdk_typescript.cpp" />
     <ClCompile Include="client_sdk_ue4.cpp" />
@@ -240,6 +241,7 @@
   <ItemGroup>
     <ClInclude Include="client_sdk.h" />
     <ClInclude Include="client_sdk_csharp.h" />
+    <ClInclude Include="client_sdk_cxx.h" />
     <ClInclude Include="client_sdk_plugin.h" />
     <ClInclude Include="client_sdk_typescript.h" />
     <ClInclude Include="client_sdk_ue4.h" />

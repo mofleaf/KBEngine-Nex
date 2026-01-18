@@ -1,6 +1,48 @@
 
 # 更新日志
 
+## 2.7.0
+
+由于本次更新中，navmesh属于底层破坏性更新，所以直接调整为一个大版本更新
+
+- [feat] 新增navigateToDetour方法，用于使用Detour导航，原navigate方法不变（points导航） [Issue #96](https://github.com/KBEngineLab/KBEngine-Nex/issues/96)
+  - Detour导航可以在服务端贴合navmesh高度，在多层建筑中非常有用
+- [feat] recastnavigation升级，并改为由vcpkg导入 [Issue #74](https://github.com/KBEngineLab/KBEngine-Nex/issues/74)
+  - 重要：navmesh升级后，为了保持多客户端兼容和未来插件升级兼容，由之前的左手坐标系转换为官方支持的-z右手坐标系（Recast Navigation / Three.js），KBE层是+Z的右手坐标
+  - 客户端侧所有的坐标同步都要做对应手系的翻转
+  - xyz分别为roll、pitch、yaw
+  - unity:
+    - 位置：x = -x ,y = y ,z = z
+    - 朝向：yaw = -z
+  - Cocos Creator:
+    - 位置：-x = x ，y = z ，z = y 
+    - 朝向：yaw + 180
+  - Godot
+    - 位置：-x = x ，y = z ，z = y 
+    - 朝向：yaw + 180
+  - UE
+    - 位置：x = x * 100，y = z * 100 ，z = y * 100
+    - 朝向：yaw + 90
+- [feat] navmesh 周边工具，一个web端的navmesh生成工具（https://navmesh.kbelab.com/） [Issue #58](https://github.com/KBEngineLab/KBEngine-Nex/issues/58)
+- [feat] mongodb接入 [Issue #59](https://github.com/KBEngineLab/KBEngine-Nex/issues/59)
+- [feat] 原生c++ sdk [Issue #60](https://github.com/KBEngineLab/KBEngine-Nex/issues/60)
+- [feat] 原生cxx ue5 demo+原生cxx demo [Issue #67](https://github.com/KBEngineLab/KBEngine-Nex/issues/67)
+- [feat] 文档完善 docker使用教程，云服务器部署教程，kbex docker教程 [Issue #64](https://github.com/KBEngineLab/KBEngine-Nex/issues/64)
+- [feat] WebConsole 全新重构 [Issue #44](https://github.com/KBEngineLab/KBEngine-Nex/issues/44)
+- [feat] csharp sdk ，websocket 端口和域名映射支持 [Issue #50](https://github.com/KBEngineLab/KBEngine-Nex/issues/50)
+- [feat] ts sdk ，websocket 端口和域名映射支持 [Issue #51](https://github.com/KBEngineLab/KBEngine-Nex/issues/51)
+- [feat] webconsole 新增用户时配置权限 [Issue #62](https://github.com/KBEngineLab/KBEngine-Nex/issues/62)
+- [feat] kbex 添加日志直连功能，用于外部启动引擎时连接日志 [Issue #61](https://github.com/KBEngineLab/KBEngine-Nex/issues/61)
+- [feat] kbex 插件更优的docker支持 [Issue #55](https://github.com/KBEngineLab/KBEngine-Nex/issues/55)
+- [feat] dockerfile 以及基础镜像 [Issue #56](https://github.com/KBEngineLab/KBEngine-Nex/issues/56)
+- [bug] webconsole 创建用户时，设置用户扩展数据报错 [Issue #53](https://github.com/KBEngineLab/KBEngine-Nex/issues/53)
+- [bug] webconsole py控制台无法多行输入的bug [Issue #52](https://github.com/KBEngineLab/KBEngine-Nex/issues/52)
+- [bug] kbex 调试模式异常输出的bug [Issue #63](https://github.com/KBEngineLab/KBEngine-Nex/issues/63)
+- [bug] 修复ts sdk里event Fire没有立即触发导致的延迟
+- [delete] 删除底层redis持久化实现 [Issue #71](https://github.com/KBEngineLab/KBEngine-Nex/issues/71)
+- [update] 基础demo 全面升级，适配服务端navmesh （unity、cocos、godot、ue5）
+- [update] assets移除一些历史spaces配置，所有基础demo统一在一个space配置（kbengine_all_demo）下实现，加速服务端启动
+
 ## v2.6.3
 - [feat] 系统回调支持asyncio [Issue #1](https://github.com/KBEngineLab/KBEngine-Nex/issues/1)
 - [feat] 新增 ts sdk  [Issue #6](https://github.com/KBEngineLab/KBEngine-Nex/issues/6)

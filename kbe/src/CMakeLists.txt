@@ -200,6 +200,7 @@ find_package(EXPAT  REQUIRED COMPONENTS core)
 find_package(log4cxx CONFIG REQUIRED)
 find_package(ZLIB REQUIRED)
 find_package(hiredis CONFIG REQUIRED)
+find_package(mongoc-1.0 CONFIG REQUIRED)
 
 
 
@@ -240,7 +241,7 @@ add_subdirectory(lib/client_lib)
 add_subdirectory(lib/common)
 add_subdirectory(lib/db_interface)
 add_subdirectory(lib/db_mysql)
-add_subdirectory(lib/db_redis)
+add_subdirectory(lib/db_mongodb)
 add_subdirectory(lib/entitydef)
 add_subdirectory(lib/math)
 add_subdirectory(lib/navigation)
