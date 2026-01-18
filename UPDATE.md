@@ -10,19 +10,19 @@
 - [feat] recastnavigation升级，并改为由vcpkg导入 [Issue #74](https://github.com/KBEngineLab/KBEngine-Nex/issues/74)
   - 重要：navmesh升级后，为了保持多客户端兼容和未来插件升级兼容，由之前的左手坐标系转换为官方支持的-z右手坐标系（Recast Navigation / Three.js），KBE层是+Z的右手坐标
   - 客户端侧所有的坐标同步都要做对应手系的翻转
+  - xyz分别为roll、pitch、yaw
   - unity:
-    - unity中x/z翻转（根据模型导出手系决定），（gameEntity.position = new Vector3(-entity.position.x,entity.position.y,entity.position.z);）
-    - 同理因为手系翻转，yaw也要做翻转（gameEntity.direction = new Vector3(entity.direction.y, -entity.direction.z, entity.direction.x);）
-    - xyz分别为roll、pitch、yaw
+    - 位置：x = -x ,y = y ,z = z
+    - 朝向：yaw = -z
   - Cocos Creator:
-    - 位置无需修改，cocos手系和Three.js一致
-    - 朝向：因为cocos 模型坐标系是-z朝外，所以yaw需要 +180
+    - 位置：-x = x ，y = z ，z = y 
+    - 朝向：yaw + 180
   - Godot
-    - 位置无需修改，Godot手系和Three.js一致
-    - 朝向：因为Godot 模型坐标系是-z朝外，所以yaw需要 +180
+    - 位置：-x = x ，y = z ，z = y 
+    - 朝向：yaw + 180
   - UE
     - 位置：x = x * 100，y = z * 100 ，z = y * 100
-    - 朝向：roll = -RadiansToDegrees(x)，pitch = -RadiansToDegrees(y)，yaw = -RadiansToDegrees(z) + 90
+    - 朝向：yaw + 90
 - [feat] navmesh 周边工具，一个web端的navmesh生成工具（https://navmesh.kbelab.com/） [Issue #58](https://github.com/KBEngineLab/KBEngine-Nex/issues/58)
 - [feat] mongodb接入 [Issue #59](https://github.com/KBEngineLab/KBEngine-Nex/issues/59)
 - [feat] 原生c++ sdk [Issue #60](https://github.com/KBEngineLab/KBEngine-Nex/issues/60)
@@ -38,8 +38,10 @@
 - [bug] webconsole 创建用户时，设置用户扩展数据报错 [Issue #53](https://github.com/KBEngineLab/KBEngine-Nex/issues/53)
 - [bug] webconsole py控制台无法多行输入的bug [Issue #52](https://github.com/KBEngineLab/KBEngine-Nex/issues/52)
 - [bug] kbex 调试模式异常输出的bug [Issue #63](https://github.com/KBEngineLab/KBEngine-Nex/issues/63)
+- [bug] 修复ts sdk里event Fire没有立即触发导致的延迟
 - [delete] 删除底层redis持久化实现 [Issue #71](https://github.com/KBEngineLab/KBEngine-Nex/issues/71)
 - [update] 基础demo 全面升级，适配服务端navmesh （unity、cocos、godot、ue5）
+- [update] assets移除一些历史spaces配置，所有基础demo统一在一个space配置（kbengine_all_demo）下实现，加速服务端启动
 
 ## v2.6.3
 - [feat] 系统回调支持asyncio [Issue #1](https://github.com/KBEngineLab/KBEngine-Nex/issues/1)
