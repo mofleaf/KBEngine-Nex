@@ -131,7 +131,6 @@ if defined VCPKG_PATH (
         exit /b 1
     )
     set "VCPKG_EXE=!VCPKG_PATH!\vcpkg.exe"
-    call "!VCPKG_PATH!\bootstrap-vcpkg.bat"
 
 )
 
@@ -146,6 +145,7 @@ git -C "%USERPROFILE%\AppData\Local\kbe-vcpkg-gitee" reset --hard HEAD
 git -C "%USERPROFILE%\AppData\Local\kbe-vcpkg-gitee" pull
 
 set "ARCH=%PROCESSOR_ARCHITECTURE%"
+set "PATH=!VCPKG_PATH!;%PATH%"
 
 if not exist "!VCPKG_PATH!\downloads\tools\powershell-core-7.2.24-windows" (
 
