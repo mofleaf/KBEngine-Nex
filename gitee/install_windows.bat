@@ -144,6 +144,27 @@ if defined VCPKG_PATH (
 git -C "%USERPROFILE%\AppData\Local\kbe-vcpkg-gitee" reset --hard HEAD
 git -C "%USERPROFILE%\AppData\Local\kbe-vcpkg-gitee" pull
 
+
+
+
+set DOWNLOADS_PATH=%USERPROFILE%\AppData\Local\kbe-vcpkg-gitee\downloads
+
+if not exist "%DOWNLOADS_PATH%" (
+    echo Downloads directory not found, cloning repository...
+    git clone -b v27x https://gitee.com/KBEngineLab/kbe-vcpkg-gitee-download.git "%DOWNLOADS_PATH%"
+) else (
+    if not exist "%DOWNLOADS_PATH%\.git" (
+        echo .git directory not found, removing existing downloads directory...
+        rmdir /s /q "%DOWNLOADS_PATH%"
+        echo Re-cloning repository...
+        git clone -b v27x https://gitee.com/KBEngineLab/kbe-vcpkg-gitee-download.git "%DOWNLOADS_PATH%"
+    ) else (
+        echo Downloads directory exists, updating...
+        git -C "%DOWNLOADS_PATH%" pull
+    )
+)
+
+
 @REM set "ARCH=%PROCESSOR_ARCHITECTURE%"
 set "PATH=!VCPKG_PATH!;%PATH%"
 
