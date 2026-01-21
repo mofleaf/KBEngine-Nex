@@ -1,5 +1,5 @@
 <div align="center">
-<img alt="KBEngineNex" src="https://github.com/KBEngineLab/KBEngineNexMaterials/blob/main/images/logo_200.png?raw=true" width="80"  style="margin-top:20px;">
+<img alt="KBEngineNex" src="https://github.com/KBEngineLab/KBEngineNexMaterials/blob/main/images/logo_200.png?raw=true" width="120"  style="margin-top:20px;">
 
 
 <h1>KBEngine Nex</h1>
