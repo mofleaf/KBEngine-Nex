@@ -205,12 +205,13 @@ namespace KBEngine {
 		if (strlen(db_username_) > 0)
 		{
 			kbe_snprintf(uri_string, sizeof(uri_string),
-				"mongodb://%s:%s@%s:%d/%s?authSource=admin&maxPoolSize=32",
+				"mongodb://%s:%s@%s:%d/%s?authSource=%s&maxPoolSize=32",
 				db_username_,
 				db_password_,
 				db_ip_,
 				db_port_,
-				databaseName ? databaseName : "admin");
+				databaseName,
+				databaseName);
 		}
 		else
 		{
@@ -218,7 +219,7 @@ namespace KBEngine {
 				"mongodb://%s:%d/%s?maxPoolSize=32",
 				db_ip_,
 				db_port_,
-				databaseName ? databaseName : "admin");
+				databaseName);
 		}
 
 		// mongoc_uri_t* uri = mongoc_uri_new(uriStr);
