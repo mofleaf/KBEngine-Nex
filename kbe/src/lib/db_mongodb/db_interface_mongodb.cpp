@@ -129,14 +129,14 @@ namespace KBEngine {
 		_g_installedWatcher = true;
 		_g_debug = g_kbeSrvConfig.getDBMgr().debugDBMgr;
 
-		WATCH_OBJECT("db_querys/select", &KBEngine::watcher_select);
-		WATCH_OBJECT("db_querys/delete", &KBEngine::watcher_delete);
-		WATCH_OBJECT("db_querys/insert", &KBEngine::watcher_insert);
-		WATCH_OBJECT("db_querys/update", &KBEngine::watcher_update);
-		WATCH_OBJECT("db_querys/json_function", &KBEngine::watcher_json_function);
-		WATCH_OBJECT("db_querys/select_index", &KBEngine::watcher_select_index);
-		WATCH_OBJECT("db_querys/create_index", &KBEngine::watcher_create_index);
-		WATCH_OBJECT("db_querys/drop_index", &KBEngine::watcher_drop_index);
+		WATCH_OBJECT("db_mongo_querys/select", &KBEngine::watcher_select);
+		WATCH_OBJECT("db_mongo_querys/delete", &KBEngine::watcher_delete);
+		WATCH_OBJECT("db_mongo_querys/insert", &KBEngine::watcher_insert);
+		WATCH_OBJECT("db_mongo_querys/update", &KBEngine::watcher_update);
+		WATCH_OBJECT("db_mongo_querys/json_function", &KBEngine::watcher_json_function);
+		WATCH_OBJECT("db_mongo_querys/select_index", &KBEngine::watcher_select_index);
+		WATCH_OBJECT("db_mongo_querys/create_index", &KBEngine::watcher_create_index);
+		WATCH_OBJECT("db_mongo_querys/drop_index", &KBEngine::watcher_drop_index);
 	}
 
 	DBInterfaceMongodb::DBInterfaceMongodb(const char* name) :

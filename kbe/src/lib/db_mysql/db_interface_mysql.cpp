@@ -113,15 +113,15 @@ static void initializeWatcher()
 	_g_installedWatcher = true;
 	_g_debug = g_kbeSrvConfig.getDBMgr().debugDBMgr;
 
-	WATCH_OBJECT("db_querys/select", &KBEngine::watcher_select);
-	WATCH_OBJECT("db_querys/delete", &KBEngine::watcher_delete);
-	WATCH_OBJECT("db_querys/insert", &KBEngine::watcher_insert);
-	WATCH_OBJECT("db_querys/update", &KBEngine::watcher_update);
-	WATCH_OBJECT("db_querys/create", &KBEngine::watcher_create);
-	WATCH_OBJECT("db_querys/drop", &KBEngine::watcher_drop);
-	WATCH_OBJECT("db_querys/show", &KBEngine::watcher_show);
-	WATCH_OBJECT("db_querys/alter", &KBEngine::watcher_alter);
-	WATCH_OBJECT("db_querys/grant", &KBEngine::watcher_grant);
+	WATCH_OBJECT("db_mysql_querys/select", &KBEngine::watcher_select);
+	WATCH_OBJECT("db_mysql_querys/delete", &KBEngine::watcher_delete);
+	WATCH_OBJECT("db_mysql_querys/insert", &KBEngine::watcher_insert);
+	WATCH_OBJECT("db_mysql_querys/update", &KBEngine::watcher_update);
+	WATCH_OBJECT("db_mysql_querys/create", &KBEngine::watcher_create);
+	WATCH_OBJECT("db_mysql_querys/drop", &KBEngine::watcher_drop);
+	WATCH_OBJECT("db_mysql_querys/show", &KBEngine::watcher_show);
+	WATCH_OBJECT("db_mysql_querys/alter", &KBEngine::watcher_alter);
+	WATCH_OBJECT("db_mysql_querys/grant", &KBEngine::watcher_grant);
 }
 
 size_t DBInterfaceMysql::sql_max_allowed_packet_ = 0;
