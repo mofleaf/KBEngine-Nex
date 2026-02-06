@@ -1,6 +1,13 @@
 
 # 更新日志
 
+## 2.7.1
+
+- [update] kbex 调试下，entity.xxx 不支持输出的问题 [Issue #102](https://github.com/KBEngineLab/KBEngine-Nex/issues/102)
+- [bug] 同时启动多个不同类型数据库，watcher冲突的bug [Issue #103](https://github.com/KBEngineLab/KBEngine-Nex/issues/103)
+- [update] mongodb authSource应该验证对应的数据库，而不是admin [Issue #105](https://github.com/KBEngineLab/KBEngine-Nex/issues/105)
+- [update] kbex 增加entity快捷操作功能 [Issue #86](https://github.com/KBEngineLab/KBEngine-Nex/issues/86)
+
 ## 2.7.0
 
 由于本次更新中，navmesh属于底层破坏性更新，所以直接调整为一个大版本更新
@@ -44,6 +51,7 @@
 - [update] assets移除一些历史spaces配置，所有基础demo统一在一个space配置（kbengine_all_demo）下实现，加速服务端启动
 
 ## v2.6.3
+
 - [feat] 系统回调支持asyncio [Issue #1](https://github.com/KBEngineLab/KBEngine-Nex/issues/1)
 - [feat] 新增 ts sdk  [Issue #6](https://github.com/KBEngineLab/KBEngine-Nex/issues/6)
 - [feat] 添加原生C# SDK，支持unity和GODOT [Issue #15](https://github.com/KBEngineLab/KBEngine-Nex/issues/15) [Issue #6](https://github.com/KBEngineLab/KBEngine-Nex/issues/6)
